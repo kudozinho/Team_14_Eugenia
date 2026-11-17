@@ -1,15 +1,18 @@
 // Génère alerte_j2.json (workflow n8n importable). Lancer : node construire_alerte_j2.mjs
-// Le code du nœud « Préparer les alertes » est écrit ici en clair pour rester lisible et relu.
+// Le code des nœuds « Code » est écrit ici en clair pour rester lisible et relu.
+// Attention : dans ces gabarits, ne jamais écrire de "\n" (il deviendrait un vrai saut de ligne) :
+// utiliser String.fromCharCode(10).
 import { writeFileSync } from 'node:fs';
 
 const SUPABASE = 'https://bvxmnrvqehemqsjiasdr.supabase.co';
 const CRED_SUPABASE = { supabaseApi: { id: 'te9bIHUOLzve2fhc', name: 'Supabase Ghost (équipe)' } };
+const LIMITE = 100; // tâches lues au plus par passage
 
 const codeAuto = `// Mode automatique : ne lit que les tâches créées depuis la dernière vérification.
 // Au tout premier passage après l'activation, on part de maintenant (pas d'avalanche d'anciennes alertes).
 const memoire = $getWorkflowStaticData('global');
 if (!memoire.depuis) memoire.depuis = new Date().toISOString();
-return [{ json: { mode: 'auto', depuis: memoire.depuis, ordre: 'cree_le.asc', limite: 20 } }];`;
+return [{ json: { mode: 'auto', depuis: memoire.depuis, ordre: 'cree_le.asc', limite: ${LIMITE} } }];`;
 
 const codeTest = `// Mode test (démo) : renvoie l'alerte de la dernière tâche détectée, sans toucher à la mémoire.
 return [{ json: { mode: 'test', depuis: '1970-01-01T00:00:00Z', ordre: 'cree_le.desc', limite: 1 } }];`;
@@ -20,14 +23,11 @@ const EXPEDITEUR = 'Ghost <ADRESSE_GMAIL@gmail.com>'; // doit être l'adresse Gm
 const LIEN_RAPPORT = ''; // adresse du tableau de bord ou du rapport (Binta), laisser vide si pas encore en ligne
 // =================================
 
-const declencheur = $('Mode automatique').isExecuted ? 'auto' : 'test';
+const mode = $('Mode automatique').isExecuted ? 'auto' : 'test';
+const memoire = $getWorkflowStaticData('global');
+const dejaEnvoyees = memoire.envoyees || {};
 const taches = $input.all().map(i => i.json).filter(t => t && t.id);
-
-// Mémoriser la plus récente tâche vue (mode automatique seulement)
-if (declencheur === 'auto' && taches.length) {
-  const memoire = $getWorkflowStaticData('global');
-  memoire.depuis = taches.map(t => t.cree_le).sort().at(-1);
-}
+const plusRecente = taches.map(t => t.cree_le).sort().at(-1) || null;
 
 const COMMENT = {
   agent_h: "l'agent de H Company peut la refaire à ta place dans le navigateur (ces sites n'ont pas d'API)",
@@ -35,31 +35,62 @@ const COMMENT = {
   les_deux: "un workflow n8n et l'agent de H Company peuvent la faire à ta place",
   outil_existant: "ton logiciel sait déjà le faire : il suffit d'activer la fonction",
 };
-
+const connu = n => n !== null && n !== undefined && n !== '';
+const nombre = n => String(n).replace('.', ',');
 const echapper = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const nombre = n => (n == null ? '?' : String(n).replace('.', ','));
 
-return taches
-  .filter(t => COMMENT[t.methode]) // « rien » : pas d'alerte
-  .map(t => {
-    const sujet = \`Ghost : tu fais « \${t.nom} » à la main, on peut l'automatiser\`;
-    const lignes = [
-      'Bonjour,',
-      '',
-      \`Pendant l'audit, Ghost a repéré une tâche répétée \${nombre(t.occurrences)} fois : « \${t.nom} ».\`,
-      \`Elle te prend environ \${nombre(t.temps_perdu_semaine_min)} min par semaine.\`,
-      '',
-      \`Bonne nouvelle : \${COMMENT[t.methode]}. Gain estimé : \${nombre(t.gain_estime_h_semaine)} h par semaine.\`,
-      '',
-      "Rien ne change sans ton accord : tu pourras voir l'agent faire la tâche et valider avant toute mise en place.",
-      "Ce message ne parle que de la tâche : ni ton écran ni tes données n'y figurent.",
-      ...(LIEN_RAPPORT ? ['', \`Voir le détail : \${LIEN_RAPPORT}\`] : []),
-      '',
-      'Ghost · See the work. Ghost the task.',
-    ];
-    const html = lignes.map(l => (l ? \`<p style="margin:0 0 4px">\${echapper(l)}</p>\` : '<br>')).join('');
-    return { json: { tache_id: t.id, methode: t.methode, a: DESTINATAIRE, de: EXPEDITEUR, sujet, texte: lignes.join(String.fromCharCode(10)), html } };
-  });`;
+// Une seule alerte par type de tâche (même nom) et par audit, même si la détection la réécrit sous un autre identifiant.
+const vues = new Set();
+const aEnvoyer = taches.filter(t => {
+  if (!COMMENT[t.methode]) return false; // « rien » : pas d'alerte
+  const cle = t.audit_id + '|' + t.nom;
+  if (vues.has(cle)) return false;
+  vues.add(cle);
+  return mode === 'test' || !dejaEnvoyees[cle];
+});
+
+// Rien à envoyer : on peut avancer la mémoire sans risque (aucune alerte ne peut se perdre).
+if (mode === 'auto' && aEnvoyer.length === 0) {
+  if (plusRecente) memoire.depuis = plusRecente;
+  return [];
+}
+
+return aEnvoyer.map(t => {
+  const sujet = \`Ghost : tu fais « \${t.nom} » à la main, on peut l'automatiser\`;
+  const repetition = connu(t.occurrences) ? \` \${nombre(t.occurrences)} fois\` : '';
+  const gain = connu(t.gain_estime_h_semaine) ? \` Gain estimé : \${nombre(t.gain_estime_h_semaine)} h par semaine.\` : '';
+  const lignes = [
+    'Bonjour,',
+    '',
+    \`Pendant l'audit, Ghost a repéré une tâche répétée\${repetition} : « \${t.nom} ».\`,
+    ...(connu(t.temps_perdu_semaine_min) ? [\`Elle te prend environ \${nombre(t.temps_perdu_semaine_min)} min par semaine.\`] : []),
+    '',
+    \`Bonne nouvelle : \${COMMENT[t.methode]}.\${gain}\`,
+    '',
+    "Rien ne change sans ton accord : tu pourras voir l'agent faire la tâche et valider avant toute mise en place.",
+    "Ce message ne parle que de la tâche : ni ton écran ni tes données n'y figurent.",
+    ...(LIEN_RAPPORT ? ['', \`Voir le détail : \${LIEN_RAPPORT}\`] : []),
+    '',
+    'Ghost · See the work. Ghost the task.',
+  ];
+  const html = lignes.map(l => (l ? \`<p style="margin:0 0 4px">\${echapper(l)}</p>\` : '<br>')).join('');
+  return { json: {
+    mode, cle: t.audit_id + '|' + t.nom, tache_id: t.id, plus_recente: plusRecente, nb_alertes: aEnvoyer.length,
+    a: DESTINATAIRE, de: EXPEDITEUR, sujet, texte: lignes.join(String.fromCharCode(10)), html,
+  } };
+});`;
+
+const codeMemoriser = `// Après l'envoi : on ne note comme « traitées » que les alertes réellement envoyées.
+// Si un envoi a échoué, la mémoire n'avance pas : la tâche sera retentée au passage suivant,
+// et les alertes déjà parties ne repartiront pas (elles sont dans « envoyees »).
+const alertes = $('Préparer les alertes').all();
+const reussies = $input.all().map(i => alertes[i.pairedItem?.item ?? 0].json);
+if (!reussies.length || reussies[0].mode !== 'auto') return reussies.map(a => ({ json: { envoyee: a.tache_id } }));
+const memoire = $getWorkflowStaticData('global');
+memoire.envoyees = memoire.envoyees || {};
+for (const a of reussies) memoire.envoyees[a.cle] = new Date().toISOString();
+if (reussies.length === reussies[0].nb_alertes && reussies[0].plus_recente) memoire.depuis = reussies[0].plus_recente;
+return reussies.map(a => ({ json: { envoyee: a.tache_id, depuis: memoire.depuis } }));`;
 
 const workflow = {
   name: 'alerte_j2',
@@ -77,17 +108,20 @@ const workflow = {
         authentication: 'predefinedCredentialType', nodeCredentialType: 'supabaseApi',
         sendQuery: true,
         queryParameters: { parameters: [
-          { name: 'select', value: 'id,nom,occurrences,temps_perdu_semaine_min,methode,gain_estime_h_semaine,cree_le' },
+          { name: 'select', value: 'id,audit_id,nom,occurrences,temps_perdu_semaine_min,methode,gain_estime_h_semaine,cree_le' },
           { name: 'cree_le', value: '=gt.{{ $json.depuis }}' },
-          { name: 'order', value: '={{ $json.ordre }}' },
+          { name: 'order', value: '={{ $json.ordre }},id.asc' },
           { name: 'limit', value: '={{ $json.limite }}' },
         ] },
         options: {},
       } },
     { id: 'n6', name: 'Préparer les alertes', type: 'n8n-nodes-base.code', typeVersion: 2, position: [760, 110], parameters: { jsCode: codeAlertes } },
     { id: 'n7', name: "Envoyer l'e-mail", type: 'n8n-nodes-base.emailSend', typeVersion: 2.1, position: [1000, 110],
+      onError: 'continueErrorOutput',
       parameters: { fromEmail: '={{ $json.de }}', toEmail: '={{ $json.a }}', subject: '={{ $json.sujet }}', emailFormat: 'both',
         text: '={{ $json.texte }}', html: '={{ $json.html }}', options: { appendAttribution: false } } },
+    { id: 'n8', name: 'Mémoriser les envois', type: 'n8n-nodes-base.code', typeVersion: 2, position: [1240, 40], parameters: { jsCode: codeMemoriser } },
+    { id: 'n9', name: 'Échec : retenté au prochain passage', type: 'n8n-nodes-base.noOp', typeVersion: 1, position: [1240, 220], parameters: {} },
   ],
   connections: {
     'Toutes les minutes': { main: [[{ node: 'Mode automatique', type: 'main', index: 0 }]] },
@@ -96,6 +130,10 @@ const workflow = {
     'Mode test': { main: [[{ node: 'Lire les tâches détectées', type: 'main', index: 0 }]] },
     'Lire les tâches détectées': { main: [[{ node: 'Préparer les alertes', type: 'main', index: 0 }]] },
     'Préparer les alertes': { main: [[{ node: "Envoyer l'e-mail", type: 'main', index: 0 }]] },
+    "Envoyer l'e-mail": { main: [
+      [{ node: 'Mémoriser les envois', type: 'main', index: 0 }],
+      [{ node: 'Échec : retenté au prochain passage', type: 'main', index: 0 }],
+    ] },
   },
   settings: { executionOrder: 'v1', timezone: 'Europe/Paris' },
 };
