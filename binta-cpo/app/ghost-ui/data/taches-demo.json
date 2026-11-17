@@ -1,37 +1,64 @@
 {
-  "_note": "Fichier d'exemple (fausses données, Agence Belvédère). Chiffres de commun/roadmap/07 §18b : 49 + 84 + 72 = 205 h par an. Remplacé jeudi par la base Supabase (scores d'Henriquet).",
-  "organisation": "Agence Belvédère (fictive)",
-  "total_heures_an": 205,
-  "taches": [
-    {
-      "id": "tache_001",
-      "nom": "Recopier une annonce sur 3 sites sans passerelle",
-      "methode": "agent_h",
-      "heures_an": 49,
-      "duree_humaine_s": 720,
-      "score": { "gain": 3, "facilite": 4, "effort": 2, "risque": 2, "confiance": 4, "total": 73, "quadrant": "gain_rapide" },
-      "outil": "Agent H (pas d'API sur les 3 sites)",
-      "vigilance": "Mentions obligatoires de l'annonce"
-    },
-    {
-      "id": "tache_002",
-      "nom": "Relancer les prospects après visite",
-      "methode": "n8n",
-      "heures_an": 84,
-      "duree_humaine_s": 300,
-      "score": { "gain": 4, "facilite": 5, "effort": 1, "risque": 3, "confiance": 4, "total": 85, "quadrant": "gain_rapide" },
-      "outil": "n8n : brouillon de message à J+2, envoi après validation",
-      "vigilance": "Coordonnées des prospects, pas d'envoi automatique"
-    },
-    {
-      "id": "tache_003",
-      "nom": "Compte rendu de visite au propriétaire",
-      "methode": "n8n",
-      "heures_an": 72,
-      "duree_humaine_s": 480,
-      "score": { "gain": 4, "facilite": 3, "effort": 2, "risque": 3, "confiance": 3, "total": 71, "quadrant": "gain_rapide" },
-      "outil": "Dictée + mise en forme par un LLM + n8n",
-      "vigilance": "Propos rapportés d'un visiteur : relecture obligatoire"
-    }
-  ]
+ "_note": "Fichier d'exemple (fausses données, Agence Belvédère). Chiffres de commun/roadmap/07 §18b : 49 + 84 + 72 = 205 h par an. Remplacé jeudi par la base Supabase (scores d'Henriquet).",
+ "organisation": "Agence Belvédère (fictive)",
+ "total_heures_an": 205,
+ "taches": [
+  {
+   "id": "tache_001",
+   "nom": "Recopier une annonce sur 3 sites sans passerelle",
+   "methode": "agent_h",
+   "heures_an": 49,
+   "duree_humaine_s": 720,
+   "score": {
+    "gain": 3,
+    "facilite": 4,
+    "effort": 2,
+    "risque": 2,
+    "confiance": 4,
+    "total": 73,
+    "quadrant": "gain_rapide"
+   },
+   "outil": "Agent H (pas d'API sur les 3 sites)",
+   "vigilance": "Mentions obligatoires de l'annonce",
+   "court": "Recopie 3 sites"
+  },
+  {
+   "id": "tache_002",
+   "nom": "Relancer les prospects après visite",
+   "methode": "n8n",
+   "heures_an": 84,
+   "duree_humaine_s": 300,
+   "score": {
+    "gain": 4,
+    "facilite": 5,
+    "effort": 1,
+    "risque": 3,
+    "confiance": 4,
+    "total": 85,
+    "quadrant": "gain_rapide"
+   },
+   "outil": "n8n : brouillon de message à J+2, envoi après validation",
+   "vigilance": "Coordonnées des prospects, pas d'envoi automatique",
+   "court": "Relances"
+  },
+  {
+   "id": "tache_003",
+   "nom": "Compte rendu de visite au propriétaire",
+   "methode": "n8n",
+   "heures_an": 72,
+   "duree_humaine_s": 480,
+   "score": {
+    "gain": 4,
+    "facilite": 3,
+    "effort": 2,
+    "risque": 3,
+    "confiance": 3,
+    "total": 71,
+    "quadrant": "gain_rapide"
+   },
+   "outil": "Dictée + mise en forme par un LLM + n8n",
+   "vigilance": "Propos rapportés d'un visiteur : relecture obligatoire",
+   "court": "Comptes rendus"
+  }
+ ]
 }

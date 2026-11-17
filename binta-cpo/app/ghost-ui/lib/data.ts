@@ -8,7 +8,7 @@ export type Score = {
   total: number; quadrant: string;
 };
 export type Tache = {
-  id: string; nom: string; methode: "agent_h" | "n8n" | "rien";
+  id: string; nom: string; court: string; methode: "agent_h" | "n8n" | "rien";
   heures_an: number; duree_humaine_s: number; score: Score; outil: string; vigilance: string;
 };
 export type Execution = {
@@ -46,7 +46,7 @@ export const LABEL_METHODE: Record<string, string> = {
   rien: "Rien à construire",
 };
 
-export type Piste = { id: string; nom: string; methode?: string; heures_an?: number; heures_an_aujourdhui?: number; pourquoi: string };
+export type Piste = { id: string; nom: string; court: string; methode?: string; heures_an?: number; heures_an_aujourdhui?: number; pourquoi: string };
 // Pistes à mesurer pendant l'audit : jamais additionnées au chiffre principal.
 export function getPistes() {
   const aConfirmer = pistesJson.a_confirmer as Piste[];
