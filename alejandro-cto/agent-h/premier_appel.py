@@ -2,7 +2,7 @@
 
 Lancer :
     pip install -r requirements.txt
-    set HAI_API_KEY=hk-...        (Windows)   |   export HAI_API_KEY=hk-...   (Mac)
+    copier .env.example en .env et y mettre la clé HAI_API_KEY
     python premier_appel.py
 
 Option : --start-url https://portail-a.example/deposer  (quand les sites de Vladimir sont en ligne)
@@ -12,8 +12,11 @@ import argparse
 import json
 import time
 
+from dotenv import load_dotenv
 from hai_agents import Client
 from pydantic import BaseModel
+
+load_dotenv()  # lit HAI_API_KEY depuis le fichier .env à côté du script
 
 AGENT = "h/web-surfer-flash"
 MAX_STEPS = 20
