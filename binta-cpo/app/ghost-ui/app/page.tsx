@@ -24,7 +24,7 @@ export default function Dashboard() {
       <div className="grid g2">
         <section className="card">
           <h2>Tâches classées par score</h2>
-          <table>
+          <div className="scroll-x"><table>
             <thead>
               <tr><th>Tâche</th><th>Outil</th><th className="num">Score</th><th className="num">h/an</th><th className="num">Durée aujourd'hui</th></tr>
             </thead>
@@ -42,7 +42,7 @@ export default function Dashboard() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
           <p className="note">Règle d'outil : API disponible → n8n · pas d'API → agent H · déjà couvert par le logiciel → rien à construire.</p>
         </section>
 
