@@ -28,7 +28,7 @@ def evenement_vers_action(e: Mapping[str, Any]) -> str | None:
     if portal:
         return f"Portail {portal.group(1).upper()} / formulaire"
     if WINDOW_FOLLOWUP.search(title):
-        return f'{app} / suivi_prospects.xlsx'
+        return f'{app} / suivi_prospects'  # tableur : Google Sheets depuis le 17/11, plus Excel
     if not title and not app:
         return None
     # Normalise les références de mandats et les chiffres des titres.
