@@ -1,0 +1,18 @@
+pillow>=10
+imagehash>=4.3
+requests>=2.31
+python-dotenv>=1
+pystray>=0.19
+
+# Windows
+pywin32>=306; sys_platform == "win32"
+psutil>=5.9; sys_platform == "win32"
+uiautomation>=2.0.20; sys_platform == "win32"
+winocr>=0.0.14; sys_platform == "win32"
+
+# macOS
+pyobjc-framework-Quartz>=10; sys_platform == "darwin"
+ocrmac>=1.0; sys_platform == "darwin"
+
+# tests
+pytest>=8
