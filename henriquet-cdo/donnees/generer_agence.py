@@ -99,24 +99,53 @@ mandats = [
     for ref, typ, titre, ville, cp, surf, pieces, prix, dpe, n, demo, desc in MANDATS
 ]
 
-# 20 prospects inventés : numéros 06 00 00 00 xx et e-mails @example.com
-PRENOMS = ["Camille", "Julien", "Inès", "Thomas", "Léa", "Karim", "Sarah", "Hugo", "Amandine", "Yanis",
-           "Chloé", "Mathis", "Nora", "Lucas", "Élodie", "Bastien", "Fatou", "Antoine", "Manon", "Olivier"]
-NOMS = ["Exemple", "Fictif", "Test", "Demo", "Bidon", "Essai", "Modele", "Factice", "Specimen", "Maquette"]
-projets = ["Achat résidence principale", "Investissement locatif", "Premier achat", "Agrandissement de la famille"]
-prospects = []
-for i in range(20):
-    prenom, nom = PRENOMS[i], NOMS[i % len(NOMS)]
-    biens = rng.sample([m["ref"] for m in mandats], k=rng.randint(1, 3))
-    prospects.append({
-        "id": f"pro_{i + 1:02d}",
-        "nom": f"{prenom} {nom}",
-        "telephone": f"06 00 00 00 {i + 1:02d}",
-        "email": f"{prenom.lower().replace('é', 'e').replace('è', 'e')}.{nom.lower()}@example.com",
-        "projet": rng.choice(projets),
-        "budget_max": rng.choice([150000, 200000, 250000, 300000, 350000, 450000, 650000]),
-        "biens_suivis": sorted(biens),
-    })
+# 20 prospects inventés, cohérents avec les mandats (budget, type de bien, ville).
+# Noms courants en Île-de-France, numéros 06 00 00 00 xx et e-mails @example.com : ne peuvent viser personne.
+# (id, prénom, nom, projet, recherche, villes, budget, financement, apport, délai, source, premier contact, étape, biens suivis)
+PROSPECTS = [
+    (1, "Camille", "Martin", "Premier achat", "T2 ou T3", ["Massy", "Longjumeau"], 240000, "Accord de principe de la banque", 25000, "3 mois", "Portail A", "2026-11-03", "Visite faite", ["M-0145", "M-0148"]),
+    (2, "Julien", "Bernard", "Agrandissement de la famille", "Maison avec jardin", ["Igny", "Juvisy-sur-Orge"], 480000, "Vente de son appartement en cours", 120000, "6 mois", "Portail B", "2026-10-28", "Visite faite", ["M-0146", "M-0149"]),
+    (3, "Inès", "Haddad", "Investissement locatif", "Studio ou T2", ["Orsay", "Les Ulis"], 150000, "Prêt accordé", 20000, "1 mois", "Portail A", "2026-11-10", "Visite faite", ["M-0144", "M-0150"]),
+    (4, "Thomas", "Petit", "Résidence principale", "T3 ou T4", ["Massy", "Gif-sur-Yvette"], 380000, "Accord de principe de la banque", 60000, "3 mois", "Site de l'agence", "2026-11-05", "Nouveau", ["M-0142", "M-0147"]),
+    (5, "Léa", "Dubois", "Premier achat", "T2", ["Massy"], 245000, "Simulation faite, dossier à monter", 15000, "6 mois", "Portail C", "2026-11-12", "Nouveau", ["M-0145"]),
+    (6, "Karim", "Benali", "Investissement locatif", "T2 ou T3", ["Évry-Courcouronnes", "Les Ulis"], 165000, "Prêt accordé", 40000, "1 mois", "Portail A", "2026-11-02", "Offre en préparation", ["M-0150", "M-0151"]),
+    (7, "Sarah", "Nguyen", "Agrandissement de la famille", "Maison avec jardin", ["Palaiseau"], 640000, "Vente de sa maison en cours", 200000, "4 mois", "Recommandation", "2026-10-30", "Visite faite", ["M-0143"]),
+    (8, "Hugo", "Moreau", "Premier achat", "T3", ["Longjumeau", "Juvisy-sur-Orge"], 230000, "Accord de principe de la banque", 20000, "2 mois", "Portail B", "2026-11-08", "Visite faite", ["M-0148"]),
+    (9, "Amandine", "Laurent", "Résidence principale", "Maison", ["Juvisy-sur-Orge", "Igny"], 360000, "Dossier de prêt à l'étude", 50000, "6 mois", "Portail A", "2026-11-11", "Nouveau", ["M-0149"]),
+    (10, "Yanis", "Diallo", "Logement étudiant pour un enfant", "Studio", ["Orsay"], 145000, "Achat comptant", 145000, "2 mois", "Site de l'agence", "2026-11-06", "Visite faite", ["M-0144"]),
+    (11, "Chloé", "Girard", "Résidence principale", "T4", ["Gif-sur-Yvette"], 390000, "Accord de principe de la banque", 70000, "3 mois", "Portail C", "2026-11-09", "Visite faite", ["M-0147"]),
+    (12, "Mathis", "Roux", "Résidence principale", "T3", ["Massy"], 340000, "Prêt accordé", 45000, "1 mois", "Portail A", "2026-10-27", "Offre en préparation", ["M-0142"]),
+    (13, "Nora", "Mercier", "Premier achat", "T2 ou T3", ["Évry-Courcouronnes"], 170000, "Simulation faite, dossier à monter", 10000, "6 mois", "Portail B", "2026-11-13", "Nouveau", ["M-0151"]),
+    (14, "Lucas", "Fontaine", "Agrandissement de la famille", "Maison", ["Igny", "Palaiseau"], 470000, "Accord de principe de la banque", 90000, "3 mois", "Portail A", "2026-11-04", "Visite faite", ["M-0146"]),
+    (15, "Élodie", "Chevalier", "Investissement locatif", "T2 ou T3", ["Massy", "Longjumeau"], 245000, "Prêt accordé", 50000, "2 mois", "Portail C", "2026-11-07", "Visite faite", ["M-0145", "M-0148"]),
+    (16, "Bastien", "Lefèvre", "Premier achat", "T3", ["Évry-Courcouronnes", "Les Ulis"], 165000, "Accord de principe de la banque", 15000, "3 mois", "Site de l'agence", "2026-11-12", "Nouveau", ["M-0151", "M-0150"]),
+    (17, "Fatou", "Traoré", "Résidence principale", "T3 ou T4", ["Massy", "Gif-sur-Yvette"], 380000, "Accord de principe de la banque", 55000, "4 mois", "Portail A", "2026-11-01", "Visite faite", ["M-0142", "M-0147"]),
+    (18, "Antoine", "Garnier", "Agrandissement de la famille", "Maison avec jardin", ["Palaiseau"], 620000, "Vente de son appartement en cours", 250000, "5 mois", "Recommandation", "2026-10-29", "Nouveau", ["M-0143"]),
+    (19, "Manon", "Rousseau", "Premier achat", "T2", ["Les Ulis"], 140000, "Dossier de prêt à l'étude", 8000, "6 mois", "Portail B", "2026-11-14", "Nouveau", ["M-0150"]),
+    (20, "Olivier", "Lambert", "Investissement locatif", "Studio", ["Orsay"], 145000, "Prêt accordé", 30000, "1 mois", "Portail A", "2026-11-10", "Visite faite", ["M-0144"]),
+]
+
+
+def sans_accent(x):
+    return x.lower().translate(str.maketrans("éèêëàâîïôöûüç", "eeeeaaiioouuc")).replace(" ", "-")
+
+
+prospects = [
+    {
+        "id": f"pro_{i:02d}", "nom": f"{prenom} {nom}", "telephone": f"06 00 00 00 {i:02d}",
+        "email": f"{sans_accent(prenom)}.{sans_accent(nom)}@example.com",
+        "projet": projet, "recherche": recherche, "villes": villes, "budget_max": budget,
+        "financement": financement, "apport": apport, "delai": delai, "source": source,
+        "premier_contact": date, "etape": etape, "biens_suivis": biens,
+    }
+    for i, prenom, nom, projet, recherche, villes, budget, financement, apport, delai, source, date, etape, biens in PROSPECTS
+]
+
+# Garde le tirage aléatoire identique à la première version (les stats déjà en base ne changent pas)
+for _ in range(20):
+    rng.sample([m["ref"] for m in mandats], k=rng.randint(1, 3))
+    rng.choice(range(4))
+    rng.choice(range(7))
 
 # Stats hebdo par bien et par portail (ce qu'affichent les back-offices et ce que l'agent H relève)
 POIDS_PORTAIL = {"Portail A": 1.0, "Portail B": 0.6, "Portail C": 0.35}
