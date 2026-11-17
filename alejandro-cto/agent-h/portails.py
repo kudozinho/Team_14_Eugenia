@@ -31,18 +31,19 @@ def vider(noms: list[str]) -> None:
         r.raise_for_status()
 
 
-def verifier(noms: list[str], mandat: dict, depuis: datetime) -> dict[str, bool]:
-    """Pour chaque portail : une annonce créée après `depuis`, avec tous les champs exacts ?"""
+def verifier(noms: list[str], mandat: dict, depuis: datetime) -> dict[str, str]:
+    """Pour chaque portail, parmi les annonces créées après `depuis` :
+    "ok" (tous les champs exacts), "faux" (annonce créée, un champ diffère) ou "absent"."""
     resultat = {}
     for nom in noms:
         r = requests.get(racine(PORTAILS[nom]) + "/api/annonces", timeout=15)
         r.raise_for_status()
-        annonces = r.json().get("annonces", [])
-        resultat[nom] = any(
-            datetime.fromisoformat(a["cree_le"]) >= depuis
-            and all(_egal(a.get(c), mandat[c]) for c in CHAMPS)
-            for a in annonces
-        )
+        recentes = [a for a in r.json().get("annonces", [])
+                    if datetime.fromisoformat(a["cree_le"]) >= depuis]
+        if any(all(_egal(a.get(c), mandat[c]) for c in CHAMPS) for a in recentes):
+            resultat[nom] = "ok"
+        else:
+            resultat[nom] = "faux" if recentes else "absent"
     return resultat
 
 
