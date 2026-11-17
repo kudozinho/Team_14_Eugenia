@@ -93,3 +93,17 @@ Les suggestions vocales utilisent un schéma de travail intermédiaire, puis doi
 - [ ] Le CDO fournit score et gains §10 issus d'hypothèses explicites.
 - [ ] Le résultat de l'agent est confirmé **en lisant les annonces réellement créées**.
 - [ ] L'ensemble a été testé trois fois de suite, sans modification des prompts après vendredi 11h.
+
+## Analyse du Recorder avec Holo
+
+Depuis la racine, sur un export d'un seul audit dont le floutage a été vérifié :
+
+```sh
+python3 omar-caio/analyser_audit.py commun/donnees/evenements-exemple.json --simulation
+python3 omar-caio/analyser_audit.py chemin/vers/export-nettoye.json --modele ID_HOLO_VERIFIE
+```
+
+Le mode Holo attend `HAI_API_KEY` dans l'environnement. Seuls le contexte
+fictif et les candidates structurées sont transmis au modèle. Vérifier la tâche
+§2 et ses consignes avant le transfert à l'agent H. Le script écrit le JSON
+sur la sortie standard et ne lance aucune session agent.

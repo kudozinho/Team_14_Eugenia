@@ -43,3 +43,25 @@ def test_deduplication_empreinte():
     extra=e.copy();extra['id']='doublon';extra['horodatage']='2026-11-18T09:05:11+01:00'
     arr=[e,extra]+EVENTS[1:]
     assert detecter_taches(arr)[0]['occurrences']==3
+
+
+def test_export_recorder_vers_analyse(monkeypatch):
+    from analyser_audit import analyser_audit
+    from detection.analyse_llm import simulateur_local
+    from detection.provider_holo import HoloProvider
+
+    def reponse_holo(self, route, payload):
+        assert route == '/chat/completions'
+        assert payload['model'] == 'holo-test'
+        return {'choices': [{'message': {
+            'content': json.dumps(simulateur_local(payload['messages']))
+        }}]}
+
+    monkeypatch.setenv('HAI_API_KEY', 'cle-fictive-test')
+    monkeypatch.setattr(HoloProvider, '_requete', reponse_holo)
+    tache = analyser_audit(EVENTS, HoloProvider('holo-test'))[0]
+    assert tache['occurrences'] == 3
+    assert tache['duree_moyenne_s'] == 745
+    assert tache['methode'] == 'agent_h'
+    assert tache['instructions_agent']
+    assert tache['prompt_empreinte']
