@@ -63,3 +63,32 @@ def test_benchmark_sans_fausses_performances():
     assert report['cout_usd'] is None
     assert report['precision'] is None
     assert report['mode']=='simulation'
+
+
+def test_analyse_rapport_vendeurs_depuis_detection():
+    from lancer_benchmark_reel import data
+    from detection.analyse_llm import analyser_candidates
+
+    lot, prompt = data(analyse_cinq=True)
+    rapport = next(t for t in lot if t['id'] == 'rapport_vendeurs')
+    assert rapport['occurrences'] == 3
+    assert rapport['duree_moyenne_s'] == 600
+    assert rapport['sequence'][0] == 'Portail A / statistiques'
+
+    def reponse_fictive(messages):
+        assert 'sans envoi' in messages[0]['content']
+        assert rapport['faits'] in messages[1]['content']
+        return json.dumps({'taches': [dict(
+            rapport, methode='agent_h', automatisable=True,
+            instructions_agent=(
+                'Relever les vues et les contacts sur les trois portails fictifs autorisés. '
+                'Signaler les données manquantes. Préparer un brouillon et demander '
+                'la validation humaine. Ne rien envoyer.'
+            )
+        )]})
+
+    resultat = analyser_candidates([rapport], prompt, reponse_fictive)[0]
+    assert resultat['methode'] == 'agent_h'
+    assert resultat['prompt_empreinte'] == prompt['empreinte']
+    assert resultat['duree_moyenne_s'] == 600
+    assert 'Ne rien envoyer.' in resultat['instructions_agent']
