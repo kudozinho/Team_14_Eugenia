@@ -25,6 +25,25 @@ Démo : l'Agence Belvédère (fictive, Massy). Une assistante recopie chaque ann
 | Tableur de suivi (décision du mardi 17) | **Google Sheets** (dans Chrome, site `docs.google.com` autorisé), plus Excel. |
 | Conformité | Ghost est présenté comme **le contre-modèle de la sanction CNIL de 2024** (secteur immobilier). Le gérant voit des tâches, jamais des personnes. |
 
+## Planning resserré (décision du mardi 17, 13h40) : tout fini mercredi 18h
+Priorité au cœur du produit : **audit → compte rendu**, avec l'agent H comme preuve dans le compte rendu. Jeudi = marge (fiabiliser, mesurer, répéter, deck).
+
+**Livré mercredi soir** : 1) audit (capture des sites autorisés, floutage, tâche détectée) ; 2) compte rendu (tâche, score, fiche à 2 axes, 205 h/an) ; 3) preuve (l'agent H refait la tâche sur les 3 sites, chrono dans le rapport).
+
+**Coupé ou repoussé** : mode vocal et formulaire → n8n → prompt (contexte de l'agence en dur) ; n8n réduit à l'alerte J2 ; benchmark, sous-agents et Holo en local seulement jeudi si tout marche ; interface réduite à 2 écrans (tableau de bord, rapport).
+
+| Quand | Alejandro | Omar | Vladimir | Henriquet | Binta |
+|---|---|---|---|---|---|
+| **Mardi, d'ici 18h30** | Recorder testé sur Mac ; agent H sur le site A | Analyse branchée sur Holo | 3 sites en ligne, adresses envoyées | Mandats, prospects, vrais domaines ; PR vers main | Interface Next.js : tableau de bord |
+| **Mercredi matin** | Agent H sur les 3 sites, résultat en base | Détection sur les vraies sessions | Alerte J2 ; aide à l'agent H | 9h-10h : 2 sessions jouées sur Mac | Page rapport sur les fichiers d'exemple |
+| **Mercredi 14h** | Bout en bout n°1 : session → tâche → rapport → agent | Tâche détectée envoyée à l'agent | Chronos main / agent | Scores et gain en base | Rapport branché sur la base |
+| **Mercredi 17h** | CP2 envoyé (Assel) | | | | Loom |
+| **Mercredi 18h** | **Bout en bout n°2 : 3 passages de suite. Gel de la base de démo.** | | | | |
+| Jeudi | Vidéo de secours, tests de l'agent | Benchmark Holo si le temps le permet | Tests de l'agent | Chiffres finaux | Deck, répétitions |
+
+Assel : script de démo et questions difficiles mercredi soir, deck avec Binta jeudi.
+Test décisif ce soir 18h30 : Recorder sur Mac + agent H sur un site. Si l'un échoue, plan B (capture plein écran, ou agent prêt à l'emploi avec consigne écrite à la main).
+
 ## Le dépôt
 ```
 README.md                ← ce fichier
