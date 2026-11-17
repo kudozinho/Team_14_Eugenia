@@ -84,8 +84,8 @@
     <h3>Ce qui a été capté aujourd'hui</h3>
     <table>
       <tr><th>Heure</th><th>Appli</th><th>Texte envoyé (nettoyé)</th><th></th></tr>
-      <tr><td>09:05</td><td>Chrome · Portail A</td><td>Titre : Appartement T3 · Prix : <ins>[MONTANT]</ins> · Contact : <ins>[TELEPHONE]</ins></td><td><button class="btn sec">Supprimer</button></td></tr>
-      <tr><td>09:06</td><td>Chrome · Portail B</td><td>Ville : Massy · Contact : <ins>[NOM]</ins></td><td><button class="btn sec">Supprimer</button></td></tr>
+      <tr><td>09:05</td><td>Chrome · Portail A (espace pro)</td><td>Bien : T3 Massy · Vues : 142 · Contacts : 9 · Vendeur : <ins>[NOM]</ins></td><td><button class="btn sec">Supprimer</button></td></tr>
+      <tr><td>09:06</td><td>Chrome · Portail B (espace pro)</td><td>Bien : T2 Massy · Vues : 87 · Contacts : 4 · Tél. vendeur : <ins>[TELEPHONE]</ins></td><td><button class="btn sec">Supprimer</button></td></tr>
       <tr><td>09:12</td><td>Hors périmètre</td><td><span class="blur">non capté</span> · 95 s</td><td></td></tr>
     </table>
     <p class="meta">Les noms et téléphones sont remplacés sur le Mac, avant tout envoi.</p>
@@ -93,53 +93,65 @@
 </section>
 
 <section data-t="3. Tableau de bord">
-  <p class="meta"><span class="tag">Vue Entreprise</span>Démo 1:20 · [D] · Aucune donnée par personne ; sous 3 participants, la tâche s'affiche sans aucune répartition.</p>
+  <p class="meta"><span class="tag">Vue Entreprise</span>Démo 1:20 · [D] · Aucune donnée par personne ; sous 3 participants, la tâche s'affiche sans aucune répartition. Données : taches-semaine-agence.json (fictives).</p>
   <div class="grid g3" style="margin-bottom:14px">
-    <div class="frame kpi"><b>205 h</b><span>récupérables par an, justifiées tâche par tâche</span></div>
-    <div class="frame kpi"><b>3</b><span>tâches classées</span></div>
+    <div class="frame kpi"><b>258 h</b><span>récupérables par an (sur 440 h observées), justifiées tâche par tâche</span></div>
+    <div class="frame kpi"><b>10</b><span>tâches analysées · 7 à automatiser · 3 déjà couvertes</span></div>
     <div class="frame kpi"><b>60 %</b><span>avancement de l'audit</span><div class="bar"><i style="width:60%"></i></div></div>
   </div>
   <div class="grid g2">
     <div class="frame">
-      <h3>Top des tâches</h3>
+      <h3>Top des tâches par gain</h3>
       <table>
-        <tr><th>Tâche</th><th>Score</th><th>h/an</th><th>Outil</th></tr>
-        <tr><td>Relancer les prospects après visite</td><td>85</td><td>84</td><td>n8n</td></tr>
-        <tr><td>Recopier une annonce sur 3 sites</td><td>73</td><td>49</td><td>Agent H</td></tr>
-        <tr><td>Compte rendu de visite au propriétaire</td><td>71</td><td>72</td><td>Dictée + n8n</td></tr>
+        <tr><th>Tâche</th><th>Outil</th><th>Gain h/an</th></tr>
+        <tr><td>Rapport hebdo aux vendeurs (vues et contacts des portails)</td><td>Agent H</td><td>74</td></tr>
+        <tr><td>Compte rendu de visite au vendeur</td><td>n8n</td><td>44</td></tr>
+        <tr><td>Dossier du compromis sur les extranets des syndics</td><td>Agent H</td><td>41</td></tr>
+        <tr><td>Prise de rendez-vous de visite</td><td>n8n</td><td>31</td></tr>
+        <tr><td>État des risques sur Géorisques</td><td>Agent H</td><td>28</td></tr>
+        <tr><td>Relance des acquéreurs 48 h après visite</td><td>n8n</td><td>25</td></tr>
+        <tr><td>Demande de rendez-vous au diagnostiqueur</td><td>n8n</td><td>16</td></tr>
       </table>
+      <p class="pri"><b>Rien à construire (0 h)</b> : multidiffusion des annonces, import des leads, registre des mandats. Déjà faits par le logiciel d'agence : Ghost reste honnête.</p>
+      <p class="meta">Agent H : 143 h · n8n : 116 h · Total : 258 h par an (46 semaines).</p>
     </div>
     <div class="frame">
       <h3>Matrice gain / effort</h3>
       <div class="matrix">
         <span class="q" style="left:8px;top:6px">GAIN RAPIDE</span><span class="q" style="right:8px;top:6px">PROJET</span>
         <span class="q" style="left:8px;bottom:6px">À REGROUPER</span><span class="q" style="right:8px;bottom:6px">À ÉCARTER</span>
-        <div class="dot" style="left:12%;top:22%;width:58px;height:58px">84 h</div>
-        <div class="dot" style="left:30%;top:30%;width:50px;height:50px;background:var(--warn)">72 h</div>
-        <div class="dot" style="left:22%;top:42%;width:44px;height:44px">49 h</div>
+        <div class="dot" style="left:10%;top:16%;width:62px;height:62px">74 h</div>
+        <div class="dot" style="left:34%;top:30%;width:48px;height:48px;background:var(--ok)">44 h</div>
+        <div class="dot" style="left:60%;top:24%;width:46px;height:46px">41 h</div>
+        <div class="dot" style="left:26%;top:58%;width:38px;height:38px;background:var(--ok)">31 h</div>
+        <div class="dot" style="left:70%;top:62%;width:36px;height:36px">28 h</div>
+        <div class="dot" style="left:16%;top:70%;width:34px;height:34px;background:var(--ok)">25 h</div>
+        <div class="dot" style="left:44%;top:74%;width:30px;height:30px;background:var(--ok)">16 h</div>
       </div>
-      <p class="meta">Taille = heures par an · couleur = risque.</p>
+      <p class="meta">Taille = heures par an · violet = Agent H · vert = n8n. Placement indicatif (le scoring est calculé par Henriquet).</p>
     </div>
   </div>
 </section>
 
 <section data-t="4. Preuve de l'agent">
-  <p class="meta"><span class="tag">Vue Entreprise</span>Démo 1:50 à 3:30 · [D] · Chrono mesuré par notre code.</p>
+  <p class="meta"><span class="tag">Vue Entreprise</span>Démo 1:50 à 3:30 · [D] · Chrono mesuré par notre code. Les 3 sites de test sont des back-offices de portail.</p>
   <div class="grid g2">
     <div class="frame">
-      <h3>Recopier une annonce sur 3 sites</h3>
-      <p>Méthode recommandée : <b>Agent H</b> (les 3 sites n'ont pas d'API).</p>
+      <h3>Rapport hebdomadaire aux vendeurs</h3>
+      <p>Méthode recommandée : <b>Agent H</b> (les espaces pro des portails n'ont pas d'API pour une petite agence).</p>
       <button class="btn">Prouver avec l'agent</button>
-      <p class="meta" style="margin-top:12px">Portail A ✔ · Portail B ✔ · Portail C ✔</p>
+      <p class="meta" style="margin-top:12px">Portail A ✔ (vues, contacts) · Portail B ✔ · Portail C ✔</p>
       <div class="bar"><i style="width:100%"></i></div>
+      <p class="meta">Résultat : une liste de biens avec les vues et contacts de la semaine, puis le message au vendeur rédigé (envoi après validation).</p>
     </div>
     <div class="frame">
       <h3>Durée avant / après</h3>
       <div class="cmp">
-        <div style="background:var(--bad);height:100%">12 min<br>à la main</div>
-        <div style="background:var(--ok);height:13%;padding-top:0"></div>
+        <div style="background:var(--bad);height:100%">10 min<br>à la main<br>(par rapport)</div>
+        <div style="background:var(--ok);height:20%;padding-top:0"></div>
       </div>
-      <p><b>1 min 35</b> avec l'agent · <b>87 %</b> de temps en moins. Mesuré, pas promis.</p>
+      <p>Durée de l'agent : <b>à mesurer jeudi</b> (médiane de 5 essais). Mesuré, pas promis.</p>
+      <p class="meta">Chiffres de démonstration à remplacer par la mesure réelle.</p>
     </div>
   </div>
 </section>
@@ -147,30 +159,30 @@
 <section data-t="5. Fiche opportunité">
   <p class="meta"><span class="tag">Vue Entreprise</span>Démo 3:30 · [D] · Fiche à 2 axes (voir pitch/fiche-opportunite-exemple.json).</p>
   <div class="frame">
-    <h3>OPPORTUNITÉ N°1 : Recopier une annonce sur 3 sites sans passerelle</h3>
-    <p><span class="pill ok">Score 73/100</span> <span class="pill warn">Gain rapide</span> Confiance 4/5</p>
+    <h3>OPPORTUNITÉ N°1 : Rapport hebdomadaire aux vendeurs (vues et contacts des portails)</h3>
+    <p><span class="pill ok">Score 71/100 (à confirmer)</span> <span class="pill warn">Gain rapide</span> Confiance 3/5</p>
     <div class="grid g2">
       <div>
         <h4>Axe métier</h4>
         <table>
-          <tr><td>Qui</td><td>2 assistantes commerciales</td></tr>
-          <tr><td>Aujourd'hui</td><td>12 min × 300 par an et par personne</td></tr>
-          <tr><td>Gain</td><td>49 h par an (≈ 1 470 €)</td></tr>
-          <tr><td>Temps libéré</td><td>Accueil téléphonique, suivi des mandats</td></tr>
+          <tr><td>Qui</td><td>L'assistante</td></tr>
+          <tr><td>Aujourd'hui</td><td>10 min × 12 rapports par semaine = 92 h par an</td></tr>
+          <tr><td>Gain</td><td>74 h par an (80 % supprimé, le reste = vérification)</td></tr>
+          <tr><td>Temps libéré</td><td>Accueil téléphonique, suivi des dossiers de mandat</td></tr>
         </table>
       </div>
       <div>
         <h4>Axe technique</h4>
         <table>
-          <tr><td>Outil</td><td>Agent H (pas d'API)</td></tr>
-          <tr><td>Effort</td><td>1 jour (8 h)</td></tr>
-          <tr><td>Coût</td><td>≈ 90 $ par an</td></tr>
-          <tr><td>Recette</td><td>9 sur 10, prix identique, moins de 3 min</td></tr>
-          <tr><td>Preuve</td><td>3 sites sur 3, 95 s contre 720 s</td></tr>
+          <tr><td>Outil</td><td>Agent H (pas d'API sur les espaces pro)</td></tr>
+          <tr><td>Effort</td><td>1 jour (8 h) [H]</td></tr>
+          <tr><td>Coût</td><td>≈ 110 $ par an [H]</td></tr>
+          <tr><td>Recette</td><td>9 rapports justes sur 10, chiffres identiques aux back-offices</td></tr>
+          <tr><td>Preuve</td><td>3 portails sur 3, durée à mesurer jeudi</td></tr>
         </table>
       </div>
     </div>
-    <p class="pri">Vigilance : ne rien retirer des mentions obligatoires de l'annonce. Validation humaine avant publication tant que la réussite est inférieure à 9 sur 10.</p>
+    <p class="pri">Vigilance : conditions d'utilisation des portails, identifiants dans un coffre, jamais dans la consigne. Aucun message envoyé au vendeur sans validation humaine.</p>
     <p class="meta">Alerte J2 reçue · workflow n8n pré-rempli · devis (maquette).</p>
   </div>
 </section>
@@ -187,8 +199,8 @@
     </div>
     <div class="frame">
       <h3>Voici ce que j'ai compris</h3>
-      <ol><li>Ouvrir le mandat dans ImmoGest</li><li>Copier titre, prix, description</li><li>Coller sur le portail A</li><li>Recommencer sur B et C</li></ol>
-      <p class="meta">Outils : ImmoGest, Portails A, B, C · 3 à 5 fois par semaine · 15 min</p>
+      <ol><li>Me connecter à l'espace pro de chaque portail</li><li>Relever les vues et les contacts de chaque bien</li><li>Écrire un message au vendeur avec les chiffres</li><li>Recommencer pour chaque bien en vente</li></ol>
+      <p class="meta">Outils : Portails A, B, C · messagerie · 12 fois par semaine · 10 min</p>
       <button class="btn">Oui, c'est bien ça</button> <button class="btn sec">Corriger</button>
     </div>
   </div>
@@ -198,7 +210,7 @@
   <p class="meta"><span class="tag">Vue Collaborateur</span>Démo 3:30 · [D] · 1 alerte.</p>
   <div class="frame" style="max-width:420px">
     <h3>Ghost</h3>
-    <p>Tu recopies la même annonce sur 3 sites à la main. On peut l'automatiser : environ 10 min gagnées par annonce.</p>
+    <p>Tu relèves à la main les vues et contacts sur 3 portails pour chaque rapport vendeur. On peut l'automatiser : environ 74 h gagnées par an.</p>
     <button class="btn">Voir la solution</button> <button class="btn sec">Plus tard</button>
   </div>
 </section>
