@@ -11,7 +11,8 @@ import sys
 
 from config import RACINE_REPO
 
-sys.path.insert(0, str(RACINE_REPO / "omar-caio" / "filtres"))
+# Le paquet d'Omar est omar-caio/filtres/ : c'est le dossier PARENT qu'il faut ajouter au chemin.
+sys.path.insert(0, str(RACINE_REPO / "omar-caio"))
 
 try:
     _module = importlib.import_module(os.getenv("NETTOYER_MODULE", "filtres"))

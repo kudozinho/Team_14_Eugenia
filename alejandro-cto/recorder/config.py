@@ -45,7 +45,8 @@ def charger_config() -> Config:
         applis_autorisees=tuple(_liste("APPLIS_AUTORISEES")),
         sites_autorises=tuple(_liste("SITES_AUTORISES")),
         supabase_url=os.getenv("SUPABASE_URL") or None,
-        supabase_cle=os.getenv("SUPABASE_SERVICE_KEY") or None,
+        # Même nom que les sites de test et le script d'Henriquet (ancien nom accepté)
+        supabase_cle=os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_SERVICE_KEY") or None,
         mode_capture=os.getenv("MODE_CAPTURE", "fenetre"),
         dossier_journal=ICI / "journal",
     )

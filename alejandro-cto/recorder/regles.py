@@ -5,7 +5,7 @@
 - Navigateur : seulement les domaines de la liste blanche, jamais la navigation privée.
 """
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit, urlunsplit
 
 from config import NAVIGATEURS
 
@@ -53,3 +53,11 @@ def est_autorise(
             return False
         return site_autorise(url, sites)
     return True
+
+
+def url_sans_parametres(url: str | None) -> str | None:
+    """Adresse stockée sans paramètres ni ancre : ils peuvent contenir un e-mail ou un identifiant client."""
+    if not url:
+        return None
+    p = urlsplit(url)
+    return urlunsplit((p.scheme, p.netloc.split("@")[-1], p.path, "", ""))

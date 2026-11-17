@@ -29,11 +29,28 @@ end tell
 '''
 
 
+def _pid_premier_plan() -> int | None:
+    """PID de l'application active selon macOS (celle qui a le focus)."""
+    try:
+        from AppKit import NSWorkspace  # fourni avec pyobjc (dépendance de pyobjc-framework-Quartz)
+        app = NSWorkspace.sharedWorkspace().frontmostApplication()
+        return int(app.processIdentifier()) if app else None
+    except Exception:  # noqa: BLE001 : en cas de souci, on retombe sur l'ordre des fenêtres
+        return None
+
+
 def fenetre_active() -> Fenetre | None:
-    """La première fenêtre de niveau 0 de la liste (rangée de l'avant vers l'arrière) est celle de devant."""
+    """Première fenêtre de niveau 0 (liste rangée de l'avant vers l'arrière) appartenant à l'appli active.
+
+    Le filtre par appli active évite de prendre une fenêtre flottante d'une autre appli
+    (lecteur vidéo, visio) pour la fenêtre de travail. Sans PID, on garde la première fenêtre.
+    """
+    pid_actif = _pid_premier_plan()
     options = Quartz.kCGWindowListOptionOnScreenOnly | Quartz.kCGWindowListExcludeDesktopElements
     for w in Quartz.CGWindowListCopyWindowInfo(options, Quartz.kCGNullWindowID) or []:
         if w.get("kCGWindowLayer") != 0:
+            continue
+        if pid_actif is not None and int(w.get("kCGWindowOwnerPID", 0)) != pid_actif:
             continue
         return Fenetre(
             appli=str(w.get("kCGWindowOwnerName", "")),

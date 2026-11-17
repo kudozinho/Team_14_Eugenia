@@ -29,7 +29,7 @@ from config import (
 )
 from nettoyage import SOURCE as SOURCE_NETTOYAGE
 from nettoyage import compacter, nettoyer
-from regles import est_autorise
+from regles import est_autorise, url_sans_parametres
 from stockage import Stockage, nouvel_evenement
 
 log = logging.getLogger("recorder")
@@ -148,7 +148,7 @@ class Recorder:
             self.cfg.audit_id, self.cfg.utilisateur_id, type_,
             appli=fen.appli,
             titre_fenetre=nettoyer(fen.titre or "", self.profil) or None,
-            url=url,
+            url=url_sans_parametres(url),
             texte_nettoye=nettoyer(texte, self.profil) or None,
             empreinte=str(empreinte),
         )

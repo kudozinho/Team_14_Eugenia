@@ -84,7 +84,7 @@ Ligne du bas : « 3 modes, du plus léger au plus complet. Le mode vocal ne rega
 « Oui, et dans l'immobilier, notre premier marché. C'est pour ça que Ghost fait l'inverse sur 7 points : pas d'intervalle fixe, pas d'inactivité, pas de donnée par personne. Et pour ceux qui ne veulent aucun écran, il y a le mode vocal. Ce qu'il nous reste à faire : une AIPD validée par un DPO avant le premier client. »
 
 **2. « Dans une agence de 5 personnes, tout le monde sait qui est l'assistante. Votre anonymat ne tient pas. »**
-« Vous avez raison, l'agrégation ne protège pas dans une petite équipe. Notre protection est ailleurs : le rapport décrit des tâches et des outils, pas des rythmes ni des erreurs. Et c'est le salarié qui choisit ce qu'il montre. En dessous de 3 participants sur une tâche, nous n'affichons aucun détail. »
+« Vous avez raison, l'agrégation ne protège pas dans une petite équipe. Notre protection est ailleurs : le rapport décrit des tâches et des outils, pas des rythmes ni des erreurs. Et c'est le salarié qui choisit ce qu'il montre. En dessous de 3 participants sur une tâche, nous n'affichons aucune répartition par personne. »
 
 **3. « Votre agent réussit combien de fois sur 10 ? Et sur un vrai portail ? »**
 « Sur nos sites de test : X sur 10 au niveau simple, Y sur 10 avec envoi de photo. Durée médiane : Z secondes. Sur un vrai portail, nous n'avons pas testé : leurs conditions d'utilisation l'interdisent sans accord. C'est notre prochaine étape, avec un éditeur partenaire. » (Chiffres de jeudi.)
