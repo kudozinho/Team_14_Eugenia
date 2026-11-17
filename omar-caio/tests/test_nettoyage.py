@@ -68,6 +68,7 @@ def test_idempotent_sur_marqueurs():
     ('Portail B - Nouvelle annonce', 'Portail B', 'Portail B - Nouvelle annonce'),
     ('Portail B', 'Portail B', 'Portail B'),
     ('Annonce publiée sur Portail A', 'Portail A', 'Annonce publiée sur Portail A'),
+    ('404: This page could not be found', 'This', '404: This page could not be found'),
     ('Livre intéressant', 'Livre', 'Livre intéressant'),
     ('Portable +33 6 39 98 00 03', 'Portable', 'Portable [TELEPHONE]'),
     ('n8n x Eugenia', 'Eugenia', 'n8n x Eugenia'),
