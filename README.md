@@ -9,6 +9,8 @@ Cas de preuve : l'**Agence Belvédère** (fictive, Massy). Une assistante recopi
 
 *Membres de l'équipe : l'organisation interne (planning, branchements, règles de travail) est dans [`assel-ceo/organisation-equipe.md`](assel-ceo/organisation-equipe.md).*
 
+*Back-end : qui fait quoi, où ça tourne, entrées et sorties de chaque brique, état réel : [`assel-ceo/backend-qui-fait-quoi.md`](assel-ceo/backend-qui-fait-quoi.md).*
+
 ---
 
 ## 1. Le problème
