@@ -59,7 +59,7 @@ L'**Agence Belvédère**, agence immobilière fictive de Massy (Essonne), 10 per
 | `taches_semaine_agence` | 11 | Semaine type : fréquence, durée, minutes gagnées, adoption, part récupérée, méthode (agent H, n8n, rien) et statut (`justifie`, `a_confirmer`, `hors_gain`) | Calcul du gain |
 | `scores` | 3 | Score sur 100, quadrant et gain net des 3 tâches retenues (205 h/an au total), avec les hypothèses | Rapport et matrice gain / effort |
 | `evenements_exemple` | 17 | Événements captés par le Recorder, déjà floutés (`[NOM]`, `[TELEPHONE]`, `[MONTANT]`) | Tester la détection des tâches répétées |
-| `phrases_pieges` | 20 | Phrases pour tester le floutage, avec la sortie attendue après floutage (profil immobilier). Fournies par Omar | Tester les filtres de confidentialité |
+| `phrases_pieges` | 23 | Phrases pour tester le floutage, avec la sortie attendue après floutage (profil immobilier). 3 d'entre elles vérifient que les libellés de l'interface (« Portail B - Nouvelle annonce ») ne sont pas floutés. Fournies par Omar | Tester les filtres de confidentialité |
 | `profils_metier` | 3 | Profils immobilier, comptable, avocat : contexte, motifs à flouter, prompt, base de connaissances (immobilier) | Couche « métier » des prompts |
 
 ## Les 2 mandats pièges
