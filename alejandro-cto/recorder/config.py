@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 ICI = Path(__file__).resolve().parent
 RACINE_REPO = ICI.parent.parent
 load_dotenv(ICI / ".env")
+load_dotenv(RACINE_REPO / ".env")  # SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY partagés (README d'Henriquet)
 
 INTERVALLE_BOUCLE_S = 0.5       # on regarde la fenêtre active 2 fois par seconde
 VERIF_ECRAN_S = 5               # au plus une vérification d'écran toutes les 5 s
@@ -45,8 +46,7 @@ def charger_config() -> Config:
         applis_autorisees=tuple(_liste("APPLIS_AUTORISEES")),
         sites_autorises=tuple(_liste("SITES_AUTORISES")),
         supabase_url=os.getenv("SUPABASE_URL") or None,
-        # Même nom que les sites de test et le script d'Henriquet (ancien nom accepté)
-        supabase_cle=os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_SERVICE_KEY") or None,
+        supabase_cle=os.getenv("SUPABASE_SERVICE_ROLE_KEY") or None,
         mode_capture=os.getenv("MODE_CAPTURE", "fenetre"),
         dossier_journal=ICI / "journal",
     )

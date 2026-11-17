@@ -1,3 +1,4 @@
 hai-agents>=1.5.1
 pydantic>=2
 python-dotenv>=1
+requests>=2.31
