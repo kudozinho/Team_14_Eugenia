@@ -38,6 +38,10 @@ Binta, Vladimir et Henriquet ont bien avancé. Le chemin critique (Recorder → 
 4. **`organigramme.png`** porte encore l'ancienne règle des 3 participants : Binta doit régénérer l'image.
 5. **Fusionner dans `main`** la PR #1 (Binta) et la branche d'Henriquet, pour que tout le monde ait le README de connexion à la base.
 
+## Décisions d'Assel (13h15)
+- On garde la tâche de démo. Effectif unique : 10 personnes. Chiffre unique sur les slides : **205 h/an** (3 tâches de la matrice). `taches-semaine-agence.json` est réaligné : il contient la tâche de démo, et ses autres pistes (155 h/an) sont marquées « à confirmer », jamais additionnées.
+- Tableur de suivi : **Google Sheets**. Données d'exemple mises à jour (Chrome + `docs.google.com`).
+
 ## Reste à faire aujourd'hui (mardi)
 
 | Heure | Quoi | Qui |
