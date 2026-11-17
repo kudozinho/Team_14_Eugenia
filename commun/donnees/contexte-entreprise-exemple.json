@@ -1,0 +1,40 @@
+{
+ "organisation_id": "org_belvedere",
+ "profil_metier_id": "immobilier",
+ "resume": {
+  "activite": "Transaction et gestion locative, Massy et environs",
+  "effectif": 10,
+  "decideurs": {
+   "achats_logiciels": "gérante",
+   "publication_annonces": "assistantes",
+   "prix_et_mandats": "négociateurs"
+  },
+  "outils": [
+   "ImmoGest",
+   "Google Chrome",
+   "Google Sheets",
+   "Messagerie",
+   "Agenda"
+  ],
+  "process_principaux": [
+   "Prise de mandat",
+   "Publication des annonces",
+   "Visites",
+   "Relances",
+   "Compromis"
+  ],
+  "irritants": [
+   "Ressaisie des annonces sur 3 sites sans passerelle",
+   "Relances oubliées après visite"
+  ],
+  "objectifs": [
+   "Libérer 1 jour par semaine aux assistantes"
+  ],
+  "usage_temps_libere": "Accueil téléphonique et suivi des dossiers de mandat",
+  "contraintes": [
+   "Ne jamais stocker les coordonnées des prospects",
+   "Pas d'envoi automatique d'e-mail sans validation",
+   "Ne pas observer la messagerie ni le logiciel de gestion locative"
+  ]
+ }
+}

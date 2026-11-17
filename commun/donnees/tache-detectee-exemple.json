@@ -1,0 +1,59 @@
+[
+ {
+  "id": "tache_001",
+  "audit_id": "aud_demo",
+  "nom": "Recopier une annonce sur 3 sites sans passerelle",
+  "sequence": [
+   "ImmoGest / fiche mandat",
+   "Portail A / formulaire",
+   "Portail B / formulaire",
+   "Portail C / formulaire"
+  ],
+  "occurrences": 3,
+  "duree_moyenne_s": 720,
+  "temps_perdu_semaine_min": 180,
+  "automatisable": true,
+  "methode": "agent_h",
+  "gain_estime_h_semaine": 2.5,
+  "instructions_agent": "Pour chaque portail de la liste : ouvre la page, clique sur le bouton de dépôt d'annonce, remplis titre, prix, surface, ville et description avec les données fournies, valide le formulaire, puis note le nom du portail une fois l'annonce publiée.",
+  "workflow_n8n_modele": "multidiffusion_annonce",
+  "confiance": 0.8,
+  "score": {
+   "gain": 3,
+   "facilite": 4,
+   "effort": 2,
+   "risque": 2,
+   "confiance": 4,
+   "total": 73,
+   "heures_an": 49,
+   "quadrant": "gain_rapide",
+   "hypotheses": [
+    "2 assistantes",
+    "300 opérations par an et par personne",
+    "10 min gagnées",
+    "adoption 70 %",
+    "part récupérée 70 %"
+   ]
+  },
+  "prompt_empreinte": "a41f09"
+ },
+ {
+  "id": "tache_002",
+  "audit_id": "aud_demo",
+  "nom": "Mettre à jour le suivi des prospects dans Excel après chaque publication",
+  "sequence": [
+   "Microsoft Excel / suivi_prospects.xlsx"
+  ],
+  "occurrences": 2,
+  "duree_moyenne_s": 240,
+  "temps_perdu_semaine_min": 40,
+  "automatisable": true,
+  "methode": "n8n",
+  "gain_estime_h_semaine": 0.5,
+  "instructions_agent": null,
+  "workflow_n8n_modele": "synchro_annonces_sheets",
+  "confiance": 0.6,
+  "score": null,
+  "prompt_empreinte": "a41f09"
+ }
+]

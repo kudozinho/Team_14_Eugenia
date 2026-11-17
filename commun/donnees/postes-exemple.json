@@ -1,0 +1,69 @@
+[
+ {
+  "id": "poste_gerante",
+  "organisation_id": "org_belvedere",
+  "intitule": "Gérante",
+  "missions": [
+   "Piloter l'activité",
+   "Suivre les mandats et les ventes",
+   "Gérer l'équipe et les fournisseurs"
+  ],
+  "outils": [
+   "ImmoGest",
+   "Google Sheets",
+   "Messagerie"
+  ],
+  "peut_decider": [
+   "Tout achat",
+   "Toute organisation"
+  ],
+  "ne_peut_pas": []
+ },
+ {
+  "id": "poste_negociateur",
+  "organisation_id": "org_belvedere",
+  "intitule": "Négociateur immobilier",
+  "missions": [
+   "Prospecter et estimer",
+   "Prendre des mandats",
+   "Faire visiter et négocier"
+  ],
+  "outils": [
+   "ImmoGest",
+   "Téléphone",
+   "Messagerie",
+   "Agenda"
+  ],
+  "peut_decider": [
+   "Prix proposé",
+   "Contenu d'un compte rendu",
+   "Moment d'une relance"
+  ],
+  "ne_peut_pas": [
+   "Acheter un outil",
+   "Signer à la place du titulaire de la carte"
+  ]
+ },
+ {
+  "id": "poste_assistante",
+  "organisation_id": "org_belvedere",
+  "intitule": "Assistante commerciale",
+  "missions": [
+   "Publier et mettre à jour les annonces",
+   "Préparer les dossiers de mandat",
+   "Accueil téléphonique"
+  ],
+  "outils": [
+   "ImmoGest",
+   "Google Chrome",
+   "Google Sheets"
+  ],
+  "peut_decider": [
+   "Mise en ligne d'une annonce validée"
+  ],
+  "ne_peut_pas": [
+   "Modifier un prix",
+   "Signer un mandat"
+  ]
+ }
+]
