@@ -57,9 +57,12 @@ def test_une_lecture_ratee_ne_bascule_pas_hors_perimetre(tmp_path):
     assert not rec.hors_perimetre
 
 
-def test_deux_lectures_ratees_de_suite_basculent_hors_perimetre(tmp_path):
-    rec = _recorder_avec_faux_systeme(tmp_path, [(None, False), (None, False)])
-    rec.tour()
+def test_lectures_ratees_qui_durent_basculent_hors_perimetre(tmp_path):
+    from config import LECTURES_RATEES_MAX
+    rec = _recorder_avec_faux_systeme(tmp_path, [(None, False)] * LECTURES_RATEES_MAX)
+    for _ in range(LECTURES_RATEES_MAX - 1):
+        rec.tour()
+        assert not rec.hors_perimetre  # chargement de page : on attend
     rec.tour()
     assert rec.hors_perimetre
 
