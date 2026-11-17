@@ -6,7 +6,7 @@ Tout est inventé. Régénérer : `python henriquet-cdo/donnees/generer_agence.p
 |---|---|---|---|
 | `agence-belvedere.json` | L'agence, **10 collaborateurs** désignés par leur poste (1 gérante, 6 négociateurs, 2 assistantes, 1 gestionnaire locatif), **10 mandats** dans l'Essonne (3 de démo : M-0142, M-0143, M-0144) | Oui : `utilisateurs`, `postes`, `mandats` | Tous |
 | `stats-portails-semaine.json` | Vues, contacts et favoris par bien et par portail, semaines 2026-S46 et 2026-S47 (60 lignes). **S47 = semaine du rapport aux vendeurs de la démo.** | Oui : `stats_portails` | Piste « à confirmer pendant l'audit » seulement (pas la démo) |
-| `prospects-fictifs.json` | 20 prospects inventés (06 00 00 00 xx, @example.com) | **Non, jamais** (contrainte : ne pas stocker les coordonnées des prospects) | Vladimir (n8n, relances) |
+| `prospects-fictifs.json` | 20 prospects inventés et cohérents avec les mandats (budget, villes, type de bien, financement, apport, délai, source, étape). Noms courants, numéros 06 00 00 00 xx, e-mails @example.com | **Non, jamais** (contrainte : ne pas stocker les coordonnées des prospects) | Vladimir (n8n, relances) |
 
 ## Statut après la décision d'Assel (17/11, 13h35) : démo figée sur la recopie d'annonces
 
