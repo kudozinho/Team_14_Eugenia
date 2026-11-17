@@ -31,6 +31,18 @@ def test_photo_absente_sur_c():
     assert code_erreur(resultat(reussi=False, verification_base={"Portail C": "sans_photo"})) == "E7"
 
 
+def test_piege_detecte_reussi():
+    r = resultat(attendu="signale", reussi=True, verification_base={"Portail A": "absent"})
+    assert code_erreur(r) is None
+
+
+def test_piege_publie_et_signale_a_tort():
+    assert code_erreur(resultat(attendu="signale", reussi=False, piege_publie=True)) == "E9"
+    assert code_erreur(resultat(reussi=False, signale_a_tort=True)) == "E10"
+    assert code_erreur(resultat(attendu="signale", reussi=False,
+                                verification_base={"Portail A": "absent"})) == "E5"
+
+
 def test_mauvaise_valeur_contre_annonce_absente():
     assert code_erreur(resultat(reussi=False, verification_base={"Portail A": "faux"})) == "E2"
     assert code_erreur(resultat(reussi=False, verification_base={"Portail A": "absent"})) == "E1"

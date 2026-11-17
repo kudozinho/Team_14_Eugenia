@@ -52,6 +52,17 @@ def verifier(noms: list[str], mandat: dict, depuis: datetime) -> dict[str, str]:
     return resultat
 
 
+def ecarts(nom: str, mandat: dict, depuis: datetime) -> dict[str, tuple]:
+    """Champs faux de la dernière annonce créée après `depuis` sur ce portail : {champ: (lu, attendu)}."""
+    r = requests.get(racine(PORTAILS[nom]) + "/api/annonces", timeout=15)
+    r.raise_for_status()
+    recentes = [a for a in r.json().get("annonces", []) if datetime.fromisoformat(a["cree_le"]) >= depuis]
+    if not recentes:
+        return {}
+    derniere = max(recentes, key=lambda a: a["cree_le"])
+    return {c: (derniere.get(c), mandat[c]) for c in CHAMPS if not _egal(derniere.get(c), mandat[c])}
+
+
 def _egal(lu, attendu) -> bool:
     if isinstance(attendu, str):
         return " ".join(str(lu or "").split()) == " ".join(attendu.split())

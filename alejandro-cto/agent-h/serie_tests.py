@@ -20,30 +20,42 @@ from pathlib import Path
 
 import requests
 
-from lancer_agent import AGENT_PAR_DEFAUT, ICI, MANDAT_DEMO, lancer
+from lancer_agent import AGENT_PAR_DEFAUT, ICI, MANDAT_DEMO, MANDATS_PIEGES, lancer
 
 log = logging.getLogger("agent-h")
 
-# Niveaux de la roadmap 06 que les 3 sites actuels permettent de jouer.
+# Niveaux de la roadmap 06 que les 3 sites actuels permettent de jouer, plus 2 mandats piégés.
+# (cas, portails, mandat, résultat attendu)
 NIVEAUX = {
-    1: ("1 annonce sur le site A", ["A"]),
-    2: ("1 annonce sur A puis B", ["A", "B"]),
-    3: ("Site C : 2 étapes, menu déroulant, case à cocher", ["C"]),
-    4: ("Site C avec envoi d'une photo", ["C"]),
-    6: ("Les 3 sites à la suite (cas de la démo)", ["A", "B", "C"]),
+    1: ("1 annonce sur le site A", ["A"], MANDAT_DEMO, "publie"),
+    2: ("1 annonce sur A puis B", ["A", "B"], MANDAT_DEMO, "publie"),
+    3: ("Site C : 2 étapes, menu déroulant, case à cocher", ["C"], MANDAT_DEMO, "publie"),
+    4: ("Site C avec envoi d'une photo", ["C"], MANDAT_DEMO, "publie"),
+    6: ("Les 3 sites à la suite (cas de la démo)", ["A", "B", "C"], MANDAT_DEMO, "publie"),
+    12: ("Piège : classe énergie absente, rien ne doit être publié", ["A", "B", "C"],
+         MANDATS_PIEGES["classe_energie"], "signale"),
+    13: ("Piège : prix au m² incohérent (425 €/m²), rien ne doit être publié", ["A", "B", "C"],
+         MANDATS_PIEGES["prix_m2"], "signale"),
 }
 ESSAIS_MIN = 10  # moins de 10 essais : résultat « indicatif » (règle 1)
 
 
 def code_erreur(r: dict) -> str | None:
-    """Codes E1 à E8 de la roadmap 06, du plus grave au moins grave."""
+    """Codes E1 à E8 de la roadmap 06, du plus grave au moins grave, plus 2 codes des pièges :
+    E9 = mandat piégé publié (piège non détecté), E10 = mandat correct signalé à tort."""
     if r["statut"] == "erreur_infra":
         return "E8"
+    if r.get("piege_publie"):
+        return "E9"
+    if r.get("signale_a_tort"):
+        return "E10"
+    if r.get("attendu") == "signale":
+        return None if r["reussi"] else "E5"  # rien publié mais réponse sans "signale"
     if r["faux_succes"]:
         return "E6"
     if r["statut"] == "timed_out":
         return "E4"
-    if r["reussi"]:
+    if r["reussi"] and not r.get("corrections"):
         return None
     if r["statut"] == "completed" and not r["reponse_structuree"]:
         return "E5"
@@ -55,16 +67,25 @@ def code_erreur(r: dict) -> str | None:
 
 
 def essai(niveau: int, numero: int, agent: str, contournement: str | None) -> dict:
-    cas, lettres = NIVEAUX[niveau]
+    cas, lettres, mandat, attendu = NIVEAUX[niveau]
     noms = [f"Portail {x}" for x in lettres]
     try:
-        r = lancer("tache_001", noms, agent, MANDAT_DEMO)
+        r = lancer("tache_001", noms, agent, mandat, attendu)
     except Exception as e:  # API indisponible, session non démarrée...
         log.error("Essai %s : erreur d'infrastructure : %s", numero, e)
         r = {"statut": "erreur_infra", "session_id": None, "duree_s": None, "etapes": None,
              "cout_usd": None, "modele": None, "reussi": False, "faux_succes": False,
-             "reponse_structuree": False, "verification_base": {}, "erreur_h": str(e)[:300]}
+             "reponse_structuree": False, "verification_base": {}, "erreur_h": str(e)[:300],
+             "corrections": 0, "attendu": attendu}
     erreur = code_erreur(r)
+    if r.get("raison"):
+        log.info("Essai %s : raison donnée par l'agent : %s", numero, r["raison"])
+        if erreur:
+            erreur = f"{erreur} raison donnée : {r['raison']}"[:300]
+    if erreur and r["corrections"] and r["reussi"]:
+        erreur += " (corrigé par la vérification)"  # l'erreur brute de l'agent reste comptée
+    if r["corrections"]:
+        contournement = ", ".join(x for x in (contournement, "correction automatique") if x)
     return {
         "id": "tst_" + uuid.uuid4().hex[:8],
         "niveau": niveau,
@@ -106,6 +127,7 @@ def bilan(lignes: list[dict]) -> str:
         + ("" if n >= ESSAIS_MIN else f"  [INDICATIF : {n} essais sur {ESSAIS_MIN}]"),
         f"Réussite vérifiée : {reussis}/{n}",
         f"Faux succès (E6) : {erreurs.count('E6')}",
+        f"Corrigés par la vérification : {sum('corrigé' in (l['erreur'] or '') for l in lignes)}",
     ]
     if durees:
         texte.append(f"Durée : médiane {statistics.median(durees):.0f} s, pire {max(durees)} s")

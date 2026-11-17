@@ -357,6 +357,16 @@
    "source": "Calendrier de la loi Climat et résilience, à revérifier"
   },
   {
+   "regle": "Annonce de vente : la classe énergie doit être affichée (obligatoire depuis le 1er janvier 2011 ; classe climat depuis juillet 2021 ; dépenses théoriques et mention des logements F et G depuis janvier 2022)",
+   "effet_sur_automatisation": "Contrôle avant publication : classe énergie absente, l'agent ne publie pas et signale",
+   "source": "INC, étiquette énergétique du DPE ; arrêté du 22/12/2021"
+  },
+  {
+   "regle": "Cohérence du prix au m2 : entre 1 500 et 6 000 euros par m2 pour le secteur de l'agence (Essonne nord)",
+   "effet_sur_automatisation": "Contrôle avant publication : prix au m2 hors fourchette, l'agent ne publie pas et signale (souvent une faute de frappe sur la surface)",
+   "source": "Fourchette fixée par l'équipe [H], à vérifier sur les prix du secteur"
+  },
+  {
    "regle": "RGPD : données des prospects, propriétaires, locataires",
    "effet_sur_automatisation": "Floutage local, durée de conservation courte",
    "source": "RGPD, CNIL"
