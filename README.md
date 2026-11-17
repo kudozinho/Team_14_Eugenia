@@ -5,7 +5,7 @@ Team 14 · Hackathon Build The Future (Eugenia × H Company) · 16 au 20 novembr
 
 > **Ghost regarde le travail sur l'écran, trouve la tâche répétitive que plus personne ne voit, puis la fait faire par l'agent de H Company devant le client pour prouver le gain, chrono à l'appui.**
 
-Cas de preuve : l'**Agence Belvédère** (fictive, Massy). Une assistante recopie chaque annonce sur **3 sites d'annonces sans passerelle** avec son logiciel. **12 minutes à la main. 2 min 36 pour l'agent H.**
+Cas de preuve : l'**Agence Belvédère** (fictive, Massy). Une assistante recopie chaque annonce sur **3 sites d'annonces sans passerelle** avec son logiciel. **12 minutes à la main. Moins de 2 minutes pour l'agent H, vérifié sur les 3 sites.**
 
 *Membres de l'équipe : l'organisation interne (planning, branchements, règles de travail) est dans [`assel-ceo/organisation-equipe.md`](assel-ceo/organisation-equipe.md).*
 
@@ -42,14 +42,17 @@ Le compte rendu donne, pour chaque tâche, le bon outil : **API disponible → n
 
 | Mesure | Résultat | Source |
 |---|---|---|
-| Agent H sur les 3 sites (`h/web-surfer-pro`) | **3 sur 3 réussis en 156 s** au lieu de 720 s à la main (**78 % de temps en moins**, ×4,6) | session 969ac9f2 |
-| Coût de ce passage | **0,19 $** | coût lu chez H |
+| Agent H sur le vrai mandat M-0142, 3 sites (`h/web-surfer-pro`) | **3 sur 3 vérifiés en 99 s** au lieu de 720 s à la main (**86 % de temps en moins**), **0,10 $** | session 633cebc0, table `executions_agent` |
+| Premier passage sur les 3 sites | 3 sur 3 en 156 s, 0,19 $ | session 969ac9f2 |
+| Cas démo, 10 essais **avant** la correction automatique | 6 sur 10, médiane 98 s, 0,11 $ par essai ; 4 faux succès (« lumine » au lieu de « lumineux »), d'où la correction automatique | `serie_tests.py`, table `tests_agent` |
+| Annonce piégée sans classe énergie (M-T01) | **refusée 3 fois sur 3**, l'agent répond « signale » avec la raison, en 21 s | `serie_tests.py` |
+| Annonce piégée à 484 €/m² (M-T02) | **refusée 3 fois sur 3**, en 20 s | `serie_tests.py` |
 | Niveau 1 (1 site), 2 essais | 2 sur 2, médiane 30 s, 0,019 $ par essai | `alejandro-cto/agent-h/serie_tests.py` |
 | `h/web-surfer-flash` | **faux succès** : titre reformulé, agent qui annonce « publié » | session 8f893be4 |
 | Recorder sur Mac (MacBook Air) | Portails A, B et C captés ; Gmail et une recherche Google **non captés** ; noms et téléphone masqués | test du 17/11 |
 | Gain chiffré de l'agence | **205 h/an** justifiées tâche par tâche (3 tâches) | `commun/donnees/taches-semaine-agence.json` |
 
-*En cours : 2 annonces piégées (classe énergie absente, surface incohérente). L'agent doit refuser de publier et dire pourquoi. Taux mesuré à venir.*
+*À venir : le taux de réussite sur 10 essais après la correction automatique (si une annonce est fausse, notre code dit à l'agent quel champ corriger, 2 relances au maximum).*
 
 **Ce qui est réel, ce qui est simulé**
 
@@ -68,12 +71,12 @@ Le compte rendu donne, pour chaque tâche, le bon outil : **API disponible → n
 | Quoi | Où |
 |---|---|
 | Les 3 sites de test | [Portail A](https://ghost-portail-a.vercel.app/deposer) · [Portail B](https://ghost-portail-b.vercel.app/nouvelle) · [Portail C](https://ghost-portail-c.vercel.app/publier) · page « Annonces publiées » sur chaque site |
-| Le jeu de données fictif | [Hugging Face : Kudozin/ghost-agence-immobiliere-fictive](https://huggingface.co/datasets/Kudozin/ghost-agence-immobiliere-fictive) (8 sous-ensembles, dont les 20 phrases pièges du floutage) |
+| Le jeu de données fictif | [Hugging Face : Kudozin/ghost-agence-immobiliere-fictive](https://huggingface.co/datasets/Kudozin/ghost-agence-immobiliere-fictive) (8 sous-ensembles, dont les 23 phrases pièges du floutage et 2 mandats piégés) |
 
 | Brique | Commande (depuis la racine) | Clés dans `.env` |
 |---|---|---|
 | Recorder | `cd alejandro-cto/recorder && pip install -r requirements.txt && python recorder.py` (`--console` pour le journal dans le terminal) | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (facultatif : sinon journal local) |
-| Agent H sur les 3 sites | `cd alejandro-cto/agent-h && pip install -r requirements.txt && python lancer_agent.py --tache tache_001 --agent h/web-surfer-pro` | `HAI_API_KEY` |
+| Agent H sur les 3 sites | `cd alejandro-cto/agent-h && pip install -r requirements.txt && python lancer_agent.py --tache tache_001 --mandat M-0142` (`--mandat M-T01` pour une annonce piégée) | `HAI_API_KEY` |
 | Floutage et détection | `PYTHONPATH=omar-caio python -m pytest omar-caio/tests -q` | aucune |
 | Score et gain | `cd henriquet-cdo/scoring && python -m pytest -q` | aucune |
 | Sites de test en local | `cd vladimir-cao/portails && npm install && npm run dev:a` (`dev:b`, `dev:c`) | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (sinon mode mémoire) |
@@ -86,10 +89,10 @@ Le compte rendu donne, pour chaque tâche, le bon outil : **API disponible → n
 
 | Brique | Commande | Résultat |
 |---|---|---|
-| Recorder | `cd alejandro-cto/recorder && python -m pytest tests -q` | **17 passés** |
-| Floutage et détection | `PYTHONPATH=omar-caio python -m pytest omar-caio/tests -q` | **37 passés** |
+| Recorder | `cd alejandro-cto/recorder && python -m pytest tests -q` | **19 passés** |
+| Floutage et détection | `PYTHONPATH=omar-caio python -m pytest omar-caio/tests -q` | **50 passés** |
 | Score et gain | `cd henriquet-cdo/scoring && python -m pytest -q` | **8 passés** |
-| Série de tests de l'agent H | `cd alejandro-cto/agent-h && python -m pytest tests -q` | **5 passés** |
+| Série de tests de l'agent H | `cd alejandro-cto/agent-h && python -m pytest tests -q` | **7 passés** |
 | Sites de test et interface | `npx next build` | compilent |
 
 Les tests ne demandent aucune clé API. À chaque push, GitHub Actions lance les tests du Recorder, du floutage et de la détection, et compile les deux applications Next.js (onglet **Actions**).
@@ -98,8 +101,8 @@ Les tests ne demandent aucune clé API. À chaque push, GitHub Actions lance les
 
 | Critère | Poids | Ce qu'on montre |
 |---|---|---|
-| **Excellence technique et Agents API** | 30 % | L'agent H en live sur 3 sites de difficulté croissante, réponse structurée (`answer_schema`), limites d'étapes et de temps, résultat vérifié dans les sites, taux de réussite mesuré, comparaison flash / pro |
-| **Pertinence et impact** | 25 % | Un problème chiffré (12 min par annonce), un gain mesuré (78 %), une formule du gain avec ses hypothèses écrites (205 h/an) |
+| **Excellence technique et Agents API** | 30 % | L'agent H en live sur 3 sites de difficulté croissante, réponse structurée (`answer_schema`), limites d'étapes et de temps, résultat vérifié dans les sites, correction automatique, contrôle avant publication (annonces piégées refusées), taux de réussite mesuré, comparaison flash / pro |
+| **Pertinence et impact** | 25 % | Un problème chiffré (12 min par annonce), un gain mesuré (99 s au lieu de 720 s), une formule du gain avec ses hypothèses écrites (205 h/an) |
 | **Faisabilité, adoption, apprentissages** | 25 % | Conformité dès la conception (périmètre choisi par le salarié, floutage local, pas de suivi des personnes), coût de run chiffré, transparence sur le simulé, retours honnêtes sur l'Agent API |
 | **UX, démo et pitch** | 20 % | Icône visible et pause, journal « ce qui a été capté » avant et après floutage, tableau de bord, rapport et preuve chronométrée |
 
@@ -113,19 +116,19 @@ Les tests ne demandent aucune clé API. À chaque push, GitHub Actions lance les
 | Choix de l'outil | au cas par cas | toujours l'agent | **n8n si API, agent H sinon, rien si déjà couvert** |
 | Vie privée | entretiens nominatifs | - | périmètre choisi par le salarié, floutage local, le gérant voit des tâches, jamais des personnes |
 
-Une passe de l'agent sur les 3 sites coûte **0,19 $**, contre environ 12 minutes d'assistante par annonce.
+Une passe de l'agent sur les 3 sites coûte **0,10 $**, contre environ 12 minutes d'assistante par annonce.
 
 ## 8. Les outils, et ce que chacun fait vraiment
 
 | Outil | Rôle dans Ghost | Où dans le code |
 |---|---|---|
-| **H Company · Agent API** (`hai-agents`) | exécute la tâche dans un navigateur hébergé, réponse structurée, limites d'étapes et de temps ; `web-surfer-pro` retenu après le faux succès de `flash` | `alejandro-cto/agent-h/lancer_agent.py`, `serie_tests.py` |
+| **H Company · Agent API** (`hai-agents`) | exécute la tâche dans un navigateur hébergé à partir des vrais mandats, réponse structurée, limites d'étapes et de temps, correction automatique, contrôle avant publication ; `web-surfer-pro` retenu après le faux succès de `flash` | `alejandro-cto/agent-h/lancer_agent.py`, `serie_tests.py` |
 | **H Company · Holo** | analyse des 5 tâches candidates (prompts en 3 couches : métier, entreprise, poste) ; Claude possible en option | `omar-caio/detection/provider_holo.py` |
-| **Hugging Face** | publication du jeu de données fictif (mandats, semaine type, scores, phrases pièges du floutage) | `henriquet-cdo/huggingface/` |
+| **Hugging Face** | publication du jeu de données fictif (mandats dont 2 piégés, semaine type, scores, 23 phrases pièges du floutage) | `henriquet-cdo/huggingface/` |
 | **spaCy (modèle français)** | reconnaissance des noms en local, avant tout envoi | `omar-caio/filtres/nettoyage.py` |
 | **Supabase** | événements, tâches, scores, résultats de l'agent, annonces des sites de test ; schéma pensé pour supprimer tout un audit en cascade | `commun/schema-supabase.sql`, `henriquet-cdo/supabase/` |
 | **Next.js sur Vercel** | les 3 sites de test et l'interface (tableau de bord, rapport) | `vladimir-cao/portails/`, `binta-cpo/app/ghost-ui/` |
-| **n8n** | les tâches qui ont une API, par exemple l'alerte J2 au salarié (en cours) | `vladimir-cao/n8n/` |
+| **n8n** | les tâches qui ont une API, par exemple l'alerte J2 : un e-mail au salarié dès qu'une tâche est détectée, sans doublon ni alerte perdue | `vladimir-cao/n8n/` |
 | **GitHub** | dépôt de l'équipe, une branche par rôle, vérifications automatiques à chaque PR | `.github/workflows/verifications.yml` |
 
 ## 9. Conformité et sécurité
@@ -160,7 +163,7 @@ omar-caio/      filtres/      ← floutage local nettoyer()
                 detection/    ← séquences répétées, prompts en 3 couches, analyse
                 vocal/        ← prompts du mode vocal (prévu en complément)
 vladimir-cao/   portails/     ← les 3 sites de test A, B, C (Next.js)
-                n8n/          ← workflows exportés (alerte J2, en cours)
+                n8n/          ← workflow de l'alerte J2 (tâche détectée → e-mail au salarié)
 henriquet-cdo/  supabase/     ← données de départ, purge, test de connexion
                 donnees/      ← agence Belvédère fictive (mandats, prospects)
                 scoring/      ← score sur 100 et calcul du gain
