@@ -61,3 +61,22 @@ def url_sans_parametres(url: str | None) -> str | None:
         return None
     p = urlsplit(url)
     return urlunsplit((p.scheme, p.netloc.split("@")[-1], p.path, "", ""))
+
+
+def _titre_normalise(titre: str | None) -> str:
+    t = " ".join((titre or "").lower().split())
+    # Sur Windows (et parfois Mac), la fenêtre ajoute " - Google Chrome" (+ nom de profil).
+    i = t.find(" - google chrome")
+    return t[:i] if i >= 0 else t
+
+
+def titres_concordent(titre_fenetre: str | None, titre_onglet: str | None) -> bool:
+    """La fenêtre capturée montre-t-elle bien l'onglet dont on a lu l'adresse ?
+
+    Sans cette vérification, l'image peut venir d'une page (ex. Google) et l'adresse
+    d'une autre (un site autorisé) : on capterait une page non cochée. Titre vide = refus.
+    """
+    a, b = _titre_normalise(titre_fenetre), _titre_normalise(titre_onglet)
+    if not a or not b:
+        return False
+    return a == b or a.startswith(b) or b.startswith(a)
