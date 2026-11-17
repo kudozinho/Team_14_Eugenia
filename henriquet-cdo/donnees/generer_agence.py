@@ -166,7 +166,9 @@ for m in mandats:
 # 2 mandats pièges (demande d'Assel du 17/11) : l'agent doit refuser de les publier.
 # Ajoutés après les tirages aléatoires pour ne rien changer aux prospects ni aux stats.
 # Les autres mandats reçoivent "piege": None pour garder les mêmes colonnes partout.
-PRIX_M2_MIN, PRIX_M2_MAX = 1500, 6000  # fourchette du secteur (Essonne) [H], voir la base de connaissances
+# Fourchette lue dans la base de connaissances (source unique), jamais recopiée ici.
+_controles = json.loads((ICI / "base-connaissances-immobilier.json").read_text(encoding="utf-8"))["controles_annonce"]
+PRIX_M2_MIN, PRIX_M2_MAX = _controles["prix_m2_min"], _controles["prix_m2_max"]
 for m in mandats:
     m["piege"] = None
 MANDATS_PIEGES = [
