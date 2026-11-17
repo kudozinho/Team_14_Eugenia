@@ -61,3 +61,25 @@ def test_evenement_domaine_autorise():
 def test_idempotent_sur_marqueurs():
     txt='Prix [MONTANT], Contact [NOM] [TELEPHONE]'
     assert nettoyer(nettoyer(txt,PROFIL),PROFIL)==txt
+
+
+@pytest.mark.parametrize('texte,entite,attendu', [
+    ('Portail B - Déposer une annonce', 'Portail B - Déposer', 'Portail B - Déposer une annonce'),
+    ('Portail B - Nouvelle annonce', 'Portail B', 'Portail B - Nouvelle annonce'),
+    ('Portail B', 'Portail B', 'Portail B'),
+    ('Annonce publiée sur Portail A', 'Portail A', 'Annonce publiée sur Portail A'),
+    ('Livre intéressant', 'Livre', 'Livre intéressant'),
+    ('n8n x Eugenia', 'Eugenia', 'n8n x Eugenia'),
+    ('Visite avec Jean-Pierre Dupont', 'Jean-Pierre Dupont', 'Visite avec [NOM]'),
+    ('Visite avec jean-pierre dupont', 'jean-pierre dupont', 'Visite avec jean-pierre dupont'),
+    ('Module Brumelune', 'Brumelune', 'Module Brumelune'),
+])
+def test_entites_spacy(monkeypatch, texte, entite, attendu):
+    from types import SimpleNamespace
+    from filtres import nettoyage
+
+    debut = texte.index(entite)
+    detection = SimpleNamespace(label_='PER', text=entite, start_char=debut,
+                                end_char=debut + len(entite))
+    monkeypatch.setattr(nettoyage, '_get_fr_nlp', lambda: lambda _: SimpleNamespace(ents=[detection]))
+    assert nettoyer(texte, dict(PROFIL, mots_interface=['brumelune'])) == attendu

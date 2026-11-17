@@ -39,17 +39,30 @@ def _get_fr_nlp():
         return None
 
 
-def _local_person_ner(text: str) -> str:
+MOTS_INTERFACE = frozenset(
+    'portail annonce annonces nouvelle déposer publier publiée bien agence google '
+    'sheets chrome titre prix surface ville description livre eugenia immogest'.split()
+)
+MOTS = re.compile(r'[^\W\d_]+', re.UNICODE)
+
+
+def _local_person_ner(text: str, mots_interface=()) -> str:
     """Utilise spaCy français si installé ; sinon règles locales limitées.
 
     Ne tente jamais de télécharger un modèle ; aucune donnée ne sort du poste.
     """
     nlp = _get_fr_nlp()
     if nlp:
+        exclus = MOTS_INTERFACE | {mot.casefold() for mot in mots_interface}
         doc = nlp(text)
         # Remplacement en ordre inverse pour éviter les erreurs d'index.
         for ent in reversed(doc.ents):
-            if ent.label_ in {'PER', 'PERSON'} and '[' not in ent.text:
+            if ent.label_ not in {'PER', 'PERSON'} or '[' in ent.text or '__GHOSTMASK_' in ent.text:
+                continue
+            mots = MOTS.findall(ent.text)
+            if any(mot.casefold() in exclus for mot in mots):
+                continue
+            if any(mot[0].isupper() for mot in mots):
                 text = text[:ent.start_char] + '[NOM]' + text[ent.end_char:]
         return text
 
@@ -109,7 +122,7 @@ def nettoyer(texte: str | None, profil: Mapping[str, Any]) -> str | None:
     result = NAME_TITLE.sub('[NOM]', result)
     result = NAME_LABEL.sub(lambda m: m.group('label') + '[NOM]', result)
     if 'PER' in profil.get('entites_a_flouter', []):
-        result = _local_person_ner(result)
+        result = _local_person_ner(result, profil.get('mots_interface', ()))
 
     # Ne jamais exposer nos marqueurs temporaires ; restauration exacte et sûre.
     for i, value in enumerate(placeholders):
