@@ -33,15 +33,20 @@ def vider(noms: list[str]) -> None:
 
 def verifier(noms: list[str], mandat: dict, depuis: datetime) -> dict[str, str]:
     """Pour chaque portail, parmi les annonces créées après `depuis` :
-    "ok" (tous les champs exacts), "faux" (annonce créée, un champ diffère) ou "absent"."""
+    "ok" (tous les champs exacts, et la photo sur le site C), "sans_photo" (site C, champs justes
+    mais pas de fichier dans photos-annonces/<id>/), "faux" (un champ diffère) ou "absent"."""
     resultat = {}
     for nom in noms:
         r = requests.get(racine(PORTAILS[nom]) + "/api/annonces", timeout=15)
         r.raise_for_status()
         recentes = [a for a in r.json().get("annonces", [])
                     if datetime.fromisoformat(a["cree_le"]) >= depuis]
-        if any(all(_egal(a.get(c), mandat[c]) for c in CHAMPS) for a in recentes):
+        justes = [a for a in recentes if all(_egal(a.get(c), mandat[c]) for c in CHAMPS)]
+        # Le site C donne photo: true/false (README de Vladimir) ; les sites A et B n'ont pas ce champ.
+        if any(a.get("photo", True) is not False for a in justes):
             resultat[nom] = "ok"
+        elif justes:
+            resultat[nom] = "sans_photo"
         else:
             resultat[nom] = "faux" if recentes else "absent"
     return resultat

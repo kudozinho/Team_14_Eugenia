@@ -27,6 +27,10 @@ def test_infra_timeout_reponse_absente():
     assert code_erreur(resultat(reussi=False, reponse_structuree=False)) == "E5"
 
 
+def test_photo_absente_sur_c():
+    assert code_erreur(resultat(reussi=False, verification_base={"Portail C": "sans_photo"})) == "E7"
+
+
 def test_mauvaise_valeur_contre_annonce_absente():
     assert code_erreur(resultat(reussi=False, verification_base={"Portail A": "faux"})) == "E2"
     assert code_erreur(resultat(reussi=False, verification_base={"Portail A": "absent"})) == "E1"
