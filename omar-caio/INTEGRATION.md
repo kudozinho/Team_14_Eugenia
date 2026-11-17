@@ -107,3 +107,19 @@ Le mode Holo attend `HAI_API_KEY` dans l'environnement. Seuls le contexte
 fictif et les candidates structurées sont transmis au modèle. Vérifier la tâche
 §2 et ses consignes avant le transfert à l'agent H. Le script écrit le JSON
 sur la sortie standard et ne lance aucune session agent.
+
+### Audit chargé depuis Supabase
+
+Configurer `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` dans le fichier
+`.env` local ou dans l’environnement. Exporter `HAI_API_KEY` pour le mode réel.
+
+```sh
+python3 omar-caio/analyser_audit.py --audit aud_demo --simulation
+python3 omar-caio/analyser_audit.py --audit aud_demo --modele ID_HOLO_VERIFIE --ecrire
+```
+
+La première commande lit la base et simule l’analyse. La seconde insère
+les tâches §2 et liste les identifiants nouvellement insérés dans `inserees`.
+La réexécution sur le même audit et la même séquence conserve la ligne
+existante, ainsi que son score et sa fiche. Analyser un audit complet avant
+l’insertion, car une nouvelle exécution ne recalcule pas les lignes existantes.
