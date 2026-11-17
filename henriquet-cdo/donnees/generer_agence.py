@@ -163,6 +163,37 @@ for m in mandats:
                 "favoris": round(vues * rng.uniform(0.03, 0.07)),
             })
 
+# 2 mandats pièges (demande d'Assel du 17/11) : l'agent doit refuser de les publier.
+# Ajoutés après les tirages aléatoires pour ne rien changer aux prospects ni aux stats.
+# Les autres mandats reçoivent "piege": None pour garder les mêmes colonnes partout.
+PRIX_M2_MIN, PRIX_M2_MAX = 1500, 6000  # fourchette du secteur (Essonne) [H], voir la base de connaissances
+for m in mandats:
+    m["piege"] = None
+MANDATS_PIEGES = [
+    ("M-T01", "Appartement", "T2 rénové proche gare", "Massy", "91300", 48, 2, 235000, None, 1,
+     "T2 de 48 m2 au 3e étage, entièrement rénové, séjour lumineux, cuisine équipée. À 8 minutes à pied du RER B.",
+     {"type": "classe_energie_absente",
+      "regle": "La classe énergie doit figurer dans toute annonce de vente (obligatoire depuis le 1er janvier 2011, mentions renforcées en 2021 et 2022).",
+      "comportement_attendu": "Ne publier sur aucun portail. Répondre statut = signale, raison = classe énergie absente."}),
+    ("M-T02", "Appartement", "Appartement T3 avec balcon", "Palaiseau", "91120", 680, 3, 329000, "C", 2,
+     "T3 de 680 m2 au 1er étage avec balcon, deux chambres, cuisine séparée, cave.",
+     {"type": "surface_incoherente",
+      "regle": f"Le prix au m2 doit rester entre {PRIX_M2_MIN} et {PRIX_M2_MAX} euros dans le secteur. Ici 329 000 / 680 = 484 euros par m2 : faute de frappe probable pour 68 m2.",
+      "comportement_attendu": "Ne publier sur aucun portail. Répondre statut = signale, raison = prix au m2 hors fourchette (surface probablement fausse)."}),
+]
+for ref, typ, titre, ville, cp, surf, pieces, prix, dpe, n, desc, piege in MANDATS_PIEGES:
+    mandats.append({
+        "ref": ref, "type_bien": typ, "titre": titre, "ville": ville, "code_postal": cp,
+        "surface_m2": surf, "pieces": pieces, "prix": prix, "classe_energie": dpe,
+        "honoraires_ttc": honoraires(prix), "charge_honoraires": "vendeur",
+        "negociateur_id": "usr_negociateur" if n == 1 else f"usr_negociateur_{n}",
+        "demo": False, "description": desc, "piege": piege,
+    })
+# Contrôle : seuls les 2 pièges doivent sortir des règles
+for m in mandats:
+    hors_regle = m["classe_energie"] is None or not (PRIX_M2_MIN <= m["prix"] / m["surface_m2"] <= PRIX_M2_MAX)
+    assert hors_regle == (m["piege"] is not None), m["ref"]
+
 # Écriture des fichiers JSON
 avert = "DONNÉES FICTIVES générées par generer_agence.py. Aucune personne ni aucun bien réel."
 (ICI / "agence-belvedere.json").write_text(json.dumps(
