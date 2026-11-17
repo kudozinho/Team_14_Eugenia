@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from config import charger_profil  # noqa: E402
 from nettoyage import _nettoyer_secours, compacter  # noqa: E402
-from regles import est_autorise, site_autorise  # noqa: E402
+from regles import est_autorise, site_autorise, url_sans_parametres  # noqa: E402
 from stockage import Stockage, nouvel_evenement  # noqa: E402
 
 APPLIS = ("Google Chrome", "Microsoft Excel")
@@ -68,3 +68,15 @@ def test_duree_ecrite_sur_evenement_precedent(tmp_path):
     s.ecrire(nouvel_evenement("aud_demo", "usr_assistante", "hors_perimetre"))
     lignes = [json.loads(l) for l in s.fichier.read_text(encoding="utf-8").splitlines()]
     assert lignes[1] == {"maj": premier["id"], "duree_s": 0}
+
+
+def test_url_stockee_sans_parametres():
+    assert url_sans_parametres("https://portail-a.example/deposer?email=a@b.fr#x") == "https://portail-a.example/deposer"
+    assert url_sans_parametres(None) is None
+
+
+def test_filtres_omar_trouves_si_presents():
+    import nettoyage
+    dossier = Path(__file__).resolve().parents[3] / "omar-caio" / "filtres" / "nettoyage.py"
+    if dossier.exists():
+        assert nettoyage.SOURCE == "omar"
