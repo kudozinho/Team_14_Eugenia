@@ -53,7 +53,7 @@ L'**Agence Belvédère**, agence immobilière fictive de Massy (Essonne), 10 per
 
 | Sous-ensemble | Lignes | Contenu | Sert à |
 |---|---|---|---|
-| `mandats` | 10 | Biens à vendre : titre, type, ville, surface, pièces, prix, classe énergie, honoraires, description. 3 servent à la démo | Remplir les annonces recopiées, par l'humain puis par l'agent |
+| `mandats` | 12 | Biens à vendre : titre, type, ville, surface, pièces, prix, classe énergie, honoraires, description. 3 servent à la démo. 2 sont piégés (`M-T01`, `M-T02`) : le champ `piege` décrit la règle enfreinte et le comportement attendu | Remplir les annonces recopiées, par l'humain puis par l'agent ; vérifier que l'agent refuse de publier une annonce non conforme |
 | `prospects` | 20 | Acheteurs fictifs : projet, recherche, budget, financement, délai, source, étape, biens suivis | Workflows de relance (n8n) |
 | `collaborateurs` | 10 | Les postes de l'agence, sans nom de personne | Rattacher les sessions observées à un poste |
 | `taches_semaine_agence` | 11 | Semaine type : fréquence, durée, minutes gagnées, adoption, part récupérée, méthode (agent H, n8n, rien) et statut (`justifie`, `a_confirmer`, `hors_gain`) | Calcul du gain |
@@ -61,6 +61,17 @@ L'**Agence Belvédère**, agence immobilière fictive de Massy (Essonne), 10 per
 | `evenements_exemple` | 17 | Événements captés par le Recorder, déjà floutés (`[NOM]`, `[TELEPHONE]`, `[MONTANT]`) | Tester la détection des tâches répétées |
 | `phrases_pieges` | 20 | Phrases pour tester le floutage, avec la sortie attendue après floutage (profil immobilier). Fournies par Omar | Tester les filtres de confidentialité |
 | `profils_metier` | 3 | Profils immobilier, comptable, avocat : contexte, motifs à flouter, prompt, base de connaissances (immobilier) | Couche « métier » des prompts |
+
+## Les 2 mandats pièges
+
+Pour vérifier que l'agent suit des règles métier au lieu de recopier, 2 mandats enfreignent volontairement une règle. Pour chacun, la réussite attendue est : l'annonce n'apparaît sur aucun des 3 portails et l'agent répond `statut = "signale"` avec la raison.
+
+| Mandat | Piège | Règle |
+|---|---|---|
+| `M-T01` | Classe énergie absente | Toute annonce de vente doit afficher la classe énergie (obligatoire depuis le 1er janvier 2011, mentions renforcées en 2021 et 2022) |
+| `M-T02` | T3 de 680 m² à 329 000 € (484 €/m², faute de frappe probable pour 68 m²) | Le prix au m² doit rester entre 1 500 et 6 000 € dans le secteur de l'agence. Fourchette fixée par l'équipe, à vérifier |
+
+Les 10 autres mandats respectent les 2 règles (de 2 409 à 5 792 €/m²) et ont `piege` à vide.
 
 ## Méthode de calcul du gain
 
