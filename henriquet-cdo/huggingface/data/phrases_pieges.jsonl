@@ -1,0 +1,20 @@
+{"id": "piege_01", "texte": "Appelez M. Dupont au 06 00 00 00 21", "doit_contenir": "[NOM]", "ne_doit_pas_contenir": "06 00 00 00 21"}
+{"id": "piege_02", "texte": "Téléphone : 06.00.00.00.22", "doit_contenir": "[TELEPHONE]", "ne_doit_pas_contenir": "06.00.00.00.22"}
+{"id": "piege_03", "texte": "Portable +33 6 00 00 00 23", "doit_contenir": "[TELEPHONE]", "ne_doit_pas_contenir": "+33 6 00 00 00 23"}
+{"id": "piege_04", "texte": "Numéro 06-00-00-00-24", "doit_contenir": "[TELEPHONE]", "ne_doit_pas_contenir": "06-00-00-00-24"}
+{"id": "piege_05", "texte": "E-mail: jean.dupont+vente@example.com", "doit_contenir": "[EMAIL]", "ne_doit_pas_contenir": "jean.dupont+vente@example.com"}
+{"id": "piege_06", "texte": "IBAN FR00 0000 0000 0000 0000 0000 000", "doit_contenir": "[IBAN]", "ne_doit_pas_contenir": "FR00 0000 0000 0000 0000 0000 000"}
+{"id": "piege_07", "texte": "Compte: FR0000000000000000000000000", "doit_contenir": "[IBAN]", "ne_doit_pas_contenir": "FR0000000000000000000000000"}
+{"id": "piege_08", "texte": "Prix total 289 000 €", "doit_contenir": "[MONTANT]", "ne_doit_pas_contenir": "289 000 €"}
+{"id": "piege_09", "texte": "Prix : 289000", "doit_contenir": "[MONTANT]", "ne_doit_pas_contenir": "289000"}
+{"id": "piege_10", "texte": "Budget : 180000", "doit_contenir": "[MONTANT]", "ne_doit_pas_contenir": "180000"}
+{"id": "piege_11", "texte": "Adresse : 12 rue de l'Exemple 91300 Massy", "doit_contenir": "[ADRESSE]", "ne_doit_pas_contenir": "12 rue de l'Exemple"}
+{"id": "piege_12", "texte": "Rendez-vous 4 avenue du Test 91120 Palaiseau", "doit_contenir": "[ADRESSE]", "ne_doit_pas_contenir": "4 avenue du Test"}
+{"id": "piege_13", "texte": "Mme Marie-Claire Dupont doit rappeler", "doit_contenir": "[NOM]", "ne_doit_pas_contenir": "Marie-Claire Dupont"}
+{"id": "piege_14", "texte": "Le client Alice Martin souhaite visiter", "doit_contenir": "[NOM]", "ne_doit_pas_contenir": "Alice Martin"}
+{"id": "piege_15", "texte": "Propriétaire : Sophie Durand | Prix : 250000", "doit_contenir": "[NOM]", "ne_doit_pas_contenir": "Sophie Durand"}
+{"id": "piege_16", "texte": "Contact : [TELEPHONE]", "doit_contenir": "[TELEPHONE]", "ne_doit_pas_contenir": "__GHOSTMASK"}
+{"id": "piege_17", "texte": "Surface : 68 m2, 3 pièces", "doit_contenir": "68 m2", "ne_doit_pas_contenir": "[MONTANT]"}
+{"id": "piege_18", "texte": "Mandat M-0142 à publier", "doit_contenir": "M-0142", "ne_doit_pas_contenir": "[MONTANT]"}
+{"id": "piege_19", "texte": "Contact: 07 00 00 00 29, email: x.y@example.com", "doit_contenir": "[TELEPHONE]", "ne_doit_pas_contenir": "07 00 00 00 29"}
+{"id": "piege_20", "texte": "Propriétaire : Jean-Pierre Martin ; adresse : 7 rue des Essais, Massy", "doit_contenir": "[ADRESSE]", "ne_doit_pas_contenir": "7 rue des Essais"}
