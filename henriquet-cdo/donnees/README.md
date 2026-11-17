@@ -8,6 +8,8 @@ Tout est inventé. Régénérer : `python henriquet-cdo/donnees/generer_agence.p
 | `stats-portails-semaine.json` | Vues, contacts et favoris par bien et par portail, semaines 2026-S46 et 2026-S47 (60 lignes). **S47 = semaine du rapport aux vendeurs de la démo.** | Oui : `stats_portails` | Piste « à confirmer pendant l'audit » seulement (pas la démo) |
 | `prospects-fictifs.json` | 20 prospects inventés et cohérents avec les mandats (budget, villes, type de bien, financement, apport, délai, source, étape). Noms courants, numéros 06 00 00 00 xx, e-mails @example.com | **Non, jamais** (contrainte : ne pas stocker les coordonnées des prospects) | Vladimir (n8n, relances) |
 
+| `base-connaissances-immobilier.json` | Doc 07, partie 20, au format commun : 8 process, 11 termes, 8 catégories de logiciels, 10 tâches répétitives (durées [H]), 6 obligations, 6 données sensibles, 7 choses déjà automatisées. Régénérer : `generer_base_connaissances.py` | Oui : `profils_metier.config.base_connaissances` (profil `immobilier`) | Omar (couche métier du prompt, nommage des tâches, réponse « outil existant ») |
+
 ## Statut après la décision d'Assel (17/11, 13h35) : démo figée sur la recopie d'annonces
 
 - **Démo live** : l'assistante recopie une annonce sur 3 sites sans passerelle, et l'agent H le fait à sa place. Les **3 mandats de démo** (M-0142, M-0143, M-0144) fournissent le contenu des annonces.
