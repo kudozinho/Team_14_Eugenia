@@ -11,11 +11,10 @@ import sys
 
 from config import RACINE_REPO
 
-# Le paquet d'Omar est omar-caio/filtres/ : c'est le dossier PARENT qu'il faut ajouter au chemin.
 sys.path.insert(0, str(RACINE_REPO / "omar-caio"))
 
 try:
-    _module = importlib.import_module(os.getenv("NETTOYER_MODULE", "filtres"))
+    _module = importlib.import_module(os.getenv("NETTOYER_MODULE", "filtres"))  # omar-caio/filtres/
     _nettoyer_omar = _module.nettoyer
     SOURCE = "omar"
 except (ImportError, AttributeError):
@@ -31,7 +30,7 @@ def _nettoyer_secours(texte: str, profil: dict) -> str:
 
 def nettoyer(texte: str, profil: dict) -> str:
     if _nettoyer_omar:
-        return _nettoyer_omar(texte, profil)
+        return _nettoyer_omar(texte, profil) or ""
     return _nettoyer_secours(texte, profil)
 
 
