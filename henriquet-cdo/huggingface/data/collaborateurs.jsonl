@@ -1,0 +1,10 @@
+{"id": "usr_gerante", "poste_id": "poste_gerante", "nom": "Gérante", "role": "gerant", "mode_analyse": null}
+{"id": "usr_negociateur", "poste_id": "poste_negociateur", "nom": "Négociateur 1", "role": "collaborateur", "mode_analyse": "vocal"}
+{"id": "usr_negociateur_2", "poste_id": "poste_negociateur", "nom": "Négociateur 2", "role": "collaborateur", "mode_analyse": null}
+{"id": "usr_negociateur_3", "poste_id": "poste_negociateur", "nom": "Négociateur 3", "role": "collaborateur", "mode_analyse": null}
+{"id": "usr_negociateur_4", "poste_id": "poste_negociateur", "nom": "Négociateur 4", "role": "collaborateur", "mode_analyse": null}
+{"id": "usr_negociateur_5", "poste_id": "poste_negociateur", "nom": "Négociateur 5", "role": "collaborateur", "mode_analyse": null}
+{"id": "usr_negociateur_6", "poste_id": "poste_negociateur", "nom": "Négociateur 6", "role": "collaborateur", "mode_analyse": null}
+{"id": "usr_assistante", "poste_id": "poste_assistante", "nom": "Assistante 1", "role": "collaborateur", "mode_analyse": "ecran"}
+{"id": "usr_assistante_2", "poste_id": "poste_assistante", "nom": "Assistante 2", "role": "collaborateur", "mode_analyse": null}
+{"id": "usr_gestionnaire", "poste_id": "poste_gestionnaire", "nom": "Gestionnaire locatif", "role": "collaborateur", "mode_analyse": null}
