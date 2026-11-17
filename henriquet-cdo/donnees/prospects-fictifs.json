@@ -1,0 +1,246 @@
+{
+ "_note": "DONNÉES FICTIVES générées par generer_agence.py. Aucune personne ni aucun bien réel. À NE JAMAIS charger en base (contrainte : ne pas stocker les coordonnées des prospects). Usage : sites de test et workflows n8n de relance.",
+ "prospects": [
+  {
+   "id": "pro_01",
+   "nom": "Camille Exemple",
+   "telephone": "06 00 00 00 01",
+   "email": "camille.exemple@example.com",
+   "projet": "Investissement locatif",
+   "budget_max": 250000,
+   "biens_suivis": [
+    "M-0151"
+   ]
+  },
+  {
+   "id": "pro_02",
+   "nom": "Julien Fictif",
+   "telephone": "06 00 00 00 02",
+   "email": "julien.fictif@example.com",
+   "projet": "Agrandissement de la famille",
+   "budget_max": 250000,
+   "biens_suivis": [
+    "M-0143",
+    "M-0146",
+    "M-0151"
+   ]
+  },
+  {
+   "id": "pro_03",
+   "nom": "Inès Test",
+   "telephone": "06 00 00 00 03",
+   "email": "ines.test@example.com",
+   "projet": "Achat résidence principale",
+   "budget_max": 250000,
+   "biens_suivis": [
+    "M-0148",
+    "M-0151"
+   ]
+  },
+  {
+   "id": "pro_04",
+   "nom": "Thomas Demo",
+   "telephone": "06 00 00 00 04",
+   "email": "thomas.demo@example.com",
+   "projet": "Premier achat",
+   "budget_max": 650000,
+   "biens_suivis": [
+    "M-0147"
+   ]
+  },
+  {
+   "id": "pro_05",
+   "nom": "Léa Bidon",
+   "telephone": "06 00 00 00 05",
+   "email": "lea.bidon@example.com",
+   "projet": "Investissement locatif",
+   "budget_max": 200000,
+   "biens_suivis": [
+    "M-0147",
+    "M-0150"
+   ]
+  },
+  {
+   "id": "pro_06",
+   "nom": "Karim Essai",
+   "telephone": "06 00 00 00 06",
+   "email": "karim.essai@example.com",
+   "projet": "Achat résidence principale",
+   "budget_max": 150000,
+   "biens_suivis": [
+    "M-0142",
+    "M-0144",
+    "M-0146"
+   ]
+  },
+  {
+   "id": "pro_07",
+   "nom": "Sarah Modele",
+   "telephone": "06 00 00 00 07",
+   "email": "sarah.modele@example.com",
+   "projet": "Premier achat",
+   "budget_max": 200000,
+   "biens_suivis": [
+    "M-0142",
+    "M-0143",
+    "M-0147"
+   ]
+  },
+  {
+   "id": "pro_08",
+   "nom": "Hugo Factice",
+   "telephone": "06 00 00 00 08",
+   "email": "hugo.factice@example.com",
+   "projet": "Achat résidence principale",
+   "budget_max": 650000,
+   "biens_suivis": [
+    "M-0148",
+    "M-0149"
+   ]
+  },
+  {
+   "id": "pro_09",
+   "nom": "Amandine Specimen",
+   "telephone": "06 00 00 00 09",
+   "email": "amandine.specimen@example.com",
+   "projet": "Achat résidence principale",
+   "budget_max": 450000,
+   "biens_suivis": [
+    "M-0143",
+    "M-0144",
+    "M-0147"
+   ]
+  },
+  {
+   "id": "pro_10",
+   "nom": "Yanis Maquette",
+   "telephone": "06 00 00 00 10",
+   "email": "yanis.maquette@example.com",
+   "projet": "Premier achat",
+   "budget_max": 300000,
+   "biens_suivis": [
+    "M-0145",
+    "M-0150"
+   ]
+  },
+  {
+   "id": "pro_11",
+   "nom": "Chloé Exemple",
+   "telephone": "06 00 00 00 11",
+   "email": "chloe.exemple@example.com",
+   "projet": "Premier achat",
+   "budget_max": 150000,
+   "biens_suivis": [
+    "M-0145",
+    "M-0146",
+    "M-0149"
+   ]
+  },
+  {
+   "id": "pro_12",
+   "nom": "Mathis Fictif",
+   "telephone": "06 00 00 00 12",
+   "email": "mathis.fictif@example.com",
+   "projet": "Premier achat",
+   "budget_max": 250000,
+   "biens_suivis": [
+    "M-0143"
+   ]
+  },
+  {
+   "id": "pro_13",
+   "nom": "Nora Test",
+   "telephone": "06 00 00 00 13",
+   "email": "nora.test@example.com",
+   "projet": "Investissement locatif",
+   "budget_max": 450000,
+   "biens_suivis": [
+    "M-0142"
+   ]
+  },
+  {
+   "id": "pro_14",
+   "nom": "Lucas Demo",
+   "telephone": "06 00 00 00 14",
+   "email": "lucas.demo@example.com",
+   "projet": "Achat résidence principale",
+   "budget_max": 300000,
+   "biens_suivis": [
+    "M-0143",
+    "M-0150"
+   ]
+  },
+  {
+   "id": "pro_15",
+   "nom": "Élodie Bidon",
+   "telephone": "06 00 00 00 15",
+   "email": "elodie.bidon@example.com",
+   "projet": "Agrandissement de la famille",
+   "budget_max": 300000,
+   "biens_suivis": [
+    "M-0144",
+    "M-0150"
+   ]
+  },
+  {
+   "id": "pro_16",
+   "nom": "Bastien Essai",
+   "telephone": "06 00 00 00 16",
+   "email": "bastien.essai@example.com",
+   "projet": "Agrandissement de la famille",
+   "budget_max": 300000,
+   "biens_suivis": [
+    "M-0149",
+    "M-0151"
+   ]
+  },
+  {
+   "id": "pro_17",
+   "nom": "Fatou Modele",
+   "telephone": "06 00 00 00 17",
+   "email": "fatou.modele@example.com",
+   "projet": "Agrandissement de la famille",
+   "budget_max": 200000,
+   "biens_suivis": [
+    "M-0143",
+    "M-0146",
+    "M-0149"
+   ]
+  },
+  {
+   "id": "pro_18",
+   "nom": "Antoine Factice",
+   "telephone": "06 00 00 00 18",
+   "email": "antoine.factice@example.com",
+   "projet": "Achat résidence principale",
+   "budget_max": 350000,
+   "biens_suivis": [
+    "M-0149",
+    "M-0151"
+   ]
+  },
+  {
+   "id": "pro_19",
+   "nom": "Manon Specimen",
+   "telephone": "06 00 00 00 19",
+   "email": "manon.specimen@example.com",
+   "projet": "Premier achat",
+   "budget_max": 350000,
+   "biens_suivis": [
+    "M-0149"
+   ]
+  },
+  {
+   "id": "pro_20",
+   "nom": "Olivier Maquette",
+   "telephone": "06 00 00 00 20",
+   "email": "olivier.maquette@example.com",
+   "projet": "Agrandissement de la famille",
+   "budget_max": 150000,
+   "biens_suivis": [
+    "M-0142",
+    "M-0148"
+   ]
+  }
+ ]
+}

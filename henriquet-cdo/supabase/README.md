@@ -9,10 +9,12 @@
 | `profils_metier` | 3 | immobilier, comptable, avocat (`commun/donnees/profils-metier.json`) |
 | `organisations` | 1 | `org_belvedere`, Agence Belvédère (fictive) |
 | `contextes_entreprise` | 1 | contexte §7 de l'agence |
-| `postes` | 3 | gérante, négociateur, assistante (§8) |
-| `utilisateurs` | 3 | désignés par leur poste, jamais par un vrai nom |
+| `postes` | 4 | gérante, négociateur, assistante (§8), gestionnaire locatif |
+| `utilisateurs` | 10 | désignés par leur poste, jamais par un vrai nom (1 gérante, 6 négociateurs, 2 assistantes, 1 gestionnaire locatif) |
 | `applis_autorisees`, `sites_autorises` | 1 + 5 | ce que l'assistante autorise (Chrome ; immogest, les 3 portails et `docs.google.com` pour le suivi Google Sheets). **À mettre à jour dès que Vladimir a déployé** : les domaines réels seront `ghost-portail-a.vercel.app`, etc., pas `portail-a.example`. |
 | `audits` | 1 | `aud_demo` |
+| `mandats` | 10 | ajouté le 17/11 après-midi : biens de l'agence, dont 3 de démo (voir `henriquet-cdo/donnees/`) |
+| `stats_portails` | 60 | ajouté le 17/11 : vues et contacts par bien, par portail, semaines S46 et S47 (rapport aux vendeurs) |
 | `evenements`, `taches_detectees`, `tests_agent` | 17, 2, 5 | **exemples du kit**, à purger mercredi matin |
 
 Les autres tables (`transcriptions`, `prompts_systeme`, `executions_agent`, `rapports`, `annonces_portails`) sont vides et prêtes.
