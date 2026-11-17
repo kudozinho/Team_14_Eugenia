@@ -1,0 +1,367 @@
+[
+  {
+    "sequence": [
+      "ImmoGest / fiche mandat",
+      "Portail A / formulaire",
+      "Portail B / formulaire",
+      "Portail C / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 745,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0001",
+        "evt_0002",
+        "evt_0003",
+        "evt_0004"
+      ],
+      [
+        "evt_0006",
+        "evt_0007",
+        "evt_0008",
+        "evt_0009"
+      ],
+      [
+        "evt_0011",
+        "evt_0012",
+        "evt_0013",
+        "evt_0014"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "ImmoGest / fiche mandat",
+      "Portail A / formulaire",
+      "Portail B / formulaire",
+      "Portail C / formulaire",
+      "Microsoft Excel / suivi_prospects.xlsx"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 870,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0001",
+        "evt_0002",
+        "evt_0003",
+        "evt_0004",
+        "evt_0005"
+      ],
+      [
+        "evt_0006",
+        "evt_0007",
+        "evt_0008",
+        "evt_0009",
+        "evt_0010"
+      ],
+      [
+        "evt_0011",
+        "evt_0012",
+        "evt_0013",
+        "evt_0014",
+        "evt_0015"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "ImmoGest / fiche mandat",
+      "Portail A / formulaire",
+      "Portail B / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 621,
+    "occurrences_duree_connue": 3,
+    "ids_evenements": [
+      [
+        "evt_0001",
+        "evt_0002",
+        "evt_0003"
+      ],
+      [
+        "evt_0006",
+        "evt_0007",
+        "evt_0008"
+      ],
+      [
+        "evt_0011",
+        "evt_0012",
+        "evt_0013"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail A / formulaire",
+      "Portail B / formulaire",
+      "Portail C / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 592,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0002",
+        "evt_0003",
+        "evt_0004"
+      ],
+      [
+        "evt_0007",
+        "evt_0008",
+        "evt_0009"
+      ],
+      [
+        "evt_0012",
+        "evt_0013",
+        "evt_0014"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail A / formulaire",
+      "Portail B / formulaire",
+      "Portail C / formulaire",
+      "Microsoft Excel / suivi_prospects.xlsx"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 718,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0002",
+        "evt_0003",
+        "evt_0004",
+        "evt_0005"
+      ],
+      [
+        "evt_0007",
+        "evt_0008",
+        "evt_0009",
+        "evt_0010"
+      ],
+      [
+        "evt_0012",
+        "evt_0013",
+        "evt_0014",
+        "evt_0015"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail A / formulaire",
+      "Portail B / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 455,
+    "occurrences_duree_connue": 3,
+    "ids_evenements": [
+      [
+        "evt_0002",
+        "evt_0003"
+      ],
+      [
+        "evt_0007",
+        "evt_0008"
+      ],
+      [
+        "evt_0012",
+        "evt_0013"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail B / formulaire",
+      "Portail C / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 378,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0003",
+        "evt_0004"
+      ],
+      [
+        "evt_0008",
+        "evt_0009"
+      ],
+      [
+        "evt_0013",
+        "evt_0014"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail B / formulaire",
+      "Portail C / formulaire",
+      "Microsoft Excel / suivi_prospects.xlsx"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 502,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0003",
+        "evt_0004",
+        "evt_0005"
+      ],
+      [
+        "evt_0008",
+        "evt_0009",
+        "evt_0010"
+      ],
+      [
+        "evt_0013",
+        "evt_0014",
+        "evt_0015"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "ImmoGest / fiche mandat",
+      "Portail A / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 384,
+    "occurrences_duree_connue": 3,
+    "ids_evenements": [
+      [
+        "evt_0001",
+        "evt_0002"
+      ],
+      [
+        "evt_0006",
+        "evt_0007"
+      ],
+      [
+        "evt_0011",
+        "evt_0012"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail A / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 218,
+    "occurrences_duree_connue": 3,
+    "ids_evenements": [
+      [
+        "evt_0002"
+      ],
+      [
+        "evt_0007"
+      ],
+      [
+        "evt_0012"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail B / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 237,
+    "occurrences_duree_connue": 3,
+    "ids_evenements": [
+      [
+        "evt_0003"
+      ],
+      [
+        "evt_0008"
+      ],
+      [
+        "evt_0013"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail C / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 162,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0004"
+      ],
+      [
+        "evt_0009"
+      ],
+      [
+        "evt_0014"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Portail C / formulaire",
+      "Microsoft Excel / suivi_prospects.xlsx"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 288,
+    "occurrences_duree_connue": 2,
+    "ids_evenements": [
+      [
+        "evt_0004",
+        "evt_0005"
+      ],
+      [
+        "evt_0009",
+        "evt_0010"
+      ],
+      [
+        "evt_0014",
+        "evt_0015"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "ImmoGest / fiche mandat"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 166,
+    "occurrences_duree_connue": 3,
+    "ids_evenements": [
+      [
+        "evt_0001"
+      ],
+      [
+        "evt_0006"
+      ],
+      [
+        "evt_0011"
+      ]
+    ]
+  },
+  {
+    "sequence": [
+      "Microsoft Excel / suivi_prospects.xlsx"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 150,
+    "occurrences_duree_connue": 3,
+    "ids_evenements": [
+      [
+        "evt_0005"
+      ],
+      [
+        "evt_0010"
+      ],
+      [
+        "evt_0015"
+      ]
+    ]
+  }
+]

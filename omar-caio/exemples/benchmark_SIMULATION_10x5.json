@@ -1,0 +1,866 @@
+{
+  "mode": "simulation",
+  "modele": "SIMULATEUR_LOCAL_NON_LLM",
+  "nombre_cas": 10,
+  "relances_par_cas": 5,
+  "nombre_appels": 50,
+  "appels_valides": 50,
+  "taux_json_valide": 1.0,
+  "taux_accord_moyen": 1.0,
+  "cas_accord_min_9_sur_10": 10,
+  "latence_moyenne_s": 0.0,
+  "cout_usd": null,
+  "precision": null,
+  "resultats_bruts": [
+    {
+      "cas": 1,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0001,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 1,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0001,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 1,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 1,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 1,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 2,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 2,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 2,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 2,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 2,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 3,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 3,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 3,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 3,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 3,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 4,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 4,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 4,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 4,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 4,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 5,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 5,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 5,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0001,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 5,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 5,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 6,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 6,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 6,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 6,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 6,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 7,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 7,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 7,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 7,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 7,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 8,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 8,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 8,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 8,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 8,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 9,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 9,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 9,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 9,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 9,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 10,
+      "essai": 1,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 10,
+      "essai": 2,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 10,
+      "essai": 3,
+      "status": "ok",
+      "latence_s": 0.0001,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 10,
+      "essai": 4,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    },
+    {
+      "cas": 10,
+      "essai": 5,
+      "status": "ok",
+      "latence_s": 0.0,
+      "decision": [
+        [
+          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "rien"
+        ],
+        [
+          "recopier une annonce sur 3 sites sans passerelle",
+          "agent_h"
+        ]
+      ],
+      "erreur": null
+    }
+  ]
+}
