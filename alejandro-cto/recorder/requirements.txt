@@ -4,6 +4,11 @@ requests>=2.31
 python-dotenv>=1
 pystray>=0.19
 
+# Reconnaissance des noms en français pour nettoyer() d'Omar.
+# Sans ces 2 lignes, « Jean-Pierre Dupont » sans « M. » devant n'est pas masqué.
+spacy>=3.8,<3.9
+fr_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.8.0/fr_core_news_sm-3.8.0-py3-none-any.whl
+
 # Windows
 pywin32>=306; sys_platform == "win32"
 psutil>=5.9; sys_platform == "win32"
