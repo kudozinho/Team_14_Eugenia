@@ -69,6 +69,7 @@ def test_idempotent_sur_marqueurs():
     ('Portail B', 'Portail B', 'Portail B'),
     ('Annonce publiée sur Portail A', 'Portail A', 'Annonce publiée sur Portail A'),
     ('Livre intéressant', 'Livre', 'Livre intéressant'),
+    ('Portable +33 6 39 98 00 03', 'Portable', 'Portable [TELEPHONE]'),
     ('n8n x Eugenia', 'Eugenia', 'n8n x Eugenia'),
     ('Visite avec Jean-Pierre Dupont', 'Jean-Pierre Dupont', 'Visite avec [NOM]'),
     ('Visite avec jean-pierre dupont', 'jean-pierre dupont', 'Visite avec jean-pierre dupont'),

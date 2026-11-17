@@ -41,7 +41,7 @@ def _get_fr_nlp():
 
 MOTS_INTERFACE = frozenset(
     'portail annonce annonces nouvelle déposer publier publiée bien agence google '
-    'sheets chrome titre prix surface ville description livre eugenia immogest'.split()
+    'sheets chrome titre prix surface ville description livre eugenia immogest portable téléphone'.split()
 )
 MOTS = re.compile(r'[^\W\d_]+', re.UNICODE)
 
