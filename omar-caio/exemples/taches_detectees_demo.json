@@ -1,0 +1,45 @@
+[
+  {
+    "id": "tache_001_c8835b13",
+    "audit_id": "aud_demo",
+    "nom": "Recopier une annonce sur 3 sites sans passerelle",
+    "sequence": [
+      "ImmoGest / fiche mandat",
+      "Portail A / formulaire",
+      "Portail B / formulaire",
+      "Portail C / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 745,
+    "temps_perdu_semaine_min": null,
+    "automatisable": true,
+    "methode": "agent_h",
+    "gain_estime_h_semaine": null,
+    "instructions_agent": "Sur les portails de test autorisés : consulte le mandat et prépare une annonce sur chaque site. Renseigne titre, prix, surface, ville et description à partir des données explicitement fournies. Ne modifie pas le prix. Vérifie les mentions obligatoires et fais valider la publication. Retourne les portails réellement traités et les erreurs éventuelles.",
+    "workflow_n8n_modele": "multidiffusion_annonce",
+    "confiance": 0.8,
+    "score": null,
+    "fiche": null,
+    "prompt_empreinte": "966e5e8fcb5193fb"
+  },
+  {
+    "id": "tache_002_9f713e29",
+    "audit_id": "aud_demo",
+    "nom": "Enchaînement répétitif : Google Chrome / suivi_prospects",
+    "sequence": [
+      "Google Chrome / suivi_prospects"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 150,
+    "temps_perdu_semaine_min": null,
+    "automatisable": false,
+    "methode": "rien",
+    "gain_estime_h_semaine": null,
+    "instructions_agent": null,
+    "workflow_n8n_modele": null,
+    "confiance": 0.8,
+    "score": null,
+    "fiche": null,
+    "prompt_empreinte": "966e5e8fcb5193fb"
+  }
+]

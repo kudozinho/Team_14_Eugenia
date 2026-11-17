@@ -5,17 +5,14 @@ Tout est inventé. Régénérer : `python henriquet-cdo/donnees/generer_agence.p
 | Fichier | Contenu | En base ? | Pour qui |
 |---|---|---|---|
 | `agence-belvedere.json` | L'agence, **10 collaborateurs** désignés par leur poste (1 gérante, 6 négociateurs, 2 assistantes, 1 gestionnaire locatif), **10 mandats** dans l'Essonne (3 de démo : M-0142, M-0143, M-0144) | Oui : `utilisateurs`, `postes`, `mandats` | Tous |
-| `stats-portails-semaine.json` | Vues, contacts et favoris par bien et par portail, semaines 2026-S46 et 2026-S47 (60 lignes). **S47 = semaine du rapport aux vendeurs de la démo.** | Oui : `stats_portails` | Vladimir (back-offices des 3 sites), Alejandro (vérifier ce que l'agent H relève), Binta (rapport) |
-| `prospects-fictifs.json` | 20 prospects inventés (06 00 00 00 xx, @example.com) | **Non, jamais** (contrainte : ne pas stocker les coordonnées des prospects) | Vladimir (n8n, relances) |
+| `stats-portails-semaine.json` | Vues, contacts et favoris par bien et par portail, semaines 2026-S46 et 2026-S47 (60 lignes). **S47 = semaine du rapport aux vendeurs de la démo.** | Oui : `stats_portails` | Piste « à confirmer pendant l'audit » seulement (pas la démo) |
+| `prospects-fictifs.json` | 20 prospects inventés et cohérents avec les mandats (budget, villes, type de bien, financement, apport, délai, source, étape). Noms courants, numéros 06 00 00 00 xx, e-mails @example.com | **Non, jamais** (contrainte : ne pas stocker les coordonnées des prospects) | Vladimir (n8n, relances) |
 
-## Pourquoi ce format (changement de démo du 17/11, mail d'Assel)
+## Statut après la décision d'Assel (17/11, 13h35) : démo figée sur la recopie d'annonces
 
-La recopie d'annonces sur 3 sites est déjà faite par la passerelle du logiciel d'agence : Ghost doit répondre « rien à construire ».
-La tâche exécutée en direct par l'agent H devient **le rapport hebdomadaire aux vendeurs** : relever, sur le back-office de chaque portail, les vues et les contacts de chaque bien.
-
-- Les 3 back-offices affichent les lignes de `stats_portails` de leur portail pour la semaine 2026-S47.
-- La réussite de l'agent se vérifie **par le code** : les chiffres qu'il rapporte doivent être égaux à ceux de `stats_portails`.
-- Les 3 biens de démo (`demo = true`) suffisent pour la démo live ; les 7 autres donnent de la matière au tableau de bord.
+- **Démo live** : l'assistante recopie une annonce sur 3 sites sans passerelle, et l'agent H le fait à sa place. Les **3 mandats de démo** (M-0142, M-0143, M-0144) fournissent le contenu des annonces.
+- **`stats_portails` et `stats-portails-semaine.json`** : préparés pendant la piste « rapport aux vendeurs », qui est **annulée pour la démo**. On les garde comme matière pour la piste « à confirmer pendant l'audit ». Ils ne servent ni à la démo live ni au chiffre des slides.
+- **Chiffre des slides** : 205 h/an (les 3 tâches de la matrice). Source unique : `commun/donnees/taches-semaine-agence.json`.
 
 ## Hypothèses [H]
 
