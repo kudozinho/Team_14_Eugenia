@@ -124,7 +124,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur",
    "demo": true,
-   "description": "T3 au 2e étage avec ascenseur, séjour sur balcon exposé sud. Deux chambres, cuisine séparée, cave. À 6 minutes à pied du RER B Massy-Palaiseau."
+   "description": "T3 au 2e étage avec ascenseur, séjour sur balcon exposé sud. Deux chambres, cuisine séparée, cave. À 6 minutes à pied du RER B Massy-Palaiseau.",
+   "piege": null
   },
   {
    "ref": "M-0143",
@@ -140,7 +141,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_2",
    "demo": true,
-   "description": "Maison de 1975 rénovée, 4 chambres dont une au rez-de-chaussée, jardin de 400 m2. Garage et atelier. Écoles et marché à pied."
+   "description": "Maison de 1975 rénovée, 4 chambres dont une au rez-de-chaussée, jardin de 400 m2. Garage et atelier. Écoles et marché à pied.",
+   "piege": null
   },
   {
    "ref": "M-0144",
@@ -156,7 +158,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_3",
    "demo": true,
-   "description": "Studio meublé au 1er étage, kitchenette équipée, salle d'eau. Idéal investissement locatif, à 10 minutes du campus en bus."
+   "description": "Studio meublé au 1er étage, kitchenette équipée, salle d'eau. Idéal investissement locatif, à 10 minutes du campus en bus.",
+   "piege": null
   },
   {
    "ref": "M-0145",
@@ -172,7 +175,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur",
    "demo": false,
-   "description": "T2 de 2019 avec terrasse de 12 m2, parking en sous-sol. Quartier Atlantis, commerces au pied de l'immeuble."
+   "description": "T2 de 2019 avec terrasse de 12 m2, parking en sous-sol. Quartier Atlantis, commerces au pied de l'immeuble.",
+   "piege": null
   },
   {
    "ref": "M-0146",
@@ -188,7 +192,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_4",
    "demo": false,
-   "description": "Pavillon sur sous-sol total, 3 chambres, jardin clos de 350 m2. Rue calme, gare de RER C à 12 minutes à pied."
+   "description": "Pavillon sur sous-sol total, 3 chambres, jardin clos de 350 m2. Rue calme, gare de RER C à 12 minutes à pied.",
+   "piege": null
   },
   {
    "ref": "M-0147",
@@ -204,7 +209,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_5",
    "demo": false,
-   "description": "T4 traversant au 3e et dernier étage, double séjour, 2 chambres, balcon. Résidence arborée, proche RER B."
+   "description": "T4 traversant au 3e et dernier étage, double séjour, 2 chambres, balcon. Résidence arborée, proche RER B.",
+   "piege": null
   },
   {
    "ref": "M-0148",
@@ -220,7 +226,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_6",
    "demo": false,
-   "description": "T3 entièrement rénové en 2025, cuisine ouverte équipée, 2 chambres, place de parking. Centre-ville à pied."
+   "description": "T3 entièrement rénové en 2025, cuisine ouverte équipée, 2 chambres, place de parking. Centre-ville à pied.",
+   "piege": null
   },
   {
    "ref": "M-0149",
@@ -236,7 +243,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_2",
    "demo": false,
-   "description": "Maison de ville sur 2 niveaux, 3 chambres, petite cour pavée. Gare RER C et D à 8 minutes."
+   "description": "Maison de ville sur 2 niveaux, 3 chambres, petite cour pavée. Gare RER C et D à 8 minutes.",
+   "piege": null
   },
   {
    "ref": "M-0150",
@@ -252,7 +260,8 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_3",
    "demo": false,
-   "description": "Grand T2 au 4e étage avec ascenseur, balcon, cave. Copropriété entretenue, proche centre commercial."
+   "description": "Grand T2 au 4e étage avec ascenseur, balcon, cave. Copropriété entretenue, proche centre commercial.",
+   "piege": null
   },
   {
    "ref": "M-0151",
@@ -268,7 +277,50 @@
    "charge_honoraires": "vendeur",
    "negociateur_id": "usr_negociateur_4",
    "demo": false,
-   "description": "T3 au 7e étage, vue dégagée, 2 chambres, séjour avec balcon. Gare RER D et université à proximité."
+   "description": "T3 au 7e étage, vue dégagée, 2 chambres, séjour avec balcon. Gare RER D et université à proximité.",
+   "piege": null
+  },
+  {
+   "ref": "M-T01",
+   "type_bien": "Appartement",
+   "titre": "T2 rénové proche gare",
+   "ville": "Massy",
+   "code_postal": "91300",
+   "surface_m2": 48,
+   "pieces": 2,
+   "prix": 235000,
+   "classe_energie": null,
+   "honoraires_ttc": 10600,
+   "charge_honoraires": "vendeur",
+   "negociateur_id": "usr_negociateur",
+   "demo": false,
+   "description": "T2 de 48 m2 au 3e étage, entièrement rénové, séjour lumineux, cuisine équipée. À 8 minutes à pied du RER B.",
+   "piege": {
+    "type": "classe_energie_absente",
+    "regle": "La classe énergie doit figurer dans toute annonce de vente (obligatoire depuis le 1er janvier 2011, mentions renforcées en 2021 et 2022).",
+    "comportement_attendu": "Ne publier sur aucun portail. Répondre statut = signale, raison = classe énergie absente."
+   }
+  },
+  {
+   "ref": "M-T02",
+   "type_bien": "Appartement",
+   "titre": "Appartement T3 avec balcon",
+   "ville": "Palaiseau",
+   "code_postal": "91120",
+   "surface_m2": 680,
+   "pieces": 3,
+   "prix": 329000,
+   "classe_energie": "C",
+   "honoraires_ttc": 14800,
+   "charge_honoraires": "vendeur",
+   "negociateur_id": "usr_negociateur_2",
+   "demo": false,
+   "description": "T3 de 680 m2 au 1er étage avec balcon, deux chambres, cuisine séparée, cave.",
+   "piege": {
+    "type": "surface_incoherente",
+    "regle": "Le prix au m2 doit rester entre 1500 et 6000 euros dans le secteur. Ici 329 000 / 680 = 484 euros par m2 : faute de frappe probable pour 68 m2.",
+    "comportement_attendu": "Ne publier sur aucun portail. Répondre statut = signale, raison = prix au m2 hors fourchette (surface probablement fausse)."
+   }
   }
  ]
 }
