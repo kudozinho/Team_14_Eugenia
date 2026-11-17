@@ -83,3 +83,10 @@ def test_entites_spacy(monkeypatch, texte, entite, attendu):
                                 end_char=debut + len(entite))
     monkeypatch.setattr(nettoyage, '_get_fr_nlp', lambda: lambda _: SimpleNamespace(ents=[detection]))
     assert nettoyer(texte, dict(PROFIL, mots_interface=['brumelune'])) == attendu
+
+
+def test_prenom_compose_sans_spacy(monkeypatch):
+    from filtres import nettoyage
+
+    monkeypatch.setattr(nettoyage, '_get_fr_nlp', lambda: None)
+    assert nettoyer('Visite avec Jean-Pierre Brisedune', PROFIL) == 'Visite avec [NOM]'

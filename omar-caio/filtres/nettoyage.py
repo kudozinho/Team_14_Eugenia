@@ -55,19 +55,21 @@ def _local_person_ner(text: str, mots_interface=()) -> str:
     if nlp:
         exclus = MOTS_INTERFACE | {mot.casefold() for mot in mots_interface}
         doc = nlp(text)
+        marques = list(re.finditer(r'__GHOSTMASK_\d+__|\[[A-Z_]+\]', text))
         # Remplacement en ordre inverse pour éviter les erreurs d'index.
         for ent in reversed(doc.ents):
-            if ent.label_ not in {'PER', 'PERSON'} or '[' in ent.text or '__GHOSTMASK_' in ent.text:
+            if ent.label_ not in {'PER', 'PERSON'} or any(
+                ent.start_char < m.end() and m.start() < ent.end_char for m in marques
+            ):
                 continue
             mots = MOTS.findall(ent.text)
             if any(mot.casefold() in exclus for mot in mots):
                 continue
             if any(mot[0].isupper() for mot in mots):
                 text = text[:ent.start_char] + '[NOM]' + text[ent.end_char:]
-        return text
 
     def _replace(match: re.Match[str]) -> str:
-        if match.group(1) in FIRST_NAMES:
+        if match.group(1).split('-', 1)[0] in FIRST_NAMES:
             return '[NOM]'
         return match.group(0)
     return PERSON_FALLBACK.sub(_replace, text)
