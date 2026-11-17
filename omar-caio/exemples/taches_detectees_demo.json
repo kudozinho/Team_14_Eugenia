@@ -23,11 +23,11 @@
     "prompt_empreinte": "966e5e8fcb5193fb"
   },
   {
-    "id": "tache_002_7292b443",
+    "id": "tache_002_9f713e29",
     "audit_id": "aud_demo",
-    "nom": "Enchaînement répétitif : Microsoft Excel / suivi_prospects.xlsx",
+    "nom": "Enchaînement répétitif : Google Chrome / suivi_prospects",
     "sequence": [
-      "Microsoft Excel / suivi_prospects.xlsx"
+      "Google Chrome / suivi_prospects"
     ],
     "occurrences": 3,
     "duree_moyenne_s": 150,

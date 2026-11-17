@@ -16,10 +16,10 @@
       "cas": 1,
       "essai": 1,
       "status": "ok",
-      "latence_s": 0.0001,
+      "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -27,16 +27,17 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 1,
       "essai": 2,
       "status": "ok",
-      "latence_s": 0.0001,
+      "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -44,7 +45,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 1,
@@ -53,7 +55,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -61,7 +63,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 1,
@@ -70,7 +73,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -78,7 +81,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 1,
@@ -87,7 +91,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -95,7 +99,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 2,
@@ -104,7 +109,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -112,7 +117,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 2,
@@ -121,7 +127,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -129,7 +135,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 2,
@@ -138,7 +145,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -146,7 +153,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 2,
@@ -155,7 +163,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -163,7 +171,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 2,
@@ -172,7 +181,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -180,7 +189,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 3,
@@ -189,7 +199,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -197,7 +207,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 3,
@@ -206,7 +217,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -214,7 +225,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 3,
@@ -223,7 +235,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -231,7 +243,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 3,
@@ -240,7 +253,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -248,7 +261,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 3,
@@ -257,7 +271,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -265,7 +279,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 4,
@@ -274,7 +289,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -282,7 +297,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 4,
@@ -291,7 +307,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -299,7 +315,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 4,
@@ -308,7 +325,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -316,7 +333,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 4,
@@ -325,7 +343,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -333,7 +351,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 4,
@@ -342,7 +361,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -350,7 +369,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 5,
@@ -359,7 +379,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -367,7 +387,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 5,
@@ -376,7 +397,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -384,16 +405,17 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 5,
       "essai": 3,
       "status": "ok",
-      "latence_s": 0.0001,
+      "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -401,7 +423,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 5,
@@ -410,7 +433,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -418,7 +441,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 5,
@@ -427,7 +451,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -435,7 +459,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 6,
@@ -444,7 +469,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -452,7 +477,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 6,
@@ -461,7 +487,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -469,7 +495,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 6,
@@ -478,7 +505,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -486,7 +513,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 6,
@@ -495,7 +523,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -503,7 +531,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 6,
@@ -512,7 +541,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -520,7 +549,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 7,
@@ -529,7 +559,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -537,7 +567,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 7,
@@ -546,7 +577,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -554,7 +585,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 7,
@@ -563,7 +595,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -571,7 +603,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 7,
@@ -580,7 +613,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -588,7 +621,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 7,
@@ -597,7 +631,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -605,7 +639,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 8,
@@ -614,7 +649,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -622,7 +657,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 8,
@@ -631,7 +667,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -639,7 +675,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 8,
@@ -648,7 +685,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -656,7 +693,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 8,
@@ -665,7 +703,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -673,7 +711,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 8,
@@ -682,7 +721,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -690,7 +729,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 9,
@@ -699,7 +739,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -707,7 +747,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 9,
@@ -716,7 +757,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -724,7 +765,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 9,
@@ -733,7 +775,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -741,7 +783,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 9,
@@ -750,7 +793,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -758,7 +801,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 9,
@@ -767,7 +811,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -775,7 +819,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 10,
@@ -784,7 +829,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -792,7 +837,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 10,
@@ -801,7 +847,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -809,16 +855,17 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 10,
       "essai": 3,
       "status": "ok",
-      "latence_s": 0.0001,
+      "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -826,7 +873,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 10,
@@ -835,7 +883,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -843,7 +891,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     },
     {
       "cas": 10,
@@ -852,7 +901,7 @@
       "latence_s": 0.0,
       "decision": [
         [
-          "enchaînement répétitif : microsoft excel / suivi_prospects.xlsx",
+          "enchaînement répétitif : google chrome / suivi_prospects",
           "rien"
         ],
         [
@@ -860,7 +909,8 @@
           "agent_h"
         ]
       ],
-      "erreur": null
+      "erreur": null,
+      "exact": null
     }
   ]
 }

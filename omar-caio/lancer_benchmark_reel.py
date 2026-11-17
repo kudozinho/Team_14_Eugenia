@@ -1,8 +1,8 @@
-"""Tests Claude réels : 10 cas x 5 relances pour deux IDs de modèles fournis.
+"""Tests Holo réels : 10 cas x 5 relances pour deux IDs de modèles fournis.
 
 Exemple (après config des accès) :
-ANTHROPIC_API_KEY=... python omar-caio/lancer_benchmark_reel.py \
- --modele-a ID_HAIKU_VERIFIE --modele-b ID_SONNET_VERIFIE
+python omar-caio/lancer_benchmark_reel.py \
+ --modele-a ID_HOLO_A --modele-b ID_HOLO_B
 """
 from __future__ import annotations
 import argparse
@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from detection.prompts import assembler_prompt
 from detection.detection import detecter_taches
-from detection.provider_anthropic import AnthropicProvider
+from detection.provider_holo import HoloProvider
 from evaluation_benchmark import bench,enregistrer_rapport
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,8 +41,8 @@ def data(*, analyse_cinq=False):
 
 
 def main():
-    parser=argparse.ArgumentParser(description='Comparaison réelle de deux modèles Claude sur 50 appels chacun')
-    parser.add_argument('--modele-a',required=True,help='ID exact du modèle vérifié dans votre compte Anthropic')
+    parser=argparse.ArgumentParser(description='Comparaison réelle de deux modèles Holo sur 50 appels chacun')
+    parser.add_argument('--modele-a',required=True,help='ID exact du modèle vérifié dans votre compte H Company')
     parser.add_argument('--modele-b',required=True,help='ID exact du second modèle vérifié')
     parser.add_argument('--prix-entree-a',type=float)
     parser.add_argument('--prix-sortie-a',type=float)
@@ -50,11 +50,26 @@ def main():
     parser.add_argument('--prix-sortie-b',type=float)
     args=parser.parse_args()
     cases, attendu = data()
+    if args.modele_a == args.modele_b:
+        parser.error('Fournir deux modèles distincts')
+    providers = [
+        HoloProvider(args.modele_a, prix_entree_usd_million=args.prix_entree_a,
+                     prix_sortie_usd_million=args.prix_sortie_a),
+        HoloProvider(args.modele_b, prix_entree_usd_million=args.prix_entree_b,
+                     prix_sortie_usd_million=args.prix_sortie_b),
+    ]
+    disponibles = providers[0].modeles()
+    for provider in providers:
+        if provider.model not in disponibles:
+            parser.error(f'Modèle absent du catalogue : {provider.model}')
+        texte = provider([{'role': 'user', 'content': 'Réponds uniquement par OK.'}])
+        if not isinstance(texte, str) or not texte.strip():
+            parser.error(f'Pas de réponse texte pour {provider.model}')
+        provider.usage.clear()
     OUT.mkdir(exist_ok=True)
     results=[]
-    for name,ine,oute in [(args.modele_a,args.prix_entree_a,args.prix_sortie_a),
-                           (args.modele_b,args.prix_entree_b,args.prix_sortie_b)]:
-        provider=AnthropicProvider(name,prix_entree_usd_million=ine,prix_sortie_usd_million=oute)
+    for provider in providers:
+        name = provider.model
         report=bench(cases,provider,nom_modele=name, mode='reel', attendu=attendu)
         report.update(provider.metriques_tokens())
         results.append(report)
@@ -67,6 +82,6 @@ def main():
               '| coût USD',report['cout_usd'])
     enregistrer_rapport({'mode':'reel','comparaison':[{k:v for k,v in r.items() if k!='resultats_bruts'} for r in results]},
                         OUT/'comparatif_reel.json')
-    print('Attention : la précision métier nécessite en plus des annotations humaines de référence.')
+    print('Attention : l’exactitude mesurée porte sur le choix de méthode.')
 
 if __name__=='__main__':main()

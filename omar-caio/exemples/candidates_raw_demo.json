@@ -36,7 +36,7 @@
       "Portail A / formulaire",
       "Portail B / formulaire",
       "Portail C / formulaire",
-      "Microsoft Excel / suivi_prospects.xlsx"
+      "Google Chrome / suivi_prospects"
     ],
     "occurrences": 3,
     "duree_moyenne_s": 870,
@@ -124,7 +124,7 @@
       "Portail A / formulaire",
       "Portail B / formulaire",
       "Portail C / formulaire",
-      "Microsoft Excel / suivi_prospects.xlsx"
+      "Google Chrome / suivi_prospects"
     ],
     "occurrences": 3,
     "duree_moyenne_s": 718,
@@ -200,7 +200,7 @@
     "sequence": [
       "Portail B / formulaire",
       "Portail C / formulaire",
-      "Microsoft Excel / suivi_prospects.xlsx"
+      "Google Chrome / suivi_prospects"
     ],
     "occurrences": 3,
     "duree_moyenne_s": 502,
@@ -306,7 +306,7 @@
   {
     "sequence": [
       "Portail C / formulaire",
-      "Microsoft Excel / suivi_prospects.xlsx"
+      "Google Chrome / suivi_prospects"
     ],
     "occurrences": 3,
     "duree_moyenne_s": 288,
@@ -347,7 +347,7 @@
   },
   {
     "sequence": [
-      "Microsoft Excel / suivi_prospects.xlsx"
+      "Google Chrome / suivi_prospects"
     ],
     "occurrences": 3,
     "duree_moyenne_s": 150,

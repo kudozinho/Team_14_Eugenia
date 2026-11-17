@@ -29,15 +29,15 @@
     "duree_moyenne_s": 150,
     "fiche": null,
     "gain_estime_h_semaine": null,
-    "id": "tache_002_7292b443",
+    "id": "tache_002_9f713e29",
     "instructions_agent": null,
     "methode": "rien",
-    "nom": "Enchaînement répétitif : Microsoft Excel / suivi_prospects.xlsx",
+    "nom": "Enchaînement répétitif : Google Chrome / suivi_prospects",
     "occurrences": 3,
     "prompt_empreinte": "966e5e8fcb5193fb",
     "score": null,
     "sequence": [
-      "Microsoft Excel / suivi_prospects.xlsx"
+      "Google Chrome / suivi_prospects"
     ],
     "temps_perdu_semaine_min": null,
     "workflow_n8n_modele": null
