@@ -11,7 +11,7 @@ La variable `PORTAIL` choisit le site servi. Tout s'écrit dans `annonces_portai
 
 Chaque site a aussi : `/` (accueil avec le bouton du formulaire), `/annonces` (**Annonces publiées**), `/annonces/<id>` (fiche, avec un bandeau de confirmation après le dépôt), `GET /api/annonces` (JSON), `POST /api/reset` (vide le site entre deux essais).
 
-Titres de fenêtre (lus par le Recorder) : `Portail A - Déposer une annonce`, `Portail B - Nouvelle annonce`, `Portail C - Publier une annonce`, `Portail X - Annonces publiées`.
+Titres de fenêtre (lus par le Recorder) : `Portail A - Déposer une annonce`, `Portail B - Nouvelle annonce`, `Portail C - Publier un bien`, `Portail X - Annonces publiées`.
 Valeur de `portail` en base : `Portail A`, `Portail B`, `Portail C` (comme dans le contrat §4).
 
 **Photo du site C** : le schéma commun n'a pas de colonne photo. Le fichier est rangé dans le bucket Storage privé `photos-annonces`, sous `<id de l'annonce>/photo.<ext>`. Pour vérifier un essai de niveau 4, il faut une ligne dans `annonces_portails` et un fichier dans `photos-annonces/<id>/`. Le JSON de `GET /api/annonces` du site C donne `photo: true/false` pour chaque annonce. Plan B si l'envoi de fichier bloque l'agent : `PHOTO_ACTIVE=0` sur le projet C (niveau 3), et on le note comme limite.
@@ -25,7 +25,7 @@ Sans `SUPABASE_URL`, les sites gardent les annonces **en mémoire** (bandeau jau
 
 ## Mettre en ligne (une fois la base d'Henriquet ouverte)
 1. **Supabase** : le schéma `commun/schema-supabase.sql` est déjà passé (Henriquet). Lancer `sql/stockage-photos.sql` dans l'éditeur SQL.
-2. **GitHub** : pousser la branche `vladimir/portails`.
+2. **GitHub** : pousser la branche `vladimir/cao`.
 3. **Vercel**, à faire 3 fois (projets `ghost-portail-a`, `ghost-portail-b`, `ghost-portail-c`) : *Add New → Project →* choisir le dépôt, **Root Directory = `vladimir-cao/portails`**, Framework = Next.js, puis les variables d'environnement :
 
    | Variable | A | B | C |
@@ -36,7 +36,7 @@ Sans `SUPABASE_URL`, les sites gardent les annonces **en mémoire** (bandeau jau
    | `RESET_TOKEN` | idem | idem | idem |
    | `PHOTO_ACTIVE` | | | `1` |
 
-   Pour un déploiement depuis une branche : *Settings → Git → Production Branch = `vladimir/portails`* (ou fusionner dans `main`).
+   Pour un déploiement depuis une branche : *Settings → Git → Production Branch = `vladimir/cao`* (ou fusionner dans `main`).
 4. **Accès public** (indispensable pour le navigateur hébergé de H) : *Settings → Deployment Protection* : l'adresse de production `ghost-portail-x.vercel.app` ne doit pas demander de connexion. Test : l'ouvrir dans une fenêtre privée.
 
 La clé service ne sort jamais du serveur : elle n'a pas de préfixe `NEXT_PUBLIC_`, et seuls les routes `/api` et les pages serveur l'utilisent.

@@ -14,7 +14,7 @@ export type Portail = {
 export const PORTAILS: Record<Code, Portail> = {
   A: { code: 'A', nom: 'Portail A', chemin: '/deposer', action: 'Déposer une annonce', slogan: 'Petites annonces immobilières entre professionnels' },
   B: { code: 'B', nom: 'Portail B', chemin: '/nouvelle', action: 'Nouvelle annonce', slogan: 'Le réseau des agences du Sud francilien' },
-  C: { code: 'C', nom: 'Portail C', chemin: '/publier', action: 'Publier une annonce', slogan: 'Diffusion premium, annonces vérifiées' },
+  C: { code: 'C', nom: 'Portail C', chemin: '/publier', action: 'Publier un bien', slogan: 'Diffusion premium, annonces vérifiées' },
 };
 
 export function portailCourant(): Portail {
