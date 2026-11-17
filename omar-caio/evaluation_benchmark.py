@@ -18,21 +18,27 @@ def normaliser_decision(taches: Sequence[Mapping[str, Any]]) -> tuple[tuple[str,
 
 def bench(cas: Sequence[tuple[Sequence[Mapping[str, Any]], Mapping[str, Any]]],
           callback: Callable[[list[dict[str,str]]], str | Mapping[str, Any]], *,
-          nom_modele: str, repeats: int = 5, mode: str = 'reel') -> dict[str, Any]:
+          nom_modele: str, repeats: int = 5, mode: str = 'reel',
+          attendu: Mapping[str, str] | None = None) -> dict[str, Any]:
     if len(cas) != 10 or repeats != 5:
         raise ValueError('Le protocole prévu est 10 cas x 5 relances')
     if mode not in {'reel', 'simulation'}:
         raise ValueError('mode doit être réel ou simulation')
+    if attendu is not None and set(attendu) != {t['id'] for candidates, _ in cas for t in candidates}:
+        raise ValueError('Il faut une annotation par candidate')
     rows = []
     agreements = []
     for i, (candidates, p) in enumerate(cas):
         outputs = []
         for essai in range(repeats):
             start = perf_counter()
+            exact = None
             try:
                 tasks = analyser_candidates(candidates, p, callback)
                 signature = normaliser_decision(tasks)
                 outputs.append(signature)
+                if attendu is not None:
+                    exact = all(t['methode'] == attendu[t['id']] for t in tasks)
                 status, error = 'ok', None
             except Exception as exc:
                 signature = None
@@ -40,7 +46,7 @@ def bench(cas: Sequence[tuple[Sequence[Mapping[str, Any]], Mapping[str, Any]]],
                 status, error = 'failed', type(exc).__name__ + ': ' + str(exc)
             rows.append({'cas':i+1, 'essai':essai+1, 'status':status,
                          'latence_s':round(perf_counter()-start,4),
-                         'decision':signature, 'erreur':error})
+                         'decision':signature, 'erreur':error, 'exact':exact})
         # Taux d'accord mesuré contre la modalité la plus fréquente, pas le « vrai » résultat.
         valid = [v for v in outputs if v is not None]
         agreement = (max(valid.count(v) for v in valid)/len(valid)) if valid else 0.0
@@ -54,7 +60,8 @@ def bench(cas: Sequence[tuple[Sequence[Mapping[str, Any]], Mapping[str, Any]]],
         'cas_accord_min_9_sur_10':sum(a>=0.9 for a in agreements),
         'latence_moyenne_s':round(statistics.mean(r['latence_s'] for r in rows),4),
         'cout_usd':None,  # Non calculé sans usages/token pricing vérifiés.
-        'precision':None,  # Nécessite étiquettes de vérité terrain distinctes.
+        'precision': round(sum(r['exact'] is True for r in rows) / len(rows), 3)
+        if attendu is not None else None,
         'resultats_bruts':rows,
     }
 
