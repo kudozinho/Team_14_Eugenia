@@ -119,9 +119,9 @@ def deposer_photo(client: Client, session_id: str, attente_max_s: int = 60) -> s
             time.sleep(2)
 
 
-def resume_verifie(verifie: dict[str, bool]) -> str:
-    ok = [p for p, v in verifie.items() if v]
-    ko = [p for p, v in verifie.items() if not v]
+def resume_verifie(verifie: dict[str, str]) -> str:
+    ok = [p for p, v in verifie.items() if v == "ok"]
+    ko = [p for p, v in verifie.items() if v != "ok"]
     if not ko:
         return f"Annonce publiée et vérifiée en base sur {len(ok)} portail(s) : {', '.join(ok)}."
     return f"Vérifiée sur : {', '.join(ok) or 'aucun'}. Absente ou fausse sur : {', '.join(ko)}."
@@ -175,6 +175,7 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
     fin = session.wait_for_completion()
     duree_s = round(time.monotonic() - debut)
     etat = session.status()
+    metriques = session.changes(from_index=0, wait_for_seconds=0).metrics
     reponse = fin.answer if isinstance(fin.answer, ReponseAgent) else None
     verifie = portails.verifier(noms, mandat, depuis)
 
@@ -192,13 +193,16 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
         # en plus du §4, pour le script de test (§12)
         "resume_agent": reponse.resume if reponse else str(fin.answer or etat.error or ""),
         "agent": agent,
+        "modele": metriques.cost_per_model[0].name if metriques and metriques.cost_per_model else None,
         "etapes": etat.steps,
+        "cout_usd": round(metriques.total_cost, 4) if metriques and metriques.total_cost else None,
+        "erreur_h": etat.error,
+        "reponse_structuree": reponse is not None,
         "verification_base": verifie,
-        "reussi": all(verifie.values()),
+        "reussi": all(v == "ok" for v in verifie.values()),
         "faux_succes": bool(reponse) and any(
-            p in reponse.portails_publies and not ok for p, ok in verifie.items()),
+            p in reponse.portails_publies and v != "ok" for p, v in verifie.items()),
     }
-    ecrire_resultat(resultat)
     return resultat
 
 
@@ -215,6 +219,7 @@ def main() -> None:
     noms = [f"Portail {x.strip().upper()}" for x in args.portails.split(",")]
     mandat = json.loads(args.mandat.read_text(encoding="utf-8")) if args.mandat else MANDAT_DEMO
     resultat = lancer(args.tache, noms, args.agent, mandat)
+    ecrire_resultat(resultat)  # executions_agent : seulement pour un lancement normal, pas les séries de tests
     print(json.dumps(resultat, ensure_ascii=False, indent=2))
 
 
