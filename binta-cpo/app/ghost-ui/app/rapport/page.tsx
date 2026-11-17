@@ -33,7 +33,7 @@ export default function Rapport() {
       <div className="grid g2" style={{ marginBottom: 14 }}>
         <section className="card">
           <h2>Axe métier</h2>
-          <table><tbody>
+          <div className="scroll-x"><table><tbody>
             <Ligne k="Le process, en clair">{m.process}</Ligne>
             <Ligne k="Déclencheur">{m.declencheur}</Ligne>
             <Ligne k="Fréquence">{m.frequence}</Ligne>
@@ -43,12 +43,12 @@ export default function Rapport() {
             <Ligne k="Impact sur l'équipe">{m.impact_equipe}</Ligne>
             <Ligne k="Temps libéré pour">{m.temps_libere}</Ligne>
             <Ligne k="À vérifier">{m.hypotheses}</Ligne>
-          </tbody></table>
+          </tbody></table></div>
         </section>
 
         <section className="card">
           <h2>Axe technique</h2>
-          <table><tbody>
+          <div className="scroll-x"><table><tbody>
             <Ligne k="Outil recommandé">{t.outil === "agent_h" ? "Agent H" : t.outil}. {t.raison}</Ligne>
             <Ligne k="Options écartées"><ul className="clean">{t.options_ecartees.map((o: string) => <li key={o}>{o}</li>)}</ul></Ligne>
             <Ligne k="Étapes"><ol className="clean">{t.etapes.map((e: string) => <li key={e}>{e}</li>)}</ol></Ligne>
@@ -58,7 +58,7 @@ export default function Rapport() {
             <Ligne k="Critère de recette">{t.recette}</Ligne>
             <Ligne k="Coût d'exécution">{t.cout_execution}</Ligne>
             <Ligne k="Maintenance">{t.maintenance}</Ligne>
-          </tbody></table>
+          </tbody></table></div>
           <h3>Points de vigilance</h3>
           <ul className="clean">{t.vigilance.map((v: string) => <li key={v}>{v}</li>)}</ul>
         </section>
