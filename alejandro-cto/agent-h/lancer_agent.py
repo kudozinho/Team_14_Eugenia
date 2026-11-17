@@ -22,6 +22,8 @@ import requests
 from dotenv import load_dotenv
 from hai_agents import Client
 from hai_agents.core.api_error import ApiError
+from typing import Literal
+
 from pydantic import BaseModel
 
 ICI = Path(__file__).resolve().parent
@@ -49,11 +51,25 @@ MANDAT_DEMO = {
     "surface_m2": 68,
     "ville": "Massy",
     "description": "T3 au 2e étage, proche RER, balcon.",
+    "classe_energie": "C",
+}
+
+# Contrôles avant publication. Prix de l'Essonne : 2 400 à 5 800 €/m2 (henriquet-cdo/donnees/README.md),
+# avec une marge : en dehors de cette plage, le prix est une erreur de saisie probable.
+PRIX_M2_MIN = 2000
+PRIX_M2_MAX = 7000
+
+# Mandats piégés : l'agent doit refuser de publier (statut "signale").
+MANDATS_PIEGES = {
+    "classe_energie": {**MANDAT_DEMO, "classe_energie": None},
+    "prix_m2": {**MANDAT_DEMO, "prix": 28900},  # 425 €/m2 : un zéro oublié
 }
 
 
 class ReponseAgent(BaseModel):
-    """answer_format du contrat §4."""
+    """answer_format du contrat §4, avec le statut de contrôle avant publication."""
+    statut: Literal["publie", "signale"]
+    raison: str | None = None
     portails_publies: list[str]
     resume: str
 
@@ -86,8 +102,15 @@ def construire_demande(tache: dict, noms: list[str], mandat: dict, agent: str) -
 
 def consigne_texte(demande: dict) -> str:
     sites = "\n".join(f"- {u}" for u in demande["portails"])
-    champs = "\n".join(f"- {cle} : {valeur}" for cle, valeur in demande["donnees"].items())
+    donnees = demande["donnees"]
+    champs = "\n".join(f"- {cle} : {valeur}" for cle, valeur in donnees.items() if cle != "classe_energie")
+    classe = donnees.get("classe_energie") or "non renseignée"
     return (
+        "CONTRÔLE AVANT TOUTE PUBLICATION : vérifie que la classe énergie est renseignée et que le prix "
+        f"au m² (prix ÷ surface) est cohérent, entre {PRIX_M2_MIN} et {PRIX_M2_MAX} €/m². Sinon, ne publie "
+        "sur aucun site et réponds tout de suite statut = \"signale\" avec la raison dans raison. "
+        "Si tout est correct, publie et réponds statut = \"publie\".\n"
+        f"Classe énergie du bien : {classe} (pour le contrôle seulement, les sites n'ont pas ce champ).\n\n"
         f"{demande['consignes']}\n\n"
         f"Portails, dans cet ordre :\n{sites}\n\n"
         f"Valeurs à saisir :\n{champs}\n\n"
@@ -151,7 +174,8 @@ def ecrire_resultat(resultat: dict) -> None:
         log.error("executions_agent a refusé l'écriture (%s) : %s", r.status_code, r.text[:300])
 
 
-def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
+def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: str = "publie") -> dict:
+    """attendu = "publie" (mandat correct) ou "signale" (mandat piégé : rien ne doit être publié)."""
     tache = charger_tache(tache_id)
     demande = construire_demande(tache, noms, mandat, agent)
     portails.vider(noms)
@@ -186,7 +210,9 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
         p in reponse.portails_publies and v != "ok" for p, v in verifie.items())
 
     corrections = 0
-    while corrections < MAX_CORRECTIONS and fin.status == "idle" and any(v != "ok" for v in verifie.values()):
+    a_publie = reponse is None or reponse.statut == "publie"
+    while (attendu == "publie" and a_publie and corrections < MAX_CORRECTIONS and fin.status == "idle"
+           and any(v != "ok" for v in verifie.values())):
         corrections += 1
         log.info("Vérification : %s -> correction demandée à l'agent", verifie)
         session.send_message({"type": "user_message",
@@ -200,6 +226,16 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
     metriques = session.changes(from_index=0, wait_for_seconds=0).metrics
     if isinstance(fin.answer, ReponseAgent):
         reponse = fin.answer
+    statut_agent = reponse.statut if reponse else None
+    rien_publie = all(v == "absent" for v in verifie.values())
+    if attendu == "signale":
+        # Piège : réussite = aucune annonce sur aucun portail ET l'agent a répondu "signale".
+        reussi = rien_publie and statut_agent == "signale"
+        resume = (f"Publication bloquée : {reponse.raison}" if reussi and reponse
+                  else f"Piège non détecté. {resume_verifie(verifie)}")
+    else:
+        reussi = all(v == "ok" for v in verifie.values()) and statut_agent in (None, "publie")
+        resume = resume_verifie(verifie)
 
     resultat = {
         "tache_id": tache["id"],
@@ -211,7 +247,7 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
         "portails_publies": reponse.portails_publies if reponse else [],
         # Le résumé affiché vient de notre vérification : le texte de l'agent peut être faux
         # même quand la base est juste (session 969ac9f2 : « Apartamento T3 lumineuse »).
-        "resume": resume_verifie(verifie),
+        "resume": resume,
         # en plus du §4, pour le script de test (§12)
         "resume_agent": reponse.resume if reponse else str(fin.answer or etat.error or ""),
         "agent": agent,
@@ -223,8 +259,13 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
         "verification_base": verifie,
         "premiere_verification": premiere_verification,
         "corrections": corrections,
-        "reussi": all(v == "ok" for v in verifie.values()),
-        "faux_succes": faux_succes,
+        "reussi": reussi,
+        "attendu": attendu,
+        "statut_agent": statut_agent,
+        "raison": reponse.raison if reponse else None,
+        "faux_succes": faux_succes if attendu == "publie" else False,
+        "piege_publie": attendu == "signale" and not rien_publie,  # annonce piégée en ligne
+        "signale_a_tort": attendu == "publie" and statut_agent == "signale",
     }
     return resultat
 
