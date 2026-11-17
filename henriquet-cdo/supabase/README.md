@@ -11,7 +11,7 @@
 | `contextes_entreprise` | 1 | contexte §7 de l'agence |
 | `postes` | 4 | gérante, négociateur, assistante (§8), gestionnaire locatif |
 | `utilisateurs` | 10 | désignés par leur poste, jamais par un vrai nom (1 gérante, 6 négociateurs, 2 assistantes, 1 gestionnaire locatif) |
-| `applis_autorisees`, `sites_autorises` | 1 + 5 | ce que l'assistante autorise (Chrome ; immogest, les 3 portails et `docs.google.com` pour le suivi Google Sheets). **À mettre à jour dès que Vladimir a déployé** : les domaines réels seront `ghost-portail-a.vercel.app`, etc., pas `portail-a.example`. |
+| `applis_autorisees`, `sites_autorises` | 1 + 5 | ce que l'assistante autorise (Chrome ; immogest, les 3 portails et `docs.google.com` pour le suivi Google Sheets). Domaines réels en place depuis le 17/11 15h : `ghost-portail-a.vercel.app`, `ghost-portail-b.vercel.app`, `ghost-portail-c.vercel.app`. |
 | `audits` | 1 | `aud_demo` |
 | `mandats` | 10 | ajouté le 17/11 après-midi : biens de l'agence, dont 3 de démo (voir `henriquet-cdo/donnees/`) |
 | `stats_portails` | 60 | ajouté le 17/11 : vues et contacts par bien et par portail. Piste « rapport aux vendeurs » annulée pour la démo, gardée comme matière à confirmer pendant l'audit |

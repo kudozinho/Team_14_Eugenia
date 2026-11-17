@@ -85,7 +85,7 @@ for uid, poste, nom, role, mode in [
 lignes += ["", "-- Autorisations de l'assistante"]
 for i, appli in enumerate(["Google Chrome"], 1):  # tableur = Google Sheets, dans Chrome (décision du 17/11)
     lignes.append(f"insert into applis_autorisees (id, utilisateur_id, appli) values ('app_assist_{i}', 'usr_assistante', {txt(appli)}) on conflict (id) do nothing;")
-for i, dom in enumerate(["immogest.example", "portail-a.example", "portail-b.example", "portail-c.example", "docs.google.com"], 1):
+for i, dom in enumerate(["immogest.example", "ghost-portail-a.vercel.app", "ghost-portail-b.vercel.app", "ghost-portail-c.vercel.app", "docs.google.com"], 1):
     lignes.append(f"insert into sites_autorises (id, utilisateur_id, domaine) values ('site_assist_{i}', 'usr_assistante', {txt(dom)}) on conflict (id) do nothing;")
 
 # 6. Audit de démo
