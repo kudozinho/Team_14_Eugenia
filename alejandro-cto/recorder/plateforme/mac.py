@@ -17,8 +17,10 @@ import Quartz
 from ocrmac import ocrmac
 from PIL import Image
 
+from config import HAUTEUR_BARRES_CHROME_PT, NAVIGATEURS
 from plateforme import Fenetre
 from regles import titres_concordent
+from rognage import rogner_haut
 
 log = logging.getLogger("recorder")
 
@@ -97,7 +99,19 @@ def capturer(fen: Fenetre, mode: str = "fenetre") -> Image.Image | None:
             log.warning("Capture impossible : vérifier la permission « Enregistrement de l'écran ».")
             return None
         with Image.open(fichier) as image:
-            return image.copy()
+            image = image.copy()
+    if mode == "fenetre" and fen.appli in NAVIGATEURS:
+        image = rogner_haut(image, _hauteur_fenetre_pt(fen.ident), HAUTEUR_BARRES_CHROME_PT)
+    return image
+
+
+def _hauteur_fenetre_pt(numero: int) -> float:
+    """Hauteur de la fenêtre en points, lue dans kCGWindowBounds (0 si introuvable)."""
+    infos = Quartz.CGWindowListCopyWindowInfo(Quartz.kCGWindowListOptionIncludingWindow, numero) or []
+    for w in infos:
+        if int(w.get("kCGWindowNumber", -1)) == numero:
+            return float((w.get("kCGWindowBounds") or {}).get("Height", 0))
+    return 0.0
 
 
 def ocr(image: Image.Image) -> str:

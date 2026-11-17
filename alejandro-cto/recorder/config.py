@@ -21,6 +21,9 @@ SEUIL_EMPREINTE = 4             # distance d'empreinte en dessous de laquelle 2 
 LECTURES_RATEES_MAX = 6         # titre/adresse discordants 6 tours de suite (3 s, chargement de page) avant hors_perimetre
 
 NAVIGATEURS = {"Google Chrome", "Chrome"}
+# Hauteur, en points, des onglets + barre d'adresse + barre de favoris de Chrome sur Mac.
+# Rognée avant l'OCR et la miniature. Environ 120 points : à régler sur le Mac de démo.
+HAUTEUR_BARRES_CHROME_PT = 120
 
 
 def _liste(variable: str) -> list[str]:

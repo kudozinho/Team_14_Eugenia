@@ -80,3 +80,27 @@ def test_filtres_omar_trouves_si_presents():
     dossier = Path(__file__).resolve().parents[3] / "omar-caio" / "filtres" / "nettoyage.py"
     if dossier.exists():
         assert nettoyage.SOURCE == "omar"
+
+
+def test_rognage_retire_les_barres_de_chrome():
+    from PIL import Image, ImageDraw
+
+    from config import HAUTEUR_BARRES_CHROME_PT
+    from rognage import rogner_haut
+
+    # Fenêtre de 800 points capturée sur écran Retina : 1600 pixels de haut (échelle 2).
+    image = Image.new("RGB", (1000, 1600), "white")
+    ImageDraw.Draw(image).rectangle((0, 0, 999, 2 * HAUTEUR_BARRES_CHROME_PT - 1), fill="gray")
+    rognee = rogner_haut(image, 800, HAUTEUR_BARRES_CHROME_PT)
+    assert rognee.size == (1000, 1600 - 2 * HAUTEUR_BARRES_CHROME_PT)
+    assert rognee.getpixel((500, 0)) == (255, 255, 255)  # plus aucun pixel des barres
+
+
+def test_rognage_sans_hauteur_connue_garde_l_image():
+    from PIL import Image
+
+    from rognage import rogner_haut
+
+    image = Image.new("RGB", (100, 100), "white")
+    assert rogner_haut(image, 0, 120).size == (100, 100)
+    assert rogner_haut(image, 50, 120).size == (100, 100)  # rognage plus grand que l'image
