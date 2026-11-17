@@ -52,7 +52,7 @@ flowchart TD
 
 ## Règle de confidentialité (affichage)
 - La vue Entreprise n'affiche **jamais** de donnée par personne.
-- Une tâche n'apparaît que si au moins **3 participants** l'ont effectuée.
+- Une tâche apparaît toujours (sinon la tâche de démo, faite par l'assistante seule, serait cachée). Mais si **moins de 3 personnes** la font, aucune répartition ni aucun chiffre par personne n'est affiché : seulement la tâche, son temps total et l'outil recommandé.
 
 ## Écrans à maquetter, dans l'ordre de la démo (4 min)
 | # | Écran | Vue | Moment démo | Contenu minimal |
