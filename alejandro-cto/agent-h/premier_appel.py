@@ -59,10 +59,14 @@ def main() -> None:
     duree_s = round(time.monotonic() - debut)
     etat = session.status()
 
+    # "idle" = l'agent a répondu, la session se ferme seule ensuite (en "completed" chez H).
+    # Ne pas annuler : H la noterait "interrupted".
+    statut = "completed" if resultat.status == "idle" else resultat.status
+
     print(json.dumps(
         {
             "session_id": session.id,
-            "statut": resultat.status,
+            "statut": statut,
             "duree_s": duree_s,
             "etapes": etat.steps,
             "erreur": etat.error,
