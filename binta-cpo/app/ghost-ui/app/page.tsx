@@ -1,4 +1,4 @@
-import { getTaches, getTotalHeures, getOrganisation, formatDuree, LABEL_METHODE } from "@/lib/data";
+import { getTaches, getTotalHeures, getOrganisation, getPistes, formatDuree, LABEL_METHODE } from "@/lib/data";
 import Matrice from "./matrice";
 import Link from "next/link";
 
@@ -6,6 +6,7 @@ export default function Dashboard() {
   const taches = getTaches();
   const total = getTotalHeures();
   const agentH = taches.filter((t) => t.methode === "agent_h").reduce((s, t) => s + t.heures_an, 0);
+  const pistes = getPistes();
   const n8n = taches.filter((t) => t.methode === "n8n").reduce((s, t) => s + t.heures_an, 0);
 
   return (
@@ -50,6 +51,32 @@ export default function Dashboard() {
           <h2>Matrice gain / effort</h2>
           <Matrice taches={taches} />
           <p className="muted">Taille du point = heures par an · couleur = risque (vert faible, orange moyen).</p>
+        </section>
+      </div>
+
+      <div className="grid g2" style={{ marginTop: 14 }}>
+        <section className="card">
+          <h2>Autres pistes : à confirmer pendant l'audit</h2>
+          <p className="muted">{pistes.totalAConfirmer} h/an possibles, <b>jamais additionnées</b> aux {total} h ci-dessus.</p>
+          <div className="scroll-x"><table>
+            <tbody>
+              {pistes.aConfirmer.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.nom}<div className="muted">{p.pourquoi}</div></td>
+                  <td><span className={`pill ${p.methode}`}>{LABEL_METHODE[p.methode ?? "rien"]}</span></td>
+                  <td className="num">{p.heures_an} h</td>
+                </tr>
+              ))}
+            </tbody>
+          </table></div>
+        </section>
+        <section className="card">
+          <h2>Déjà couvert par le logiciel : rien à construire</h2>
+          <ul className="clean">
+            {pistes.dejaCouvert.map((p) => (
+              <li key={p.id}>{p.nom}<div className="muted">{p.pourquoi}</div></li>
+            ))}
+          </ul>
         </section>
       </div>
     </>

@@ -1,6 +1,7 @@
 import tachesJson from "@/data/taches-demo.json";
 import ficheJson from "@/data/fiche-001.json";
 import executionJson from "@/data/execution-exemple.json";
+import pistesJson from "@/data/pistes.json";
 
 export type Score = {
   gain: number; facilite: number; effort: number; risque: number; confiance: number;
@@ -44,3 +45,14 @@ export const LABEL_METHODE: Record<string, string> = {
   n8n: "n8n",
   rien: "Rien à construire",
 };
+
+export type Piste = { id: string; nom: string; methode?: string; heures_an?: number; heures_an_aujourdhui?: number; pourquoi: string };
+// Pistes à mesurer pendant l'audit : jamais additionnées au chiffre principal.
+export function getPistes() {
+  const aConfirmer = pistesJson.a_confirmer as Piste[];
+  return {
+    aConfirmer,
+    totalAConfirmer: aConfirmer.reduce((s, p) => s + (p.heures_an ?? 0), 0),
+    dejaCouvert: pistesJson.deja_couvert as Piste[],
+  };
+}
