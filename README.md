@@ -21,6 +21,8 @@ Démo : l'Agence Belvédère (fictive, Massy). Une assistante recopie chaque ann
 | Coupé cette semaine | Extension Chrome, Windows, paiement. L'adresse de l'onglet se lit depuis l'application Mac. |
 | Nouveaux contrats | §1 bis (événement `hors_perimetre` + `duree_s`), §7 contexte d'entreprise, §8 poste, §9 prompt 3 couches, §10 score, §11 fiche, §12 test de l'agent. Tout est dans `commun/contrats.md` et déjà dans le schéma. |
 | Chiffres | On affiche **205 h/an justifiées tâche par tâche**, pas 990 h. On ne compare plus à « un junior à 1 000-2 000 €/jour » mais à « 2 à 3 jours de consultant ». |
+| Agence et gain (décision du mardi 17) | **Un seul effectif : 10 personnes** (1 gérante, 6 négociateurs, 2 assistantes, 1 gestionnaire locatif). **Un seul chiffre sur les slides : 205 h/an**, les 3 tâches de la matrice. Les autres pistes (155 h/an) sont « à confirmer pendant l'audit » et ne s'additionnent jamais au chiffre des slides. Source unique : `commun/donnees/taches-semaine-agence.json`. |
+| Tableur de suivi (décision du mardi 17) | **Google Sheets** (dans Chrome, site `docs.google.com` autorisé), plus Excel. |
 | Conformité | Ghost est présenté comme **le contre-modèle de la sanction CNIL de 2024** (secteur immobilier). Le gérant voit des tâches, jamais des personnes. |
 
 ## Le dépôt

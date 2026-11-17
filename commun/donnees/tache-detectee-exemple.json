@@ -40,11 +40,11 @@
  {
   "id": "tache_002",
   "audit_id": "aud_demo",
-  "nom": "Mettre à jour le suivi des prospects dans Excel après chaque publication",
+  "nom": "Mettre à jour le suivi des prospects dans Google Sheets après chaque publication",
   "sequence": [
-   "Microsoft Excel / suivi_prospects.xlsx"
+   "Google Chrome / suivi_prospects"
   ],
-  "occurrences": 2,
+  "occurrences": 3,
   "duree_moyenne_s": 240,
   "temps_perdu_semaine_min": 40,
   "automatisable": true,

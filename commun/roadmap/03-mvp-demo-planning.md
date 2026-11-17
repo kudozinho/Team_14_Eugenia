@@ -207,7 +207,7 @@ Ghost
 │
 ├── VUE ENTREPRISE (gérant, admin)
 │   ├── Tableau de bord : heures récupérables, top des tâches, avancement de l'audit [D]
-│   │   └── aucune donnée par personne ; rien si moins de 3 participants sur une tâche
+│   │   └── aucune donnée par personne ; sous 3 participants, la tâche s'affiche sans aucune répartition
 │   ├── Équipe et consentements : invitations, statut (invité, volontaire, en pause), jamais le détail de l'activité [M]
 │   ├── Profil métier et règles : secteur, données floutées, durée de conservation [D] (lecture seule)
 │   ├── Contexte de l'entreprise : réponses au formulaire, postes [D] (lecture seule)
