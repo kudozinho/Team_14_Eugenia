@@ -18,13 +18,15 @@ from ocrmac import ocrmac
 from PIL import Image
 
 from plateforme import Fenetre
+from regles import titres_concordent
 
 log = logging.getLogger("recorder")
 
 SCRIPT_URL = '''
 tell application "Google Chrome"
     if (count of windows) = 0 then return ""
-    return (mode of front window) & "|" & (URL of active tab of front window)
+    set t to active tab of front window
+    return (mode of front window) & "|" & (title of t) & "|" & (URL of t)
 end tell
 '''
 
@@ -33,6 +35,10 @@ def _pid_premier_plan() -> int | None:
     """PID de l'application active selon macOS (celle qui a le focus)."""
     try:
         from AppKit import NSWorkspace  # fourni avec pyobjc (dépendance de pyobjc-framework-Quartz)
+        from Foundation import NSDate, NSRunLoop
+        # Sans boucle d'événements (mode --console), macOS ne met jamais à jour l'appli active :
+        # on la fait tourner 50 ms avant de lire. Corrige le hors_perimetre bloqué (test du 17/11).
+        NSRunLoop.currentRunLoop().runUntilDate_(NSDate.dateWithTimeIntervalSinceNow_(0.05))
         app = NSWorkspace.sharedWorkspace().frontmostApplication()
         return int(app.processIdentifier()) if app else None
     except Exception:  # noqa: BLE001 : en cas de souci, on retombe sur l'ordre des fenêtres
@@ -67,10 +73,16 @@ def url_navigateur(fen: Fenetre) -> tuple[str | None, bool]:
                                 text=True, timeout=2).stdout.strip()
     except subprocess.TimeoutExpired:
         return None, False
-    if "|" not in sortie:
+    if sortie.count("|") < 2:
         return None, False
-    mode, url = sortie.split("|", 1)
-    return (url or None), mode == "incognito"
+    mode, reste = sortie.split("|", 1)
+    titre_onglet, url = reste.rsplit("|", 1)  # le titre peut contenir « | », l'adresse presque jamais
+    if mode == "incognito":
+        return None, True
+    # L'adresse ne compte que si l'onglet lu est bien celui de la fenêtre capturée.
+    if not titres_concordent(fen.titre, titre_onglet):
+        return None, False
+    return (url or None), False
 
 
 def capturer(fen: Fenetre, mode: str = "fenetre") -> Image.Image | None:

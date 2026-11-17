@@ -18,6 +18,8 @@ ECART_MIN_CAPTURES_S = 3        # au plus 1 capture gardée toutes les 3 s
 PLAFOND_CAPTURES_JOUR = 600
 SEUIL_EMPREINTE = 4             # distance d'empreinte en dessous de laquelle 2 images sont "identiques"
 
+LECTURES_RATEES_MAX = 6         # titre/adresse discordants 6 tours de suite (3 s, chargement de page) avant hors_perimetre
+
 NAVIGATEURS = {"Google Chrome", "Chrome"}
 
 

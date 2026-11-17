@@ -24,7 +24,7 @@ from PIL import Image, ImageDraw, ImageFilter
 
 import plateforme
 from config import (
-    ECART_MIN_CAPTURES_S, INTERVALLE_BOUCLE_S, NAVIGATEURS, PLAFOND_CAPTURES_JOUR,
+    ECART_MIN_CAPTURES_S, INTERVALLE_BOUCLE_S, LECTURES_RATEES_MAX, NAVIGATEURS, PLAFOND_CAPTURES_JOUR,
     SEUIL_EMPREINTE, VERIF_ECRAN_S, Config, charger_config, charger_profil,
 )
 from nettoyage import SOURCE as SOURCE_NETTOYAGE
@@ -76,6 +76,7 @@ class Recorder:
         self._derniere_capture = 0.0
         self._derniere_verif = 0.0
         self._captures_jour = 0
+        self._lectures_ratees = 0      # adresse du navigateur illisible, tours de suite
 
     # --- boucle -----------------------------------------------------------------
 
@@ -99,6 +100,14 @@ class Recorder:
         url, prive = (None, False)
         if fen.appli in NAVIGATEURS and fen.appli in self.applis:
             url, prive = plateforme.url_navigateur(fen)
+            if url is None and not prive:
+                # Lecture ratée (pas de réponse, onglet en cours de changement) : on ne capte rien
+                # et on attend le tour suivant ; hors_perimetre seulement si ça dure.
+                self._lectures_ratees += 1
+                if self._lectures_ratees < LECTURES_RATEES_MAX:
+                    return
+            else:
+                self._lectures_ratees = 0
 
         if not est_autorise(fen.appli, fen.titre, url, self.applis, self.sites, prive or fen.prive):
             self._entrer_hors_perimetre()
