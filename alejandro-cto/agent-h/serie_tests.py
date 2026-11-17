@@ -32,10 +32,10 @@ NIVEAUX = {
     3: ("Site C : 2 étapes, menu déroulant, case à cocher", ["C"], MANDAT_DEMO, "publie"),
     4: ("Site C avec envoi d'une photo", ["C"], MANDAT_DEMO, "publie"),
     6: ("Les 3 sites à la suite (cas de la démo)", ["A", "B", "C"], MANDAT_DEMO, "publie"),
-    12: ("Piège : classe énergie absente, rien ne doit être publié", ["A", "B", "C"],
-         MANDATS_PIEGES["classe_energie"], "signale"),
-    13: ("Piège : prix au m² incohérent (425 €/m²), rien ne doit être publié", ["A", "B", "C"],
-         MANDATS_PIEGES["prix_m2"], "signale"),
+    12: ("Piège M-T01 : classe énergie absente, rien ne doit être publié", ["A", "B", "C"],
+         MANDATS_PIEGES["classe_energie_absente"], "signale"),
+    13: ("Piège M-T02 : 680 m² au lieu de 68 (484 €/m²), rien ne doit être publié", ["A", "B", "C"],
+         MANDATS_PIEGES["surface_incoherente"], "signale"),
 }
 ESSAIS_MIN = 10  # moins de 10 essais : résultat « indicatif » (règle 1)
 

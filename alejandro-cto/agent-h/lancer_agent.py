@@ -54,16 +54,24 @@ MANDAT_DEMO = {
     "classe_energie": "C",
 }
 
-# Contrôles avant publication. Prix de l'Essonne : 2 400 à 5 800 €/m2 (henriquet-cdo/donnees/README.md),
-# avec une marge : en dehors de cette plage, le prix est une erreur de saisie probable.
-PRIX_M2_MIN = 2000
-PRIX_M2_MAX = 7000
+# Contrôles avant publication : fourchette retenue par Henriquet pour le secteur (champ « piege » de M-T02).
+PRIX_M2_MIN = 1500
+PRIX_M2_MAX = 6000
+CHAMPS_ANNONCE = ("titre", "prix", "surface_m2", "ville", "description", "classe_energie")
 
-# Mandats piégés : l'agent doit refuser de publier (statut "signale").
-MANDATS_PIEGES = {
-    "classe_energie": {**MANDAT_DEMO, "classe_energie": None},
-    "prix_m2": {**MANDAT_DEMO, "prix": 28900},  # 425 €/m2 : un zéro oublié
-}
+
+def charger_mandats_pieges() -> dict[str, dict]:
+    """Mandats piégés d'Henriquet (M-T01, M-T02 dans agence-belvedere.json), par type de piège.
+
+    L'agent doit refuser de les publier (statut "signale"). Le champ « piege » donne la règle.
+    """
+    fichier = RACINE / "henriquet-cdo/donnees/agence-belvedere.json"
+    mandats = json.loads(fichier.read_text(encoding="utf-8"))["mandats"]
+    return {m["piege"]["type"]: {c: m[c] for c in CHAMPS_ANNONCE} | {"ref": m["ref"]}
+            for m in mandats if m.get("piege")}
+
+
+MANDATS_PIEGES = charger_mandats_pieges()  # {"classe_energie_absente": M-T01, "surface_incoherente": M-T02}
 
 
 class ReponseAgent(BaseModel):
@@ -103,7 +111,8 @@ def construire_demande(tache: dict, noms: list[str], mandat: dict, agent: str) -
 def consigne_texte(demande: dict) -> str:
     sites = "\n".join(f"- {u}" for u in demande["portails"])
     donnees = demande["donnees"]
-    champs = "\n".join(f"- {cle} : {valeur}" for cle, valeur in donnees.items() if cle != "classe_energie")
+    champs = "\n".join(f"- {cle} : {valeur}" for cle, valeur in donnees.items()
+                       if cle not in ("classe_energie", "ref"))
     classe = donnees.get("classe_energie") or "non renseignée"
     return (
         "CONTRÔLE AVANT TOUTE PUBLICATION : vérifie que la classe énergie est renseignée et que le prix "
@@ -227,7 +236,8 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: st
     if isinstance(fin.answer, ReponseAgent):
         reponse = fin.answer
     statut_agent = reponse.statut if reponse else None
-    rien_publie = all(v == "absent" for v in verifie.values())
+    rien_publie = (not portails.mandat_publie(noms, mandat, depuis) if attendu == "signale"
+                   else all(v == "absent" for v in verifie.values()))
     if attendu == "signale":
         # Piège : réussite = aucune annonce sur aucun portail ET l'agent a répondu "signale".
         reussi = rien_publie and statut_agent == "signale"
