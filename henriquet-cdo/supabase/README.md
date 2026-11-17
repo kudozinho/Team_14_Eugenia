@@ -11,7 +11,7 @@
 | `contextes_entreprise` | 1 | contexte §7 de l'agence |
 | `postes` | 3 | gérante, négociateur, assistante (§8) |
 | `utilisateurs` | 3 | désignés par leur poste, jamais par un vrai nom |
-| `applis_autorisees`, `sites_autorises` | 2 + 4 | ce que l'assistante autorise (Chrome, Excel, immogest et les 3 portails) |
+| `applis_autorisees`, `sites_autorises` | 2 + 4 | ce que l'assistante autorise (Chrome, Excel, immogest et les 3 portails). **À mettre à jour dès que Vladimir a déployé** : les domaines réels seront `ghost-portail-a.vercel.app`, etc., pas `portail-a.example`. |
 | `audits` | 1 | `aud_demo` |
 | `evenements`, `taches_detectees`, `tests_agent` | 17, 2, 5 | **exemples du kit**, à purger mercredi matin |
 
@@ -33,7 +33,7 @@ Les autres tables (`transcriptions`, `prompts_systeme`, `executions_agent`, `rap
 2. La mettre dans `.env` à la racine du dépôt (le `.gitignore` l'exclut déjà) :
    ```
    SUPABASE_URL=https://bvxmnrvqehemqsjiasdr.supabase.co
-   SUPABASE_SERVICE_KEY=...
+   SUPABASE_SERVICE_ROLE_KEY=...
    ```
 3. `pip install supabase python-dotenv` puis `python henriquet-cdo/supabase/test_connexion.py`.
 

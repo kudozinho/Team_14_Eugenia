@@ -7,7 +7,7 @@ Chacun le lance une fois pour valider le branchement « Base ouverte à tous » 
 
 Variables à mettre dans le fichier .env à la racine (jamais sur GitHub) :
     SUPABASE_URL=https://bvxmnrvqehemqsjiasdr.supabase.co
-    SUPABASE_SERVICE_KEY=<clé service_role, envoyée en privé par Henriquet>
+    SUPABASE_SERVICE_ROLE_KEY=<clé service_role, envoyée en privé par Henriquet>
 """
 import os
 import socket
@@ -17,9 +17,10 @@ from supabase import create_client
 
 load_dotenv()
 url = os.getenv("SUPABASE_URL")
-cle = os.getenv("SUPABASE_SERVICE_KEY")
+# Même nom de variable que les sites de test de Vladimir (ancien nom accepté)
+cle = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_SERVICE_KEY")
 if not url or not cle:
-    raise SystemExit("SUPABASE_URL ou SUPABASE_SERVICE_KEY manquante dans .env")
+    raise SystemExit("SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY manquante dans .env")
 
 sb = create_client(url, cle)
 
