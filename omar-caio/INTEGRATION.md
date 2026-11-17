@@ -115,7 +115,7 @@ Configurer `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` dans le fichier
 
 ```sh
 python3 omar-caio/analyser_audit.py --audit aud_demo --simulation
-python3 omar-caio/analyser_audit.py --audit aud_demo --modele ID_HOLO_VERIFIE --ecrire
+python3 omar-caio/analyser_audit.py --audit aud_demo --depuis 2026-11-18T08:55:00+01:00 --modele ID_HOLO_VERIFIE --ecrire
 ```
 
 La première commande lit la base et simule l’analyse. La seconde insère

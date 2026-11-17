@@ -62,13 +62,16 @@ class SupabaseAudit:
         except HTTPError as exc:
             raise RuntimeError(f'Supabase {table} : HTTP {exc.code}') from None
 
-    def evenements(self, audit):
+    def evenements(self, audit, *, depuis=None):
         evenements = []
         while True:
-            lot = self._requete('evenements', {
+            filtres = {
                 'audit_id': f'eq.{audit}', 'select': COLONNES_EVENEMENTS,
                 'order': 'horodatage.asc,id.asc', 'limit': 500, 'offset': len(evenements),
-            })
+            }
+            if depuis is not None:
+                filtres['horodatage'] = f'gte.{depuis}'
+            lot = self._requete('evenements', filtres)
             if not lot:
                 return evenements
             evenements.extend(lot)

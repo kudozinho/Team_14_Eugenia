@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+from datetime import datetime
 from pathlib import Path
 
 from detection.analyse_llm import analyser_candidates, simulateur_local
@@ -33,6 +34,7 @@ def main():
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument('evenements', nargs='?', type=Path, help='Export JSON flouté du Recorder')
     source.add_argument('--audit', help='Identifiant de l’audit Supabase')
+    parser.add_argument('--depuis', help='Date ISO 8601 avec fuseau pour filtrer les événements Supabase')
     parser.add_argument('--ecrire', action='store_true', help='Insère les tâches avec --audit')
     parser.add_argument('--env', type=Path, default=Path('.env'), help='Configuration Supabase locale')
     mode = parser.add_mutually_exclusive_group(required=True)
@@ -43,9 +45,14 @@ def main():
         parser.error('--ecrire requiert --audit')
     if args.ecrire and args.simulation:
         parser.error('--simulation effectue uniquement une lecture')
+    if args.depuis and not args.audit:
+        parser.error('--depuis requiert --audit')
     try:
+        depuis = datetime.fromisoformat(args.depuis) if args.depuis else None
+        if depuis is not None and depuis.utcoffset() is None:
+            raise ValueError('--depuis exige un fuseau horaire explicite')
         base = SupabaseAudit.depuis_configuration(args.env) if args.audit else None
-        evenements = base.evenements(args.audit) if base else lire_json(args.evenements)
+        evenements = base.evenements(args.audit, depuis=depuis.isoformat() if depuis else None) if base else lire_json(args.evenements)
         if args.audit and any(e.get('audit_id') != args.audit for e in evenements):
             raise ValueError('La table a renvoyé un événement d’un autre audit')
         fournisseur = simulateur_local if args.simulation else HoloProvider(args.modele)

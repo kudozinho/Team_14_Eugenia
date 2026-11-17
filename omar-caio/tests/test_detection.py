@@ -81,6 +81,7 @@ def test_audit_supabase_cli(monkeypatch, capsys):
         requetes.append((table, parametres, lignes))
         if table == 'evenements':
             assert parametres['audit_id'] == f'eq.{audit}'
+            assert parametres['horodatage'] == 'gte.2026-11-18T08:55:00+01:00'
             return EVENTS if parametres['offset'] == 0 else []
         assert table == 'taches_detectees'
         assert parametres['on_conflict'] == 'id'
@@ -90,7 +91,8 @@ def test_audit_supabase_cli(monkeypatch, capsys):
     monkeypatch.setenv('SUPABASE_SERVICE_ROLE_KEY', 'cle-fictive')
     monkeypatch.setattr(SupabaseAudit, '_requete', requete)
     monkeypatch.setattr('analyser_audit.HoloProvider', lambda _: simulateur_local)
-    monkeypatch.setattr(sys, 'argv', ['analyser_audit.py', '--audit', audit, '--modele', 'holo-test', '--ecrire'])
+    monkeypatch.setattr(sys, 'argv', ['analyser_audit.py', '--audit', audit, '--depuis', '2026-11-18T08:55:00+01:00',
+                                      '--modele', 'holo-test', '--ecrire'])
 
     main()
     premier = json.loads(capsys.readouterr().out)
