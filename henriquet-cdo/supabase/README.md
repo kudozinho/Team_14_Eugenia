@@ -11,11 +11,13 @@
 | `contextes_entreprise` | 1 | contexte §7 de l'agence |
 | `postes` | 3 | gérante, négociateur, assistante (§8) |
 | `utilisateurs` | 3 | désignés par leur poste, jamais par un vrai nom |
-| `applis_autorisees`, `sites_autorises` | 2 + 4 | ce que l'assistante autorise (Chrome, Excel, immogest et les 3 portails). **À mettre à jour dès que Vladimir a déployé** : les domaines réels seront `ghost-portail-a.vercel.app`, etc., pas `portail-a.example`. |
+| `applis_autorisees`, `sites_autorises` | 1 + 5 | ce que l'assistante autorise (Chrome ; immogest, les 3 portails et `docs.google.com` pour le suivi Google Sheets). **À mettre à jour dès que Vladimir a déployé** : les domaines réels seront `ghost-portail-a.vercel.app`, etc., pas `portail-a.example`. |
 | `audits` | 1 | `aud_demo` |
 | `evenements`, `taches_detectees`, `tests_agent` | 17, 2, 5 | **exemples du kit**, à purger mercredi matin |
 
 Les autres tables (`transcriptions`, `prompts_systeme`, `executions_agent`, `rapports`, `annonces_portails`) sont vides et prêtes.
+
+**Décision du 17/11** : tableur = Google Sheets. Si la base contient déjà la ligne `app_assist_2` (Microsoft Excel), la supprimer : `delete from applis_autorisees where id = 'app_assist_2';`. Après la fusion de la PR #2, relancer `generer_seed.py` pour récupérer les événements d'exemple mis à jour.
 
 ## Fichiers
 

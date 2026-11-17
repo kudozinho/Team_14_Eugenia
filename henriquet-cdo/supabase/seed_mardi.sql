@@ -22,11 +22,11 @@ insert into utilisateurs (id, organisation_id, poste_id, nom, role, mode_analyse
 
 -- Autorisations de l'assistante
 insert into applis_autorisees (id, utilisateur_id, appli) values ('app_assist_1', 'usr_assistante', 'Google Chrome') on conflict (id) do nothing;
-insert into applis_autorisees (id, utilisateur_id, appli) values ('app_assist_2', 'usr_assistante', 'Microsoft Excel') on conflict (id) do nothing;
 insert into sites_autorises (id, utilisateur_id, domaine) values ('site_assist_1', 'usr_assistante', 'immogest.example') on conflict (id) do nothing;
 insert into sites_autorises (id, utilisateur_id, domaine) values ('site_assist_2', 'usr_assistante', 'portail-a.example') on conflict (id) do nothing;
 insert into sites_autorises (id, utilisateur_id, domaine) values ('site_assist_3', 'usr_assistante', 'portail-b.example') on conflict (id) do nothing;
 insert into sites_autorises (id, utilisateur_id, domaine) values ('site_assist_4', 'usr_assistante', 'portail-c.example') on conflict (id) do nothing;
+insert into sites_autorises (id, utilisateur_id, domaine) values ('site_assist_5', 'usr_assistante', 'docs.google.com') on conflict (id) do nothing;
 
 -- Audit de démo
 insert into audits (id, organisation_id, statut) values ('aud_demo', 'org_belvedere', 'en_cours') on conflict (id) do nothing;
