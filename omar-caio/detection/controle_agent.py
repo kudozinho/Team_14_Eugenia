@@ -31,3 +31,20 @@ def verifier_preparation(demande, reponse):
         if erreurs:
             ecarts[url] = erreurs
     return ecarts
+
+
+if __name__ == '__main__':
+    import argparse
+    import json
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('demande', type=Path)
+    parser.add_argument('resultat', type=Path)
+    args = parser.parse_args()
+    demande = json.loads(args.demande.read_text(encoding='utf-8'))
+    resultat = json.loads(args.resultat.read_text(encoding='utf-8'))
+    reponse = resultat.get('reponse', resultat)
+    ecarts = verifier_preparation(demande, reponse if isinstance(reponse, dict) else {})
+    print(json.dumps({'pret_pour_revue': not ecarts, 'ecarts': ecarts}, ensure_ascii=False))
+    raise SystemExit(1 if ecarts else 0)
