@@ -20,7 +20,7 @@ from pathlib import Path
 
 import requests
 
-from lancer_agent import AGENT_PAR_DEFAUT, ICI, MANDAT_DEMO, MANDATS_PIEGES, lancer
+from lancer_agent import AGENT_PAR_DEFAUT, ICI, MANDAT_DEMO, MANDATS_PIEGES, charger_mandat, lancer
 
 log = logging.getLogger("agent-h")
 
@@ -66,8 +66,12 @@ def code_erreur(r: dict) -> str | None:
     return "E1"
 
 
-def essai(niveau: int, numero: int, agent: str, contournement: str | None) -> dict:
+def essai(niveau: int, numero: int, agent: str, contournement: str | None,
+          mandat_ref: str | None = None) -> dict:
     cas, lettres, mandat, attendu = NIVEAUX[niveau]
+    if mandat_ref and attendu == "publie":  # autre mandat de l'agence pour les niveaux normaux
+        mandat = charger_mandat(mandat_ref)
+        cas = f"{cas} ({mandat_ref})"
     noms = [f"Portail {x}" for x in lettres]
     try:
         r = lancer("tache_001", noms, agent, mandat, attendu)
@@ -146,6 +150,8 @@ def main() -> None:
     parser.add_argument("--essais", type=int, default=ESSAIS_MIN)
     parser.add_argument("--agent", default=AGENT_PAR_DEFAUT)
     parser.add_argument("--contournement", default=None, help="ce qui a été changé pour cette série")
+    parser.add_argument("--mandat", default=None,
+                        help="référence d'un autre mandat pour les niveaux normaux (M-0143...)")
     args = parser.parse_args()
 
     if not os.getenv("RESET_TOKEN"):
@@ -157,7 +163,7 @@ def main() -> None:
 
     lignes = []
     for numero in range(1, args.essais + 1):
-        ligne = essai(args.niveau, numero, args.agent, args.contournement)
+        ligne = essai(args.niveau, numero, args.agent, args.contournement, args.mandat)
         enregistrer(ligne, fichier)
         lignes.append(ligne)
         log.info("Essai %s/%s : %s, %s s, %s", numero, args.essais,
