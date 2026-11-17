@@ -47,6 +47,8 @@ def code_erreur(r: dict) -> str | None:
         return None
     if r["statut"] == "completed" and not r["reponse_structuree"]:
         return "E5"
+    if "sans_photo" in r["verification_base"].values():
+        return "E7"  # blocage sur l'envoi du fichier
     if "faux" in r["verification_base"].values():
         return "E2"
     return "E1"
