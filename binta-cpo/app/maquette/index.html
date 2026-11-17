@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghost : maquette des écrans de démo</title>
+<style>
+  :root{--bg:#f5f5f7;--card:#fff;--ink:#14141c;--mute:#6b6b7b;--line:#e3e3ea;--brand:#5b3df5;--ok:#17a34a;--warn:#e8890c;--bad:#d33;--soft:#efeaff}
+  @media (prefers-color-scheme:dark){:root{--bg:#101018;--card:#1a1a24;--ink:#f2f2f7;--mute:#a0a0b2;--line:#2c2c3a;--soft:#25203f}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+  header{padding:20px 16px;max-width:1100px;margin:auto}
+  h1{margin:0;font-size:22px}
+  header p{margin:4px 0 0;color:var(--mute)}
+  nav{display:flex;gap:8px;flex-wrap:wrap;max-width:1100px;margin:0 auto;padding:0 16px 12px}
+  nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 12px;border-radius:999px;cursor:pointer;font:inherit}
+  nav button[aria-selected=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+  main{max-width:1100px;margin:auto;padding:0 16px 40px}
+  section{display:none}section.on{display:block}
+  .tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--brand);margin-right:6px}
+  .meta{color:var(--mute);font-size:13px;margin:0 0 12px}
+  .frame{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .grid{display:grid;gap:14px}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .kpi b{font-size:30px;display:block}
+  .kpi span{color:var(--mute);font-size:13px}
+  table{width:100%;border-collapse:collapse}
+  td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+  .btn{display:inline-block;border:0;background:var(--brand);color:#fff;padding:10px 16px;border-radius:10px;font:inherit;cursor:pointer}
+  .btn.sec{background:var(--soft);color:var(--brand)}
+  .pill{font-size:12px;padding:2px 8px;border-radius:999px;color:#fff}
+  .ok{background:var(--ok)}.warn{background:var(--warn)}.bad{background:var(--bad)}
+  .matrix{position:relative;height:260px;border:1px solid var(--line);border-radius:10px;background:
+    linear-gradient(var(--line),var(--line)) 50% 0/1px 100% no-repeat,linear-gradient(var(--line),var(--line)) 0 50%/100% 1px no-repeat}
+  .dot{position:absolute;border-radius:50%;background:var(--brand);opacity:.85;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px}
+  .q{position:absolute;font-size:11px;color:var(--mute)}
+  .bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}
+  .cmp{display:flex;gap:10px;align-items:flex-end;height:140px}
+  .cmp div{flex:1;border-radius:8px 8px 0 0;color:#fff;text-align:center;padding-top:6px;font-size:13px}
+  .pri{background:var(--soft);padding:10px;border-radius:10px;font-size:13px;margin-top:10px}
+  .blur{background:var(--line);border-radius:4px;padding:0 4px}
+  ins{background:#d7f5e0;text-decoration:none;padding:0 3px;border-radius:3px;color:#0b5d2a}
+  @media (prefers-color-scheme:dark){ins{background:#12381f;color:#8ff0b0}}
+  .rec{width:72px;height:72px;border-radius:50%;background:var(--bad);margin:10px auto;box-shadow:0 0 0 8px rgba(221,51,51,.18)}
+  label.sw{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Ghost : maquette des écrans de démo</h1>
+  <p>Fausses données de l'Agence Belvédère (fictive). Écrans dans l'ordre de la démo de 4 minutes.</p>
+</header>
+<nav id="tabs" role="tablist"></nav>
+<main>
+
+<section data-t="1. Autorisations">
+  <p class="meta"><span class="tag">Vue Collaborateur</span>Démo 0:25 · [D] · Elle choisit ce que Ghost voit.</p>
+  <div class="grid g2">
+    <div class="frame">
+      <h3>Applis et sites autorisés</h3>
+      <label class="sw"><span>Google Chrome</span><span>✔ 5 sites</span></label>
+      <label class="sw"><span style="padding-left:14px">portail-a.example</span><span>✔</span></label>
+      <label class="sw"><span style="padding-left:14px">portail-b.example</span><span>✔</span></label>
+      <label class="sw"><span style="padding-left:14px">portail-c.example</span><span>✔</span></label>
+      <label class="sw"><span style="padding-left:14px">immogest.example</span><span>✔</span></label>
+      <label class="sw"><span style="padding-left:14px">docs.google.com (suivi Google Sheets)</span><span>✔</span></label>
+      <label class="sw"><span>Messagerie</span><span>✘ jamais</span></label>
+      <label class="sw"><span>Banque en ligne</span><span>✘ jamais</span></label>
+      <p class="meta">Chrome coché sans site = rien n'est capté. Navigation privée : jamais captée.</p>
+    </div>
+    <div class="frame">
+      <h3>Barre des menus</h3>
+      <p>Icône : <b style="color:var(--ok)">● Ghost observe</b> → ouvre la messagerie → <b style="color:var(--mute)">⊘ Ghost en pause</b></p>
+      <button class="btn sec">Pause 15 min</button> <button class="btn sec">1 h</button> <button class="btn sec">Jusqu'à demain</button>
+      <div class="pri">Ce que Ghost ne fait jamais : lire une fenêtre non autorisée, mesurer l'inactivité, envoyer une image.</div>
+    </div>
+  </div>
+</section>
+
+<section data-t="2. Journal">
+  <p class="meta"><span class="tag">Vue Collaborateur</span>Démo 0:55 · [D] · Texte avant / après floutage.</p>
+  <div class="frame">
+    <h3>Ce qui a été capté aujourd'hui</h3>
+    <table>
+      <tr><th>Heure</th><th>Appli</th><th>Texte envoyé (nettoyé)</th><th></th></tr>
+      <tr><td>09:05</td><td>Chrome · Portail A</td><td>Titre : Appartement T3 · Prix : <ins>[MONTANT]</ins> · Contact : <ins>[TELEPHONE]</ins></td><td><button class="btn sec">Supprimer</button></td></tr>
+      <tr><td>09:06</td><td>Chrome · Portail B</td><td>Ville : Massy · Contact : <ins>[NOM]</ins></td><td><button class="btn sec">Supprimer</button></td></tr>
+      <tr><td>09:12</td><td>Hors périmètre</td><td><span class="blur">non capté</span> · 95 s</td><td></td></tr>
+    </table>
+    <p class="meta">Les noms et téléphones sont remplacés sur le Mac, avant tout envoi.</p>
+  </div>
+</section>
+
+<section data-t="3. Tableau de bord">
+  <p class="meta"><span class="tag">Vue Entreprise</span>Démo 1:20 · [D] · Aucune donnée par personne ; sous 3 participants, la tâche s'affiche sans aucune répartition.</p>
+  <div class="grid g3" style="margin-bottom:14px">
+    <div class="frame kpi"><b>205 h</b><span>récupérables par an, justifiées tâche par tâche</span></div>
+    <div class="frame kpi"><b>3</b><span>tâches classées</span></div>
+    <div class="frame kpi"><b>60 %</b><span>avancement de l'audit</span><div class="bar"><i style="width:60%"></i></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="frame">
+      <h3>Top des tâches</h3>
+      <table>
+        <tr><th>Tâche</th><th>Score</th><th>h/an</th><th>Outil</th></tr>
+        <tr><td>Relancer les prospects après visite</td><td>85</td><td>84</td><td>n8n</td></tr>
+        <tr><td>Recopier une annonce sur 3 sites</td><td>73</td><td>49</td><td>Agent H</td></tr>
+        <tr><td>Compte rendu de visite au propriétaire</td><td>71</td><td>72</td><td>Dictée + n8n</td></tr>
+      </table>
+    </div>
+    <div class="frame">
+      <h3>Matrice gain / effort</h3>
+      <div class="matrix">
+        <span class="q" style="left:8px;top:6px">GAIN RAPIDE</span><span class="q" style="right:8px;top:6px">PROJET</span>
+        <span class="q" style="left:8px;bottom:6px">À REGROUPER</span><span class="q" style="right:8px;bottom:6px">À ÉCARTER</span>
+        <div class="dot" style="left:12%;top:22%;width:58px;height:58px">84 h</div>
+        <div class="dot" style="left:30%;top:30%;width:50px;height:50px;background:var(--warn)">72 h</div>
+        <div class="dot" style="left:22%;top:42%;width:44px;height:44px">49 h</div>
+      </div>
+      <p class="meta">Taille = heures par an · couleur = risque.</p>
+    </div>
+  </div>
+</section>
+
+<section data-t="4. Preuve de l'agent">
+  <p class="meta"><span class="tag">Vue Entreprise</span>Démo 1:50 à 3:30 · [D] · Chrono mesuré par notre code.</p>
+  <div class="grid g2">
+    <div class="frame">
+      <h3>Recopier une annonce sur 3 sites</h3>
+      <p>Méthode recommandée : <b>Agent H</b> (les 3 sites n'ont pas d'API).</p>
+      <button class="btn">Prouver avec l'agent</button>
+      <p class="meta" style="margin-top:12px">Portail A ✔ · Portail B ✔ · Portail C ✔</p>
+      <div class="bar"><i style="width:100%"></i></div>
+    </div>
+    <div class="frame">
+      <h3>Durée avant / après</h3>
+      <div class="cmp">
+        <div style="background:var(--bad);height:100%">12 min<br>à la main</div>
+        <div style="background:var(--ok);height:13%;padding-top:0"></div>
+      </div>
+      <p><b>1 min 35</b> avec l'agent · <b>87 %</b> de temps en moins. Mesuré, pas promis.</p>
+    </div>
+  </div>
+</section>
+
+<section data-t="5. Fiche opportunité">
+  <p class="meta"><span class="tag">Vue Entreprise</span>Démo 3:30 · [D] · Fiche à 2 axes (voir pitch/fiche-opportunite-exemple.json).</p>
+  <div class="frame">
+    <h3>OPPORTUNITÉ N°1 : Recopier une annonce sur 3 sites sans passerelle</h3>
+    <p><span class="pill ok">Score 73/100</span> <span class="pill warn">Gain rapide</span> Confiance 4/5</p>
+    <div class="grid g2">
+      <div>
+        <h4>Axe métier</h4>
+        <table>
+          <tr><td>Qui</td><td>2 assistantes commerciales</td></tr>
+          <tr><td>Aujourd'hui</td><td>12 min × 300 par an et par personne</td></tr>
+          <tr><td>Gain</td><td>49 h par an (≈ 1 470 €)</td></tr>
+          <tr><td>Temps libéré</td><td>Accueil téléphonique, suivi des mandats</td></tr>
+        </table>
+      </div>
+      <div>
+        <h4>Axe technique</h4>
+        <table>
+          <tr><td>Outil</td><td>Agent H (pas d'API)</td></tr>
+          <tr><td>Effort</td><td>1 jour (8 h)</td></tr>
+          <tr><td>Coût</td><td>≈ 90 $ par an</td></tr>
+          <tr><td>Recette</td><td>9 sur 10, prix identique, moins de 3 min</td></tr>
+          <tr><td>Preuve</td><td>3 sites sur 3, 95 s contre 720 s</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="pri">Vigilance : ne rien retirer des mentions obligatoires de l'annonce. Validation humaine avant publication tant que la réussite est inférieure à 9 sur 10.</p>
+    <p class="meta">Alerte J2 reçue · workflow n8n pré-rempli · devis (maquette).</p>
+  </div>
+</section>
+
+<section data-t="6. Mode vocal">
+  <p class="meta"><span class="tag">Vue Collaborateur</span>Mercredi · [D] · Version courte : enregistrer → « voici ce que j'ai compris » → valider ou corriger.</p>
+  <div class="grid g2">
+    <div class="frame" style="text-align:center">
+      <h3>Raconte-moi une tâche</h3>
+      <div class="rec"></div>
+      <p>● Enregistrement en cours… 0:24</p>
+      <button class="btn">Terminer</button>
+      <p class="meta">L'audio est transcrit sur ton Mac et ne sort pas de ton poste.</p>
+    </div>
+    <div class="frame">
+      <h3>Voici ce que j'ai compris</h3>
+      <ol><li>Ouvrir le mandat dans ImmoGest</li><li>Copier titre, prix, description</li><li>Coller sur le portail A</li><li>Recommencer sur B et C</li></ol>
+      <p class="meta">Outils : ImmoGest, Portails A, B, C · 3 à 5 fois par semaine · 15 min</p>
+      <button class="btn">Oui, c'est bien ça</button> <button class="btn sec">Corriger</button>
+    </div>
+  </div>
+</section>
+
+<section data-t="7. Alerte J2">
+  <p class="meta"><span class="tag">Vue Collaborateur</span>Démo 3:30 · [D] · 1 alerte.</p>
+  <div class="frame" style="max-width:420px">
+    <h3>Ghost</h3>
+    <p>Tu recopies la même annonce sur 3 sites à la main. On peut l'automatiser : environ 10 min gagnées par annonce.</p>
+    <button class="btn">Voir la solution</button> <button class="btn sec">Plus tard</button>
+  </div>
+</section>
+
+</main>
+<script>
+  const tabs=document.getElementById('tabs'),secs=[...document.querySelectorAll('section')];
+  secs.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.dataset.t;b.setAttribute('role','tab');
+    b.onclick=()=>show(i);tabs.appendChild(b)});
+  function show(i){secs.forEach((s,j)=>{s.classList.toggle('on',i===j);tabs.children[j].setAttribute('aria-selected',i===j)})}
+  show(0);
+</script>
+</body>
+</html>
