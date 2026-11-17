@@ -37,7 +37,7 @@ configs:
 
 # Ghost · Agence immobilière fictive (Agence Belvédère)
 
-> **Toutes les données sont fictives, aucune donnée réelle.** Aucune personne, aucun bien et aucune agence de ce jeu de données n'existe. Les noms sont inventés, les numéros sont de la forme `06 00 00 00 xx`, les e-mails sont en `@example.com`, les IBAN commencent par `FR00` (clé invalide) et les adresses sont fictives.
+> **Toutes les données sont fictives, aucune donnée réelle.** Aucune personne, aucun bien et aucune agence de ce jeu de données n'existe. Les noms sont inventés, les numéros sont de la forme `06 00 00 00 xx` ou dans la plage `06 39 98 xx xx` réservée à la fiction, les e-mails sont en `@example.com` ou `@example.org`, les IBAN commencent par `FR00` (clé invalide) et les adresses sont fictives.
 
 Jeu de données de démonstration de **Ghost** (« See the work. Ghost the task. »), projet de la Team 14 au hackathon **Build The Future** (Eugenia School × H Company, 16 au 20 novembre 2026).
 
@@ -59,7 +59,7 @@ L'**Agence Belvédère**, agence immobilière fictive de Massy (Essonne), 10 per
 | `taches_semaine_agence` | 11 | Semaine type : fréquence, durée, minutes gagnées, adoption, part récupérée, méthode (agent H, n8n, rien) et statut (`justifie`, `a_confirmer`, `hors_gain`) | Calcul du gain |
 | `scores` | 3 | Score sur 100, quadrant et gain net des 3 tâches retenues (205 h/an au total), avec les hypothèses | Rapport et matrice gain / effort |
 | `evenements_exemple` | 17 | Événements captés par le Recorder, déjà floutés (`[NOM]`, `[TELEPHONE]`, `[MONTANT]`) | Tester la détection des tâches répétées |
-| `phrases_pieges` | 20 | Phrases pour tester le floutage : ce que le résultat doit contenir et ne doit pas contenir | Tester les filtres de confidentialité |
+| `phrases_pieges` | 20 | Phrases pour tester le floutage, avec la sortie attendue après floutage (profil immobilier). Fournies par Omar | Tester les filtres de confidentialité |
 | `profils_metier` | 3 | Profils immobilier, comptable, avocat : contexte, motifs à flouter, prompt, base de connaissances (immobilier) | Couche « métier » des prompts |
 
 ## Méthode de calcul du gain
@@ -74,15 +74,15 @@ Score sur 100 = (0,35 × gain + 0,20 × facilité + 0,20 × (6 − effort) + 0,1
 ```python
 from datasets import load_dataset
 
-mandats = load_dataset("<compte>/ghost-agence-immobiliere-fictive", "mandats", split="train")
-pieges = load_dataset("<compte>/ghost-agence-immobiliere-fictive", "phrases_pieges", split="train")
+mandats = load_dataset("Kudozin/ghost-agence-immobiliere-fictive", "mandats", split="train")
+pieges = load_dataset("Kudozin/ghost-agence-immobiliere-fictive", "phrases_pieges", split="train")
 ```
 
 ## Limites
 
 - Données inventées pour une démonstration de 4 jours : elles ne décrivent pas le marché immobilier réel.
 - Les prix suivent des ordres de grandeur plausibles pour l'Essonne fin 2026, sans vérification.
-- Les phrases pièges reprennent la forme des tests du projet, avec des valeurs remplacées par des valeurs manifestement fictives.
+- Les phrases pièges utilisent des numéros de la plage 06 39 98 xx xx, réservée par l'ARCEP aux œuvres de fiction, des noms inventés et des e-mails en example.com ou example.org.
 
 ## Licence
 
