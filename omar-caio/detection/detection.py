@@ -26,8 +26,7 @@ def evenement_vers_action(e: Mapping[str, Any]) -> str | None:
         return 'ImmoGest / fiche mandat'
     portal = WINDOW_PORTAL.search(title)
     if portal:
-        ecran = 'statistiques' if re.search(r'\bstatistiques?\b', title, re.I) else 'formulaire'
-        return f"Portail {portal.group(1).upper()} / {ecran}"
+        return f"Portail {portal.group(1).upper()} / formulaire"
     if WINDOW_FOLLOWUP.search(title):
         return f'{app} / suivi_prospects'  # tableur : Google Sheets depuis le 17/11, plus Excel
     if not title and not app:
@@ -144,10 +143,10 @@ def _candidate_to_tache(candidate: Mapping[str, Any], *, identifiant: str,
                          frequence_semaine: float | None = None) -> dict[str, Any]:
     seq = candidate['sequence']
     source = 'ImmoGest / fiche mandat' in seq
-    portails_publication = {s for s in seq if s.startswith('Portail ') and s.endswith(' / formulaire')}
-    publication = source and len(portails_publication) >= 2
+    portals = sorted({s.split(' / ')[0] for s in seq if s.startswith('Portail ')})
+    publication = source and len(portals) >= 2
     if publication:
-        nom = f'Recopier une annonce sur {len(portails_publication)} sites sans passerelle'
+        nom = f'Recopier une annonce sur {len(portals)} sites sans passerelle'
         methode = 'agent_h'  # Seulement pour le cas de démo déclaré sans passerelle par l'équipe.
         instructions = ('Sur les portails de test autorisés : consulte le mandat et prépare une annonce sur chaque site. '
                         'Renseigne titre, prix, surface, ville et description à partir des données explicitement fournies. '

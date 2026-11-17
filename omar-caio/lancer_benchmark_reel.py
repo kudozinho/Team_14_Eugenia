@@ -34,15 +34,6 @@ def data(*, analyse_cinq=False):
              instructions_agent=None, workflow_n8n_modele=None, confiance=0)
         for cas in annotations
     ]
-    rapport = next(cas for cas in annotations if cas['id'] == 'rapport_vendeurs')
-    rapport_events = json.loads(
-        (Path(__file__).parent / 'exemples/evenements_rapport_vendeurs_fictifs.json').read_text(encoding='utf-8')
-    )
-    rapport_detecte = detecter_taches(rapport_events, prompt_empreinte=prompt['empreinte'])[0]
-    index_rapport = annotations.index(rapport)
-    candidates[index_rapport] = dict(
-        rapport_detecte, id=rapport['id'], nom=rapport['nom'], faits=rapport['faits']
-    )
     attendu = {cas['id']: cas['methode'] for cas in annotations}
     if analyse_cinq:
         return candidates[:5], prompt

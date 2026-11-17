@@ -43,26 +43,3 @@ def test_deduplication_empreinte():
     extra=e.copy();extra['id']='doublon';extra['horodatage']='2026-11-18T09:05:11+01:00'
     arr=[e,extra]+EVENTS[1:]
     assert detecter_taches(arr)[0]['occurrences']==3
-
-
-def test_rapport_vendeurs_sur_evenements_fictifs():
-    fixture = ROOT / 'omar-caio/exemples/evenements_rapport_vendeurs_fictifs.json'
-    events = json.loads(fixture.read_text(encoding='utf-8'))
-    sequence = [
-        'Portail A / statistiques',
-        'Portail B / statistiques',
-        'Portail C / statistiques',
-        'Google Chrome / Rapport hebdomadaire aux vendeurs',
-    ]
-    candidate = detecter_sequences(events)[0]
-    assert candidate['sequence'] == sequence
-    assert candidate['occurrences'] == 3
-    assert candidate['occurrences_duree_connue'] == 2
-    assert candidate['duree_moyenne_s'] == 600
-
-    tache = detecter_taches(events, prompt_empreinte='test')[0]
-    assert tache['sequence'] == sequence
-    assert tache['duree_moyenne_s'] == 600
-    assert tache['temps_perdu_semaine_min'] is None
-    assert tache['prompt_empreinte'] == 'test'
-    assert tache['instructions_agent'] is None

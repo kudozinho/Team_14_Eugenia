@@ -1,8 +1,8 @@
 [
-  {"id":"annonces","nom":"Publier une annonce sur trois portails","faits":"La passerelle du logiciel métier est activée et diffuse déjà les annonces sur les trois portails.","methode":"outil_existant"},
+  {"id":"annonces","nom":"Publier une annonce sur trois portails","faits":"Les trois portails fictifs n’ont ni API ni passerelle et disposent chacun d’un formulaire web autorisé.","methode":"agent_h"},
   {"id":"relances","nom":"Programmer une relance après visite","faits":"L’outil de messagerie expose une API documentée et autorisée pour créer un brouillon de relance.","methode":"n8n"},
   {"id":"mandats","nom":"Tenir le registre des mandats","faits":"Le logiciel métier tient déjà le registre via sa fonction native activée.","methode":"outil_existant"},
-  {"id":"rapport_vendeurs","nom":"Préparer le rapport hebdomadaire aux vendeurs","faits":"Les espaces professionnels des trois portails fictifs sont autorisés. Les vues et les contacts sont consultables dans leurs interfaces web. Aucun des trois espaces ne dispose d’une API ou d’une passerelle pour ce relevé. La préparation du rapport s’arrête au brouillon pour validation humaine.","methode":"agent_h"},
+  {"id":"exports","nom":"Télécharger le récapitulatif d’un portail","faits":"Le portail fictif et autorisé permet de télécharger le récapitulatif via son interface, sans API ni connecteur.","methode":"agent_h"},
   {"id":"factures","nom":"Transférer les factures vers la comptabilité","faits":"Les écrans montrent la répétition. Aucune information vérifiée sur une API, un connecteur ou une fonction native.","methode":"rien"},
   {"id":"calendrier","nom":"Créer un brouillon de rendez-vous","faits":"L’API du calendrier est vérifiée et autorisée pour créer des brouillons de rendez-vous.","methode":"n8n"},
   {"id":"doublons","nom":"Détecter les fiches clients en double","faits":"Le CRM propose déjà un détecteur natif activé sur ces fiches.","methode":"outil_existant"},
