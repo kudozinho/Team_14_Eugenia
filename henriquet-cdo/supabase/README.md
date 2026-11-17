@@ -14,7 +14,7 @@
 | `applis_autorisees`, `sites_autorises` | 1 + 5 | ce que l'assistante autorise (Chrome ; immogest, les 3 portails et `docs.google.com` pour le suivi Google Sheets). **À mettre à jour dès que Vladimir a déployé** : les domaines réels seront `ghost-portail-a.vercel.app`, etc., pas `portail-a.example`. |
 | `audits` | 1 | `aud_demo` |
 | `mandats` | 10 | ajouté le 17/11 après-midi : biens de l'agence, dont 3 de démo (voir `henriquet-cdo/donnees/`) |
-| `stats_portails` | 60 | ajouté le 17/11 : vues et contacts par bien, par portail, semaines S46 et S47 (rapport aux vendeurs) |
+| `stats_portails` | 60 | ajouté le 17/11 : vues et contacts par bien et par portail. Piste « rapport aux vendeurs » annulée pour la démo, gardée comme matière à confirmer pendant l'audit |
 | `evenements`, `taches_detectees`, `tests_agent` | 17, 2, 5 | **exemples du kit**, à purger mercredi matin |
 
 Les autres tables (`transcriptions`, `prompts_systeme`, `executions_agent`, `rapports`, `annonces_portails`) sont vides et prêtes.
