@@ -2,6 +2,10 @@
 
 Source : `commun/roadmap/03`, §15. Légende : **[D]** indispensable pour la démo · **[M]** maquette vendredi · **[P]** plus tard.
 
+![Organigramme de l'application Ghost](organigramme.png)
+
+Version code (Mermaid) :
+
 ```mermaid
 flowchart TD
   G[Ghost]
