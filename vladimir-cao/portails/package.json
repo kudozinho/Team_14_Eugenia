@@ -1,0 +1,27 @@
+{
+  "name": "ghost-portails",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "dev:a": "cross-env PORTAIL=A next dev -p 3001",
+    "dev:b": "cross-env PORTAIL=B next dev -p 3002",
+    "dev:c": "cross-env PORTAIL=C next dev -p 3003",
+    "build": "next build",
+    "start": "next start",
+    "verifier": "node scripts/verifier.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "next": "^15.5.29",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "cross-env": "^10.1.0",
+    "typescript": "^5.9.3"
+  }
+}
