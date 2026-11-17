@@ -37,6 +37,10 @@ log = logging.getLogger("agent-h")
 AGENT_PAR_DEFAUT = "h/web-surfer-pro"
 ETAPES_PAR_PORTAIL = 35
 SECONDES_PAR_PORTAIL = 150
+# Relances quand la vérification en base trouve une erreur. Session 17299d5f : après une
+# première relance, l'agent a encore tapé « luminosieux » ; on en autorise donc 2.
+MAX_CORRECTIONS = 2
+SESSION_OUVERTE_S = 120   # temps pendant lequel la session attend une correction après sa réponse
 
 # Mandat M-0142 de la démo (contrat §3, même entrée que le script de Vladimir).
 MANDAT_DEMO = {
@@ -162,6 +166,7 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
         max_steps=ETAPES_PAR_PORTAIL * len(noms),
         max_time_s=SECONDES_PAR_PORTAIL * len(noms),
         timezone="Europe/Paris",
+        idle_timeout_s=SESSION_OUVERTE_S,  # garde la session ouverte pour une correction
         overrides={"agent.environments[kind=web].start_url": demande["start_url"]},
     )
     log.info("Session %s lancée sur %s", session.id, ", ".join(noms))
@@ -173,11 +178,28 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
             log.info("Photo déposée pour l'agent : %s", chemin)
 
     fin = session.wait_for_completion()
+    reponse = fin.answer if isinstance(fin.answer, ReponseAgent) else None
+    verifie = portails.verifier(noms, mandat, depuis)
+    # Mesuré sur la première réponse : la fiabilité brute de l'agent reste visible.
+    premiere_verification = dict(verifie)
+    faux_succes = bool(reponse) and any(
+        p in reponse.portails_publies and v != "ok" for p, v in verifie.items())
+
+    corrections = 0
+    while corrections < MAX_CORRECTIONS and fin.status == "idle" and any(v != "ok" for v in verifie.values()):
+        corrections += 1
+        log.info("Vérification : %s -> correction demandée à l'agent", verifie)
+        session.send_message({"type": "user_message",
+                              "message": message_correction(verifie, mandat, depuis)})
+        _attendre_reprise(session)
+        fin = session.wait_for_completion()
+        verifie = portails.verifier(noms, mandat, depuis)
+
     duree_s = round(time.monotonic() - debut)
     etat = session.status()
     metriques = session.changes(from_index=0, wait_for_seconds=0).metrics
-    reponse = fin.answer if isinstance(fin.answer, ReponseAgent) else None
-    verifie = portails.verifier(noms, mandat, depuis)
+    if isinstance(fin.answer, ReponseAgent):
+        reponse = fin.answer
 
     resultat = {
         "tache_id": tache["id"],
@@ -199,11 +221,37 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict) -> dict:
         "erreur_h": etat.error,
         "reponse_structuree": reponse is not None,
         "verification_base": verifie,
+        "premiere_verification": premiere_verification,
+        "corrections": corrections,
         "reussi": all(v == "ok" for v in verifie.values()),
-        "faux_succes": bool(reponse) and any(
-            p in reponse.portails_publies and v != "ok" for p, v in verifie.items()),
+        "faux_succes": faux_succes,
     }
     return resultat
+
+
+def message_correction(verifie: dict[str, str], mandat: dict, depuis: datetime) -> str:
+    """Dit à l'agent, champ par champ, ce que notre vérification a trouvé de faux."""
+    lignes = []
+    for nom, etat in verifie.items():
+        if etat == "absent":
+            lignes.append(f"- {nom} : aucune annonce publiée. Publie-la.")
+        elif etat == "sans_photo":
+            lignes.append(f"- {nom} : l'annonce n'a pas de photo. Republie-la avec la photo.")
+        elif etat == "faux":
+            ecarts = portails.ecarts(nom, mandat, depuis)
+            detail = " ; ".join(f"{c} enregistré « {lu} » au lieu de « {attendu} »"
+                                for c, (lu, attendu) in ecarts.items())
+            lignes.append(f"- {nom} : {detail}. Republie une nouvelle annonce avec les valeurs exactes.")
+    return ("Notre vérification en base a trouvé des erreurs :\n" + "\n".join(lignes) +
+            "\nNe touche pas aux portails corrects. Recopie les valeurs exactement, sans les traduire "
+            "ni les reformuler, puis réponds à nouveau avec portails_publies et resume.")
+
+
+def _attendre_reprise(session, attente_max_s: int = 30) -> None:
+    """Après send_message, attend que la session reparte avant d'attendre sa nouvelle réponse."""
+    limite = time.monotonic() + attente_max_s
+    while session.status().status == "idle" and time.monotonic() < limite:
+        time.sleep(1)
 
 
 def main() -> None:

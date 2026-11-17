@@ -43,7 +43,7 @@ def code_erreur(r: dict) -> str | None:
         return "E6"
     if r["statut"] == "timed_out":
         return "E4"
-    if r["reussi"]:
+    if r["reussi"] and not r.get("corrections"):
         return None
     if r["statut"] == "completed" and not r["reponse_structuree"]:
         return "E5"
@@ -63,8 +63,13 @@ def essai(niveau: int, numero: int, agent: str, contournement: str | None) -> di
         log.error("Essai %s : erreur d'infrastructure : %s", numero, e)
         r = {"statut": "erreur_infra", "session_id": None, "duree_s": None, "etapes": None,
              "cout_usd": None, "modele": None, "reussi": False, "faux_succes": False,
-             "reponse_structuree": False, "verification_base": {}, "erreur_h": str(e)[:300]}
+             "reponse_structuree": False, "verification_base": {}, "erreur_h": str(e)[:300],
+             "corrections": 0}
     erreur = code_erreur(r)
+    if erreur and r["corrections"] and r["reussi"]:
+        erreur += " (corrigé par la vérification)"  # l'erreur brute de l'agent reste comptée
+    if r["corrections"]:
+        contournement = ", ".join(x for x in (contournement, "correction automatique") if x)
     return {
         "id": "tst_" + uuid.uuid4().hex[:8],
         "niveau": niveau,
@@ -106,6 +111,7 @@ def bilan(lignes: list[dict]) -> str:
         + ("" if n >= ESSAIS_MIN else f"  [INDICATIF : {n} essais sur {ESSAIS_MIN}]"),
         f"Réussite vérifiée : {reussis}/{n}",
         f"Faux succès (E6) : {erreurs.count('E6')}",
+        f"Corrigés par la vérification : {sum('corrigé' in (l['erreur'] or '') for l in lignes)}",
     ]
     if durees:
         texte.append(f"Durée : médiane {statistics.median(durees):.0f} s, pire {max(durees)} s")
