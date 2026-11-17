@@ -1,0 +1,6 @@
+{
+ "_note": "Notes de 1 à 5 sur facilité, effort, risque et confiance, reprises du doc 07 (partie 18 b, « Application à 3 tâches immobilières »). Le gain n'est pas noté à la main : il est calculé à partir des heures nettes. Les clés renvoient aux id de commun/donnees/taches-semaine-agence.json.",
+ "t03": {"facilite": 4, "effort": 2, "risque": 2, "confiance": 4, "outil": "Agent H (pas d'API)", "vigilance": "Mentions obligatoires de l'annonce"},
+ "t04": {"facilite": 5, "effort": 1, "risque": 3, "confiance": 4, "outil": "n8n : brouillon de message à J+2, envoi après validation", "vigilance": "Coordonnées des prospects, ton du message, pas d'envoi automatique"},
+ "t05": {"facilite": 3, "effort": 2, "risque": 3, "confiance": 3, "outil": "Dictée + mise en forme par un LLM + n8n", "vigilance": "Propos rapportés d'un visiteur : relecture obligatoire"}
+}
