@@ -1,6 +1,6 @@
 # Ghost : roadmap, partie 1 : stratégie (points 1, 2, 3, 4, 17, 19)
 
-Réponse au prompt `prompts/prompt-fable-roadmap.md`, rédigée lundi 16/11/2026 au soir. Cohérente avec `kit/` et `commun/architecture.md`.
+Réponse au prompt `commun/archives/prompt-fable-roadmap.md`, rédigée lundi 16/11/2026 au soir. Cohérente avec `kit/` et `commun/archives/architecture-v1.md`.
 
 **Les 7 documents de la roadmap**
 | Fichier | Contenu | Pour qui |
