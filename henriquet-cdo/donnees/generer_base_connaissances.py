@@ -19,6 +19,11 @@ SORTIE_SQL = ICI.parent / "supabase" / "base_connaissances_immobilier.sql"
 
 T, G, A = "Logiciel de transaction", "Passerelle de multidiffusion", "Portails d'annonces"
 
+# SOURCE UNIQUE des seuils de contrôle avant publication (demande d'Assel du 17/11).
+# L'agent d'Alejandro, generer_agence.py et la vérité terrain lisent ces valeurs ici, dans
+# base-connaissances-immobilier.json > "controles_annonce". Ne pas les recopier ailleurs.
+PRIX_M2_MIN, PRIX_M2_MAX = 1500, 6000  # euros par m2, secteur de l'agence (Essonne nord) [H]
+
 base = {
     "secteur": "immobilier",
     "version": "2026-11",
@@ -109,7 +114,7 @@ base = {
          "effet_sur_automatisation": "Une annonce de location doit bloquer si la classe énergie l'interdit", "source": "Calendrier de la loi Climat et résilience, à revérifier"},
         {"regle": "Annonce de vente : la classe énergie doit être affichée (obligatoire depuis le 1er janvier 2011 ; classe climat depuis juillet 2021 ; dépenses théoriques et mention des logements F et G depuis janvier 2022)",
          "effet_sur_automatisation": "Contrôle avant publication : classe énergie absente, l'agent ne publie pas et signale", "source": "INC, étiquette énergétique du DPE ; arrêté du 22/12/2021"},
-        {"regle": "Cohérence du prix au m2 : entre 1 500 et 6 000 euros par m2 pour le secteur de l'agence (Essonne nord)",
+        {"regle": f"Cohérence du prix au m2 : entre {PRIX_M2_MIN:,} et {PRIX_M2_MAX:,} euros par m2 pour le secteur de l'agence (Essonne nord)".replace(",", " "),
          "effet_sur_automatisation": "Contrôle avant publication : prix au m2 hors fourchette, l'agent ne publie pas et signale (souvent une faute de frappe sur la surface)", "source": "Fourchette fixée par l'équipe [H], à vérifier sur les prix du secteur"},
         {"regle": "RGPD : données des prospects, propriétaires, locataires",
          "effet_sur_automatisation": "Floutage local, durée de conservation courte", "source": "RGPD, CNIL"},
@@ -132,6 +137,13 @@ base = {
         {"quoi": "Relances automatiques par e-mail ou SMS", "par": "Certains logiciels de transaction"},
     ],
     "terrain_de_ghost": "Ce que ces outils ne relient pas entre eux, et ce que l'agence n'a jamais activé.",
+    "controles_annonce": {
+        "_note": "Source unique des seuils lus par l'agent avant de publier. Une annonce qui en enfreint un : ne publier sur aucun portail, répondre statut = signale avec la raison.",
+        "prix_m2_min": PRIX_M2_MIN,
+        "prix_m2_max": PRIX_M2_MAX,
+        "classe_energie_obligatoire": True,
+        "statut_seuils": "hypothese",
+    },
     "sources": [
         "https://www.economie.gouv.fr/node/3232350",
         "https://www.economie.gouv.fr/node/3237811",

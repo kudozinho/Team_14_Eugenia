@@ -3,6 +3,8 @@
     python lancer_agent.py                          # tache_001, les 3 portails
     python lancer_agent.py --portails A             # un seul site (niveau 1)
     python lancer_agent.py --tache tache_001 --agent h/web-surfer-pro
+    python lancer_agent.py --mandat M-0143            # un autre mandat de l'agence
+    python lancer_agent.py --mandat M-T01             # mandat piégé : rien ne doit être publié
 
 Étapes : tâche §2 → demande §3 → session H (navigateur hébergé, réponse structurée,
 limites d'étapes et de temps) → durée mesurée par notre code → vérification des annonces
@@ -44,26 +46,43 @@ SECONDES_PAR_PORTAIL = 150
 MAX_CORRECTIONS = 2
 SESSION_OUVERTE_S = 120   # temps pendant lequel la session attend une correction après sa réponse
 
-# Mandat M-0142 de la démo (contrat §3, même entrée que le script de Vladimir).
-MANDAT_DEMO = {
-    "titre": "Appartement T3 lumineux",
-    "prix": 289000,
-    "surface_m2": 68,
-    "ville": "Massy",
-    "description": "T3 au 2e étage, proche RER, balcon.",
-    "classe_energie": "C",
-}
+# Contrôles avant publication : fourchette retenue par Henriquet pour le secteur (champ « piege » de M-T02).
+PRIX_M2_MIN = 1500
+PRIX_M2_MAX = 6000
+CHAMPS_ANNONCE = ("titre", "prix", "surface_m2", "ville", "description", "classe_energie")
 
-# Contrôles avant publication. Prix de l'Essonne : 2 400 à 5 800 €/m2 (henriquet-cdo/donnees/README.md),
-# avec une marge : en dehors de cette plage, le prix est une erreur de saisie probable.
-PRIX_M2_MIN = 2000
-PRIX_M2_MAX = 7000
+# Les mandats viennent des données fictives d'Henriquet, jamais de valeurs écrites dans le code.
+FICHIER_MANDATS = RACINE / "henriquet-cdo/donnees/agence-belvedere.json"
+REF_DEMO = "M-0142"
 
-# Mandats piégés : l'agent doit refuser de publier (statut "signale").
-MANDATS_PIEGES = {
-    "classe_energie": {**MANDAT_DEMO, "classe_energie": None},
-    "prix_m2": {**MANDAT_DEMO, "prix": 28900},  # 425 €/m2 : un zéro oublié
-}
+
+def _mandats() -> list[dict]:
+    return json.loads(FICHIER_MANDATS.read_text(encoding="utf-8"))["mandats"]
+
+
+def _annonce(m: dict) -> dict:
+    """Les champs d'un mandat que l'agent recopie (et que l'on vérifie sur les portails)."""
+    return {c: m[c] for c in CHAMPS_ANNONCE} | {"ref": m["ref"]}
+
+
+def charger_mandat(ref: str) -> dict:
+    """Un mandat de l'agence par sa référence (M-0142, M-0143, ...)."""
+    trouve = next((m for m in _mandats() if m["ref"] == ref), None)
+    if trouve is None:
+        raise SystemExit(f"Mandat {ref} absent de {FICHIER_MANDATS.name}")
+    return _annonce(trouve)
+
+
+def charger_mandats_pieges() -> dict[str, dict]:
+    """Mandats piégés d'Henriquet (M-T01, M-T02), par type de piège.
+
+    L'agent doit refuser de les publier (statut "signale"). Le champ « piege » donne la règle.
+    """
+    return {m["piege"]["type"]: _annonce(m) for m in _mandats() if m.get("piege")}
+
+
+MANDAT_DEMO = charger_mandat(REF_DEMO)
+MANDATS_PIEGES = charger_mandats_pieges()  # {"classe_energie_absente": M-T01, "surface_incoherente": M-T02}
 
 
 class ReponseAgent(BaseModel):
@@ -103,7 +122,8 @@ def construire_demande(tache: dict, noms: list[str], mandat: dict, agent: str) -
 def consigne_texte(demande: dict) -> str:
     sites = "\n".join(f"- {u}" for u in demande["portails"])
     donnees = demande["donnees"]
-    champs = "\n".join(f"- {cle} : {valeur}" for cle, valeur in donnees.items() if cle != "classe_energie")
+    champs = "\n".join(f"- {cle} : {valeur}" for cle, valeur in donnees.items()
+                       if cle not in ("classe_energie", "ref"))
     classe = donnees.get("classe_energie") or "non renseignée"
     return (
         "CONTRÔLE AVANT TOUTE PUBLICATION : vérifie que la classe énergie est renseignée et que le prix "
@@ -227,7 +247,8 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: st
     if isinstance(fin.answer, ReponseAgent):
         reponse = fin.answer
     statut_agent = reponse.statut if reponse else None
-    rien_publie = all(v == "absent" for v in verifie.values())
+    rien_publie = (not portails.mandat_publie(noms, mandat, depuis) if attendu == "signale"
+                   else all(v == "absent" for v in verifie.values()))
     if attendu == "signale":
         # Piège : réussite = aucune annonce sur aucun portail ET l'agent a répondu "signale".
         reussi = rien_publie and statut_agent == "signale"
@@ -302,12 +323,14 @@ def main() -> None:
     parser.add_argument("--tache", default="tache_001")
     parser.add_argument("--portails", default="A,B,C", help="lettres des sites, ex. A ou A,B,C")
     parser.add_argument("--agent", default=AGENT_PAR_DEFAUT)
-    parser.add_argument("--mandat", type=Path, help="fichier JSON des données de l'annonce (§3)")
+    parser.add_argument("--mandat", default=REF_DEMO,
+                        help="référence du mandat dans agence-belvedere.json (M-0142, M-T01...)")
     args = parser.parse_args()
 
     noms = [f"Portail {x.strip().upper()}" for x in args.portails.split(",")]
-    mandat = json.loads(args.mandat.read_text(encoding="utf-8")) if args.mandat else MANDAT_DEMO
-    resultat = lancer(args.tache, noms, args.agent, mandat)
+    mandat = charger_mandat(args.mandat)
+    est_piege = mandat["ref"] in {m["ref"] for m in MANDATS_PIEGES.values()}
+    resultat = lancer(args.tache, noms, args.agent, mandat, "signale" if est_piege else "publie")
     ecrire_resultat(resultat)  # executions_agent : seulement pour un lancement normal, pas les séries de tests
     print(json.dumps(resultat, ensure_ascii=False, indent=2))
 

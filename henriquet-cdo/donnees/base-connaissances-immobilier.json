@@ -430,6 +430,13 @@
   }
  ],
  "terrain_de_ghost": "Ce que ces outils ne relient pas entre eux, et ce que l'agence n'a jamais activé.",
+ "controles_annonce": {
+  "_note": "Source unique des seuils lus par l'agent avant de publier. Une annonce qui en enfreint un : ne publier sur aucun portail, répondre statut = signale avec la raison.",
+  "prix_m2_min": 1500,
+  "prix_m2_max": 6000,
+  "classe_energie_obligatoire": true,
+  "statut_seuils": "hypothese"
+ },
  "sources": [
   "https://www.economie.gouv.fr/node/3232350",
   "https://www.economie.gouv.fr/node/3237811",
