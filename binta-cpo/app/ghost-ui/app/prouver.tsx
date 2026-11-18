@@ -8,7 +8,7 @@ type Etat = "attente" | "en_cours" | "termine" | "echec";
 
 // Bouton « Prouver » : crée une demande via /api/prouver, puis relit la ligne toutes les 5 s
 // (le script d'Alejandro lance l'agent). Sans clés Supabase : simulation avec l'exemple, clairement étiquetée.
-export default function Prouver({ exemple }: { exemple: Execution }) {
+export default function Prouver({ exemple, tacheId }: { exemple: Execution; tacheId?: string }) {
   const [etat, setEtat] = useState<Etat>("attente");
   const [secondes, setSecondes] = useState(0);
   const [faits, setFaits] = useState(0);
@@ -37,7 +37,7 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
     const debut = Date.now();
     chrono.current = setInterval(() => setSecondes(Math.round((Date.now() - debut) / 1000)), 500);
     try {
-      const r = await fetch("/api/prouver", { method: "POST" });
+      const r = await fetch("/api/prouver", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tache_id: tacheId }) });
       const d = await r.json();
       if (d.mode === "exemple") return simuler();
       if (!r.ok || !d.id) throw new Error(d.erreur || "La demande n'a pas pu être créée");

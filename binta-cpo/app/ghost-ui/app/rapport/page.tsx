@@ -1,8 +1,9 @@
-import { getFiche, getExecution, getExecutionMesuree, getHistoriqueExecutions, formatDuree } from "@/lib/data";
+import { mediane, chargerFiche, getExecution, getExecutionMesuree, getHistoriqueExecutions, formatDuree } from "@/lib/data";
 import RapportExecution from "./execution";
 import { tacheIdConfiguree } from "@/lib/tache";
 import { Rich, splitDetail, splitTitre, phrases } from "@/lib/rich";
 import Prouver from "../prouver";
+import Direct from "../direct";
 
 export const dynamic = "force-dynamic";
 
@@ -30,11 +31,12 @@ function Section({ id, titre, sub }: { id: string; titre: string; sub: string })
 
 // Le rapport se lit comme une décision : avant / après (avec la preuve en direct),
 // puis ce qu'on gagne, ce qu'il faut construire, et les risques.
-export default async function Rapport() {
-  const f = getFiche();
+export default async function Rapport({ searchParams }: { searchParams?: { tache?: string } }) {
+  const choix = await chargerFiche(searchParams?.tache || process.env.TACHE_ID || undefined);
+  const f = choix.fiche;
   const m = f.metier;
   const t = f.technique;
-  const tacheId = tacheIdConfiguree();
+  const tacheId = choix.source === "base" ? choix.tacheId : tacheIdConfiguree();
   const mesure = await getExecutionMesuree(tacheId);
   const historique = await getHistoriqueExecutions(tacheId);
   const exec = mesure ?? getExecution();
@@ -43,7 +45,9 @@ export default async function Rapport() {
   const [dureeFiche, dureeDetailFiche] = splitDetail(m.duree_aujourdhui);
   const gain = phrases(m.gain_attendu);
   const recette = t.recette.split(/,\s*/);
-  const dureeAgent = mesure?.duree_s ?? t.preuve.duree_agent_s;
+  // Durée de l'agent : médiane des exécutions terminées (plus fiable qu'un seul essai), sinon l'exemple.
+  const terminees = historique.lignes.filter((l) => l.statut === "completed" && l.duree_s);
+  const dureeAgent = mediane(terminees.map((l) => l.duree_s as number)) ?? mesure?.duree_s ?? t.preuve.duree_agent_s;
   const dureeHumaine = mesure?.duree_humaine_s ?? t.preuve.duree_humaine_s;
   // Avec une exécution mesurée : la référence « à la main » est celle de la tâche en base, pas les 12 min de l'exemple.
   const duree = mesure ? `${formatDuree(dureeHumaine)} par opération` : dureeFiche;
@@ -51,6 +55,7 @@ export default async function Rapport() {
 
   return (
     <>
+      <Direct source={choix.source} maj={new Date().toISOString()} />
       <p className="eyebrow">Fiche d'opportunité n°{f.numero}</p>
       <h1>{f.titre}</h1>
 
@@ -60,8 +65,9 @@ export default async function Rapport() {
           <Anneau valeur={f.score} />
           <div>
             <p className="lead">
-              L'agent H recopie l'annonce sur les 3 sites en <strong>{formatDuree(dureeAgent)}</strong> au lieu de{" "}
-              <strong>{formatDuree(dureeHumaine)}</strong> à la main : <strong>{m.heures_an} h</strong> récupérées par an.
+              L'agent H recopie l'annonce sur les 3 sites en <strong>{formatDuree(dureeAgent)}</strong>
+              {terminees.length > 1 && <> (médiane de {terminees.length} exécutions)</>}, contre{" "}
+              <strong>{formatDuree(dureeHumaine)}</strong> à la main : <strong>{m.heures_an} h</strong> récupérables par an selon les hypothèses.
             </p>
             <div className="row">
               <span className="pill ok">Gain rapide</span>
@@ -105,14 +111,14 @@ export default async function Rapport() {
 
         <section className="card dcard apres">
           <h4 className="dcard-tag">Demain, avec l'agent H</h4>
-          <div className="dcard-time num">{formatDuree(dureeAgent)}<span>par opération, mesuré</span></div>
+          <div className="dcard-time num">{formatDuree(dureeAgent)}<span>par opération{terminees.length > 1 ? `, médiane de ${terminees.length}` : ", mesuré"}</span></div>
           <p className="lead-text">{t.raison} L'agent fait le travail, l'assistante valide.</p>
           <ol className="steps">{t.etapes.map((e: string) => <li key={e}>{e}</li>)}</ol>
         </section>
       </div>
 
       <div id="preuve" className="duel-proof">
-        <Prouver exemple={exec} />
+        <Prouver exemple={exec} tacheId={tacheId} />
       </div>
       <div style={{ marginTop: 18 }}><RapportExecution h={historique} tacheId={tacheId} /></div>
 
