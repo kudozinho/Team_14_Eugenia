@@ -7,6 +7,7 @@ from pathlib import Path
 
 from detection.analyse_llm import analyser_candidates, simulateur_local
 from detection.detection import detecter_taches
+from detection.diagnostic_portails import diagnostic_portails
 from detection.prompts import assembler_prompt
 from detection.provider_holo import HoloProvider
 from detection.supabase_audit import SupabaseAudit
@@ -35,26 +36,41 @@ def main():
     source.add_argument('evenements', nargs='?', type=Path, help='Export JSON flouté du Recorder')
     source.add_argument('--audit', help='Identifiant de l’audit Supabase')
     parser.add_argument('--depuis', help='Date ISO 8601 avec fuseau pour filtrer les événements Supabase')
+    parser.add_argument('--avant', help='Fin exclusive de la fenêtre Supabase (ISO 8601 avec fuseau)')
     parser.add_argument('--ecrire', action='store_true', help='Insère les tâches avec --audit')
     parser.add_argument('--env', type=Path, default=Path('.env'), help='Configuration Supabase locale')
     mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--diagnostic-portails', action='store_true',
+                      help='Compte en lecture seule les passages observés sur les formulaires de démo')
     mode.add_argument('--modele', help='Identifiant Holo de la Models API')
     mode.add_argument('--simulation', action='store_true', help='Valide le parcours local sans appel API')
     args = parser.parse_args()
     if args.ecrire and not args.audit:
         parser.error('--ecrire requiert --audit')
-    if args.ecrire and args.simulation:
-        parser.error('--simulation effectue uniquement une lecture')
-    if args.depuis and not args.audit:
-        parser.error('--depuis requiert --audit')
+    if args.ecrire and not args.modele:
+        parser.error('--ecrire requiert --modele')
+    if (args.depuis or args.avant) and not args.audit:
+        parser.error('--depuis et --avant requièrent --audit')
+    if args.diagnostic_portails and args.audit and not (args.depuis and args.avant):
+        parser.error('Délimiter la session avec --depuis et --avant')
     try:
         depuis = datetime.fromisoformat(args.depuis) if args.depuis else None
-        if depuis is not None and depuis.utcoffset() is None:
-            raise ValueError('--depuis exige un fuseau horaire explicite')
+        avant = datetime.fromisoformat(args.avant) if args.avant else None
+        if any(borne.utcoffset() is None for borne in (depuis, avant) if borne is not None):
+            raise ValueError('Les bornes de temps exigent un fuseau horaire explicite')
+        if depuis and avant and depuis >= avant:
+            raise ValueError('--avant doit être postérieur à --depuis')
         base = SupabaseAudit.depuis_configuration(args.env) if args.audit else None
-        evenements = base.evenements(args.audit, depuis=depuis.isoformat() if depuis else None) if base else lire_json(args.evenements)
+        if base:
+            evenements = base.evenements(args.audit, depuis=depuis.isoformat() if depuis else None,
+                                         avant=avant.isoformat() if avant else None)
+        else:
+            evenements = lire_json(args.evenements)
         if args.audit and any(e.get('audit_id') != args.audit for e in evenements):
             raise ValueError('La table a renvoyé un événement d’un autre audit')
+        if args.diagnostic_portails:
+            print(json.dumps(diagnostic_portails(evenements), ensure_ascii=False, indent=2))
+            return
         fournisseur = simulateur_local if args.simulation else HoloProvider(args.modele)
         taches = analyser_audit(evenements, fournisseur)
         resultat = {'taches': taches}

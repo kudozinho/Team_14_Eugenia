@@ -1,0 +1,28 @@
+{
+  "date_verification": "2026-11-18T15:39:22.384329+01:00",
+  "inserees": [
+    {
+      "id": "tache_a1a0c7545c805f328eba1e25"
+    }
+  ],
+  "ligne_relue": {
+    "id": "tache_a1a0c7545c805f328eba1e25",
+    "audit_id": "aud_demo",
+    "nom": "Recopier une annonce sur 3 sites sans passerelle — durée chronométrée à la main",
+    "sequence": [
+      "Portail A / formulaire",
+      "Portail B / formulaire",
+      "Portail C / formulaire"
+    ],
+    "occurrences": 3,
+    "duree_moyenne_s": 244,
+    "temps_perdu_semaine_min": null,
+    "automatisable": true,
+    "methode": "agent_h",
+    "gain_estime_h_semaine": null,
+    "instructions_agent": "Sur les trois portails de test autorisés, recopier le mandat fictif fourni par le lanceur, en conservant exactement titre, prix, surface, ville et description. Vérifier les mentions obligatoires, la classe énergie et la cohérence du prix. Pour C, joindre la photo fournie et vérifier les deux étapes. Faire valider la publication selon le parcours de démonstration. Signaler toute donnée manquante. Retourner les portails traités, les erreurs et les liens des annonces. Durée chronométrée à la main (moyenne de trois essais sur des mandats fictifs) : 244 s. Chronos Henriquet : 428, 169 et 134 s ; médiane 169 s. Validation Assel du 18 novembre à 15 h 35 pour le test d’intégration. Le Recorder observe trois passages A → B → C, avec interruptions ; la source ImmoGest est absente de cette capture. Aucun gain annuel attribué.",
+    "workflow_n8n_modele": "multidiffusion_annonce",
+    "confiance": 0.8,
+    "prompt_empreinte": "f92dbff8c1459410"
+  }
+}

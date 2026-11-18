@@ -8,12 +8,50 @@ from collections import defaultdict
 from datetime import datetime
 import hashlib
 import json
+import math
 import re
 from typing import Any, Iterable, Mapping
+from urllib.parse import urlsplit
 
-WINDOW_PORTAL = re.compile(r'portail\s*([A-Z])', re.I)
+WINDOW_PORTAL = re.compile(r'^portail\s+([ABC])$', re.I)
 WINDOW_MANDAT = re.compile(r'(?:ImmoGest|Mandat\s+M[-\d]+)', re.I)
 WINDOW_FOLLOWUP = re.compile(r'suivi[_\s-]*prospects', re.I)
+PORTAILS = {
+    'A': ('/deposer', 'déposer une annonce'),
+    'B': ('/nouvelle', 'nouvelle annonce'),
+    'C': ('/publier', 'publier un bien'),
+}
+HOTES_PORTAILS = {
+    host: code
+    for code in PORTAILS
+    for host in (f'ghost-portail-{code.lower()}.vercel.app', f'portail-{code.lower()}.example')
+}
+FORMULAIRES = {f'Portail {code} / formulaire' for code in PORTAILS}
+
+
+def action_portail_url(url: str | None) -> str | None:
+    """Retourne un libellé fixe pour une URL reconnue des portails de démonstration."""
+    if not isinstance(url, str) or not url:
+        return None
+    try:
+        adresse = urlsplit(url)
+        code = HOTES_PORTAILS.get(adresse.hostname)
+    except ValueError:
+        return None
+    if code is None or adresse.scheme not in ('http', 'https'):
+        return None
+    chemin = adresse.path.rstrip('/')
+    if chemin == PORTAILS[code][0]:
+        page = 'formulaire'
+    elif not chemin:
+        page = 'accueil'
+    elif chemin == '/annonces':
+        page = 'liste des annonces'
+    elif re.fullmatch(r'/annonces/[^/]+', chemin):
+        page = 'fiche annonce'
+    else:
+        page = 'autre page'
+    return f'Portail {code} / {page}'
 
 
 def evenement_vers_action(e: Mapping[str, Any]) -> str | None:
@@ -22,11 +60,25 @@ def evenement_vers_action(e: Mapping[str, Any]) -> str | None:
         return None
     title = str(e.get('titre_fenetre') or '')
     app = str(e.get('appli') or '')
+    url = e.get('url')
+    if url:
+        action = action_portail_url(url)
+        if action:
+            return action
+    else:
+        # Les anciens exports peuvent ne contenir que le titre de la fenêtre.
+        parties = re.split(r'\s+[-–—|]\s+', title.strip(), maxsplit=2)
+        portail = WINDOW_PORTAL.fullmatch(parties[0])
+        if portail:
+            code = portail.group(1).upper()
+            libelle = parties[1].casefold() if len(parties) > 1 else ''
+            page = {
+                PORTAILS[code][1]: 'formulaire', 'annonce': 'fiche annonce',
+                'annonces publiées': 'liste des annonces', '': 'accueil',
+            }.get(libelle, 'autre page')
+            return f'Portail {code} / {page}'
     if WINDOW_MANDAT.search(title):
         return 'ImmoGest / fiche mandat'
-    portal = WINDOW_PORTAL.search(title)
-    if portal:
-        return f"Portail {portal.group(1).upper()} / formulaire"
     if WINDOW_FOLLOWUP.search(title):
         return f'{app} / suivi_prospects'  # tableur : Google Sheets depuis le 17/11, plus Excel
     if not title and not app:
@@ -43,7 +95,7 @@ def _clean_events(evenements: Iterable[Mapping[str, Any]]) -> list[dict[str, Any
         if not item.get('horodatage'):
             continue
         row = dict(item)
-        # Le tri et le dédoublonnage sont limités au même audit et utilisateur.
+        # Le tri et le regroupement sont limités au même audit et utilisateur.
         row['_dt'] = datetime.fromisoformat(str(item['horodatage']).replace('Z', '+00:00'))
         rows.append(row)
     rows.sort(key=lambda x: (str(x.get('audit_id')), str(x.get('utilisateur_id')), x['_dt']))
@@ -70,14 +122,17 @@ def _sessions(evenements: Iterable[Mapping[str, Any]]) -> list[list[dict[str, An
         action = evenement_vers_action(e)
         if not action:
             continue
-        e['action'] = action
-        # Empreintes d'images identiques contiguës = doublons, non répétitions.
-        if current and e.get('empreinte') and current[-1].get('empreinte') == e.get('empreinte'):
-            old = current[-1]
-            if e.get('duree_s') is not None and old.get('duree_s') is not None:
-                old['duree_s'] += e['duree_s']
-            continue
-        current.append(e)
+        duree = e.get('duree_s')
+        if type(duree) not in (int, float) or not math.isfinite(duree) or duree < 0:
+            duree = None
+        # Plusieurs captures pendant la saisie sur une même page forment une étape.
+        if current and current[-1]['action'] == action:
+            etape = current[-1]
+            etape['ids'].append(e['id'])
+            ancien = etape['duree_s']
+            etape['duree_s'] = ancien + duree if ancien is not None and duree is not None else None
+        else:
+            current.append({'action': action, 'duree_s': duree, 'ids': [e['id']]})
     if current:
         groups.append(current)
     return groups
@@ -85,7 +140,7 @@ def _sessions(evenements: Iterable[Mapping[str, Any]]) -> list[list[dict[str, An
 
 def _key_score(key: tuple[str, ...]) -> tuple[int, int, int]:
     """Privilégie une boucle opératoire entre outil source et plusieurs portails."""
-    portals = sum(a.startswith('Portail ') for a in key)
+    portals = len(FORMULAIRES.intersection(key))
     has_source = 'ImmoGest / fiche mandat' in key
     # Les feuilles de suivi terminales sont traitées comme suivi, pas publication.
     followup = sum('suivi_prospects' in a for a in key)
@@ -102,9 +157,6 @@ def detecter_sequences(evenements: Iterable[Mapping[str, Any]], *, min_occurrenc
             for index in range(len(sess)-length+1):
                 sub = sess[index:index+length]
                 key = tuple(e['action'] for e in sub)
-                # Une répétition au sein d'une même exécution ne doit pas être comptée deux fois.
-                if len(key) > 1 and len(set(key)) == 1:
-                    continue
                 found[key].append(sub)
     results: list[dict[str, Any]] = []
     for key, windows in found.items():
@@ -112,12 +164,14 @@ def detecter_sequences(evenements: Iterable[Mapping[str, Any]], *, min_occurrenc
             continue
         # Élimine les chevauchements éventuels ; délimite par audit + utilisateur + horodatage.
         selected: list[list[dict[str, Any]]] = []
+        ids_evenements: list[list[str]] = []
         used: set[str] = set()
         for window in windows:
-            ids = {str(x.get('id')) for x in window}
-            if ids & used:
+            ids = [ident for step in window for ident in step['ids']]
+            if not used.isdisjoint(ids):
                 continue
             selected.append(window)
+            ids_evenements.append(ids)
             used.update(ids)
         if len(selected) < min_occurrences:
             continue
@@ -132,7 +186,7 @@ def detecter_sequences(evenements: Iterable[Mapping[str, Any]], *, min_occurrenc
             'occurrences': len(selected),
             'duree_moyenne_s': round(sum(durations)/len(durations)) if durations else None,
             'occurrences_duree_connue': len(durations),
-            'ids_evenements': [[e['id'] for e in win] for win in selected],
+            'ids_evenements': ids_evenements,
         })
     results.sort(key=lambda r: (_key_score(tuple(r['sequence'])), r['occurrences']), reverse=True)
     return results
@@ -143,7 +197,7 @@ def _candidate_to_tache(candidate: Mapping[str, Any], *, identifiant: str,
                          frequence_semaine: float | None = None) -> dict[str, Any]:
     seq = candidate['sequence']
     source = 'ImmoGest / fiche mandat' in seq
-    portals = sorted({s.split(' / ')[0] for s in seq if s.startswith('Portail ')})
+    portals = FORMULAIRES.intersection(seq)
     publication = source and len(portals) >= 2
     if publication:
         nom = f'Recopier une annonce sur {len(portals)} sites sans passerelle'

@@ -6,7 +6,7 @@ from urllib.parse import urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 COLONNES_EVENEMENTS = (
-    'id,audit_id,utilisateur_id,horodatage,appli,titre_fenetre,type,empreinte,duree_s'
+    'id,audit_id,utilisateur_id,horodatage,appli,titre_fenetre,url,type,empreinte,duree_s'
 )
 COLONNES_TACHES = (
     'id', 'audit_id', 'nom', 'sequence', 'occurrences', 'duree_moyenne_s',
@@ -62,7 +62,7 @@ class SupabaseAudit:
         except HTTPError as exc:
             raise RuntimeError(f'Supabase {table} : HTTP {exc.code}') from None
 
-    def evenements(self, audit, *, depuis=None):
+    def evenements(self, audit, *, depuis=None, avant=None):
         evenements = []
         while True:
             filtres = {
@@ -71,6 +71,9 @@ class SupabaseAudit:
             }
             if depuis is not None:
                 filtres['horodatage'] = f'gte.{depuis}'
+            if avant is not None:
+                # Le filtre inférieur utilise déjà la clé horodatage.
+                filtres['and'] = f'(horodatage.lt.{avant})'
             lot = self._requete('evenements', filtres)
             if not lot:
                 return evenements
