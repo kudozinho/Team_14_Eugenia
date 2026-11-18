@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr" data-type="service" data-radius="soft" data-buttons="tonal" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portail C : diffusion d'annonces vérifiées</title>
+<meta name="description" content="Chaque bien publié porte une photo et une certification de mandat, en deux étapes.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Portail C : diffusion d'annonces vérifiées">
+<meta property="og:description" content="Chaque bien publié porte une photo et une certification de mandat, en deux étapes.">
+<meta property="og:image" content="/vitrine/img/photo-f187101720-960.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#c3d7e5">
+<meta name="site-kind" content="other">
+<meta name="page-type" content="service">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/vitrine/kit/system.css">
+<link rel="stylesheet" href="/vitrine/kit/ui/cards.css">
+<link rel="stylesheet" href="/vitrine/kit/motion/motion.css">
+<link rel="stylesheet" href="/vitrine/kit/layout/layout.css">
+<style>
+:root {
+  --p-bg: #c3d7e5; --p-surface: #d0e0eb; --p-ink: #141414; --p-muted: #4a5068;
+  --p-accent: #0f5257; --p-accent-ink: #ffffff; --p-action: #0f5257; --p-action-ink: #ffffff;
+  --p-inv-bg: #141414; --p-inv-surface: #1e1f20; --p-inv-ink: #c3d7e5; --p-inv-muted: #808b94;
+  --p-inv-accent: #c3d7e5; --p-inv-accent-ink: #141414; --p-inv-action: #c3d7e5; --p-inv-action-ink: #141414;
+  --font-display: "Hanken Grotesk", system-ui, sans-serif; --font-text: "Hanken Grotesk", system-ui, sans-serif;
+  --display-weight: 400; --display-tracking: -0.03em; --display-tracking-xl: -0.038em;
+}
+</style>
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="/vitrine/kit/moments/moments.js"><link rel="modulepreload" href="/vitrine/kit/moments/lib.js">
+<link rel="modulepreload" href="/vitrine/kit/moments/pinned-chapters/moment.js">
+</head>
+<body>
+<!-- type: service (site de test d'annonces, fictif)
+     deal: hero photo, nav nav-split, close close-type, footer footer-columns (footer-visit needs an address: none given; footer-dark would meet the dark band), rhythm dark-band, buttons tonal, mark dots, palette swap-pastels, type hanken
+     Accueil seulement : les formulaires (/publier) gardent leur code ; le bouton principal garde son texte exact (« Publier un bien »). -->
+<header class="nav nav--split">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Aller au contenu</a>
+    <a class="nav__logo" href="/"><span class="mark" data-mark="dots" aria-hidden="true"></span>Portail C</a>
+    <nav class="nav__links" aria-label="Principale">
+      <div class="nav__item">
+        <a class="nav__link" href="#etapes">Formulaire <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="nav__menu">
+          <div class="wrap grid">
+            <div class="menu-col span-4">
+              <p class="t-label">Publier</p>
+              <a href="/publier">Publier un bien<span>Le formulaire de dépôt</span></a>
+              <a href="/annonces">Annonces publiées<span>Toutes les annonces en ligne</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav__item"><a class="nav__link" href="/annonces">Annonces</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="btn btn--primary" href="/publier">Publier un bien</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+<main id="top">
+  <section class="hero hero--photo" data-enter data-calm="left" aria-labelledby="hero-h">
+    <img class="hero__bg" src="/vitrine/img/photo-f165047557.webp" srcset="/vitrine/img/photo-f165047557-960.webp 960w, /vitrine/img/photo-f165047557.webp 1280w" sizes="100vw" width="1280" height="962" alt="Un séjour clair, canapé et fauteuil face à la fenêtre" style="--ly-pos: 60% 50%; --ly-pos-phone: 70% 50%" fetchpriority="high" data-source="stand-in" data-subject="stand-in">
+    <div class="wrap"><div class="hero-text">
+      <div class="hero__text">
+        <h1 id="hero-h">Diffusion d'annonces vérifiées</h1>
+        <p class="hero__lead">2 étapes, une photo et la certification du mandat pour chaque annonce.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="/publier">Publier un bien<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="/annonces">Voir les annonces</a></div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="etapes" style="--h: 2" data-moment="pinned-chapters" aria-labelledby="etapes-h">
+    <div class="wrap mo-pc__grid">
+      <div class="mo-pc__text">
+        <h2 id="etapes-h">Une annonce vérifiée en trois temps</h2>
+        <ol class="mo-pc__steps">
+          <li class="mo-pc__step">
+            <h3>Étape 1 : le bien</h3>
+            <p>L'accroche, la commune choisie dans la liste et la surface habitable en m².</p>
+            <figure class="mo-pc__visual"><img src="/vitrine/img/photo-f195282458.webp" srcset="/vitrine/img/photo-f195282458-500.webp 500w, /vitrine/img/photo-f195282458-960.webp 960w, /vitrine/img/photo-f195282458.webp 1280w" sizes="(max-width: 639px) 100vw, 50vw" alt="Une chambre mansardée sous les poutres" decoding="async" data-source="stand-in" data-subject="stand-in" loading="lazy"></figure>
+          </li>
+          <li class="mo-pc__step">
+            <h3>Étape 2 : le prix et la photo</h3>
+            <p>Le prix de vente frais d'agence inclus, le descriptif, et une photo principale en JPG, PNG ou WebP.</p>
+            <figure class="mo-pc__visual"><img src="/vitrine/img/photo-f187101720.webp" srcset="/vitrine/img/photo-f187101720-500.webp 500w, /vitrine/img/photo-f187101720-960.webp 960w, /vitrine/img/photo-f187101720.webp 1280w" sizes="(max-width: 639px) 100vw, 50vw" alt="Un séjour meublé, baie vitrée ouverte sur la verdure" decoding="async" data-source="stand-in" data-subject="stand-in" loading="lazy"></figure>
+          </li>
+          <li class="mo-pc__step">
+            <h3>La certification du mandat</h3>
+            <p>Une case à cocher : l'agence certifie détenir un mandat en cours. Sans elle, rien n'est publié.</p>
+            <figure class="mo-pc__visual"><img src="/vitrine/img/photo-f26129355-960.webp" srcset="/vitrine/img/photo-f26129355-500.webp 500w, /vitrine/img/photo-f26129355-960.webp 960w" sizes="(max-width: 639px) 100vw, 50vw" alt="Façades d'immeubles en pierre à balcons de fer forgé" decoding="async" data-source="stand-in" data-subject="stand-in" loading="lazy"></figure>
+          </li>
+        </ol>
+      </div>
+      <div class="mo-pc__visuals frame"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--type">
+      <div class="section-head">
+        <h2 id="close-h">Publiez un bien vérifié</h2>
+        <p>Deux étapes, une photo, une case à cocher.</p>
+      </div>
+      <a class="btn btn--primary btn--xl btn--wide" href="/publier">Publier un bien<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <a class="nav__logo" href="/"><span class="mark" data-mark="dots" aria-hidden="true"></span>Portail C</a>
+          <p class="footer__lede">Diffusion premium, annonces vérifiées.</p>
+        </div>
+        <div class="span-4 footer__col"><h3>Publier</h3><ul><li><a href="/publier">Publier un bien</a></li></ul></div>
+        <div class="span-4 footer__col"><h3>Annonces</h3><ul><li><a href="/annonces">Annonces publiées</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 Portail C · site de test fictif, hackathon Build The Future</span>
+        <details class="credits"><summary>Photographies : Wikimedia Commons</summary>
+          <p>Shixart1985 (CC BY 2.0), Lo (CC0), Mstyslav Chernov (CC BY-SA 3.0), Philippe Alès (CC BY-SA 4.0), Paikan06 (CC0), Kotivalo (CC BY-SA 4.0), F Astily (CC BY-SA 4.0). Photographies d'illustration, sans lien avec les annonces.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</footer>
+<nav class="actionbar" aria-label="Actions rapides">
+  <a class="btn btn--primary" href="/publier">Publier un bien</a>
+</nav>
+<script type="module" src="/vitrine/kit/system.js"></script>
+<script type="module" src="/vitrine/kit/motion/motion.js"></script>
+<script type="module" src="/vitrine/kit/layout/layout.js"></script>
+</body>
+</html>
