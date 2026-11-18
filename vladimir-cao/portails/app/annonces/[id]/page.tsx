@@ -1,13 +1,17 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { portailCourant } from '@/lib/portail';
-import { lireAnnonce, urlPhoto, aUnePhoto, modeLocal } from '@/lib/store';
+import { lireAnnonce, urlPhoto, modeLocal } from '@/lib/store';
+import { illustration, offres, photo, srcset } from '@/lib/catalogue';
+import Fiche from '../../biens/Fiche';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Annonce' };
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ publiee?: string }> };
 
+// Fiche d'une annonce publiée (par l'agence ou par l'agent H) : seules les données saisies sont affichées,
+// plus ce qui s'en calcule (prix au m²). Rien n'est inventé : le DPE apparaît « non renseigné ».
 export default async function Annonce({ params, searchParams }: Props) {
   const { id } = await params;
   const { publiee } = await searchParams;
@@ -25,30 +29,34 @@ export default async function Annonce({ params, searchParams }: Props) {
     );
   }
   if (!a) notFound();
-  const [photo, avecPhoto] = p.code === 'C' ? await Promise.all([urlPhoto(id), aUnePhoto(id)]) : [null, false];
+
+  const vraiePhoto = p.code === 'C' ? await urlPhoto(id) : null;
+  const titre = a.titre ?? 'Annonce';
+  const images = vraiePhoto
+    ? [{ src: vraiePhoto, alt: titre }]
+    : [{ src: photo(illustration(id), 960), srcSet: srcset(illustration(id)), alt: titre }];
+  const catalogue = offres(p.code);
+  const similaires = [...catalogue.filter((o) => o.ville === a.ville), ...catalogue.filter((o) => o.ville !== a.ville && o.projet === 'vente')].slice(0, 3);
+  const pieces = /\bT(\d)\b|(\d) pièces?/i.exec(titre);
 
   return (
-    <>
-      {publiee && (
-        <div className="succes" role="status" id="confirmation">
-          Annonce publiée sur {p.nom}. Référence : <strong>{a.id}</strong>
-        </div>
-      )}
-      <article className="carte">
-        <h1>{a.titre}</h1>
-        <dl className="fiche">
-          <dt>Prix</dt><dd>{a.prix?.toLocaleString('fr-FR')} €</dd>
-          <dt>Surface</dt><dd>{a.surface_m2} m²</dd>
-          <dt>Ville</dt><dd>{a.ville}</dd>
-          <dt>Description</dt><dd style={{ whiteSpace: 'pre-wrap' }}>{a.description}</dd>
-          {p.code === 'C' && (<><dt>Photo</dt><dd>{avecPhoto ? 'Oui' : 'Non'}</dd></>)}
-        </dl>
-        {photo && <img className="photo" src={photo} alt={`Photo : ${a.titre}`} />}
-      </article>
-      <div className="actions" style={{ marginTop: 20 }}>
-        <Link className="bouton" href="/annonces">Voir toutes les annonces publiées</Link>
-        <Link className="bouton secondaire" href={p.chemin}>{p.action}</Link>
-      </div>
-    </>
+    <Fiche
+      f={{
+        ref: a.id,
+        projet: 'vente',
+        typeLabel: /maison/i.test(titre) ? 'Maison' : /studio/i.test(titre) ? 'Studio' : 'Appartement',
+        titre,
+        prix: a.prix,
+        surface: a.surface_m2,
+        pieces: pieces ? Number(pieces[1] ?? pieces[2]) : undefined,
+        ville: a.ville,
+        description: a.description,
+        images,
+        mentionPhoto: vraiePhoto ? undefined : "Photo d'illustration",
+        publieeLe: a.cree_le,
+        confirmation: !!publiee,
+        similaires,
+      }}
+    />
   );
 }

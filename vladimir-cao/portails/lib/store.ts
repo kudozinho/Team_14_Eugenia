@@ -120,6 +120,21 @@ export async function urlPhoto(id: string): Promise<string | null> {
   return s?.signedUrl ?? null;
 }
 
+// Adresses signées des photos (site C), pour les vignettes de la page « Annonces publiées ».
+export async function urlsPhotos(ids: string[]): Promise<Record<string, string>> {
+  const db = sb();
+  if (!db || !ids.length) return {};
+  const paires = await Promise.all(
+    ids.map(async (id) => {
+      const { data } = await db.storage.from(BUCKET_PHOTOS).list(id);
+      if (!data?.length) return null;
+      const { data: s } = await db.storage.from(BUCKET_PHOTOS).createSignedUrl(`${id}/${data[0].name}`, 3600);
+      return s?.signedUrl ? ([id, s.signedUrl] as const) : null;
+    }),
+  );
+  return Object.fromEntries(paires.filter((p): p is readonly [string, string] => p !== null));
+}
+
 // Ids des annonces qui ont une photo (une seule requête : les dossiers à la racine du bucket).
 export async function idsAvecPhoto(): Promise<Set<string>> {
   const db = sb();

@@ -34,6 +34,10 @@ function pageErreur(portail: string, erreurs: string[]) {
 
 export async function POST(req: Request) {
   const p = portailCourant();
+  // Copie de prévisualisation (LECTURE_SEULE=1) : elle lit la base mais n'y écrit jamais.
+  if (process.env.LECTURE_SEULE === '1') {
+    return pageErreur(p.nom, ["Site de prévisualisation : la publication est désactivée ici. Utilisez le site officiel."]);
+  }
   const f = await req.formData();
   const n = CHAMPS[p.code];
 

@@ -1,8 +1,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Newsreader, Hanken_Grotesk } from 'next/font/google';
 import { portailCourant } from '@/lib/portail';
 import { modeLocal } from '@/lib/store';
+import Logo from './Logo';
 import './globals.css';
+import './immobilier.css';
+
+// Typographies tirées par le skill design-taste-frontend (start.mjs deal --page service --trade agency) :
+// A et B : Newsreader (titres) + Hanken Grotesk (texte) ; C : Hanken Grotesk partout.
+const newsreader = Newsreader({ subsets: ['latin'], variable: '--font-serif', display: 'swap' });
+const hanken = Hanken_Grotesk({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 
 export const dynamic = 'force-dynamic';
 
@@ -15,16 +23,22 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const p = portailCourant();
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${newsreader.variable} ${hanken.variable}`}>
       <body data-portail={p.code}>
         <header className="entete">
           <div className="cadre entete-ligne">
-            <Link href="/" className="logo">
-              <span className="pastille">{p.code}</span> {p.nom}
+            <Link href="/" className="logo" aria-label={`${p.nom}, accueil`}>
+              <Logo code={p.code} />
+              <span className="logo-texte">
+                <span className="logo-nom">{p.nom}</span>
+                <span className="logo-slogan">{p.slogan}</span>
+              </span>
             </Link>
             <nav className="menu">
-              <Link href={p.chemin}>{p.action}</Link>
+              <Link href="/annonces?projet=acheter#offres-h">Acheter</Link>
+              <Link href="/annonces?projet=louer#offres-h">Louer</Link>
               <Link href="/annonces">Annonces publiées</Link>
+              <Link href={p.chemin}>{p.action}</Link>
             </nav>
           </div>
         </header>
