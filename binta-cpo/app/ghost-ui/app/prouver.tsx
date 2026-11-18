@@ -10,51 +10,79 @@ type Etat = "attente" | "en_cours" | "termine";
 export default function Prouver({ exemple }: { exemple: Execution }) {
   const [etat, setEtat] = useState<Etat>("attente");
   const [secondes, setSecondes] = useState(0);
+  const [faits, setFaits] = useState(0);
 
   function lancer() {
     setEtat("en_cours");
     setSecondes(0);
+    setFaits(0);
     const debut = Date.now();
     const id = setInterval(() => setSecondes(Math.round((Date.now() - debut) / 1000)), 250);
+    [900, 1700, 2500].forEach((d, i) => setTimeout(() => setFaits(i + 1), d));
     setTimeout(() => {
       clearInterval(id);
       setEtat("termine");
-    }, 2500);
+    }, 2600);
   }
 
   const gain = Math.round((1 - exemple.duree_s / exemple.duree_humaine_s) * 100);
-  const hauteurAgent = Math.max(8, Math.round((exemple.duree_s / exemple.duree_humaine_s) * 100));
+  const hauteurAgent = Math.max(12, Math.round((exemple.duree_s / exemple.duree_humaine_s) * 100));
+  const sites = ["Portail A", "Portail B", "Portail C"];
 
   return (
-    <div className="card">
-      <h2>Preuve avec l'agent H</h2>
-      <div className="row">
-        <button className="btn" onClick={lancer} disabled={etat === "en_cours"}>
-          {etat === "en_cours" ? `Agent en cours… ${secondes} s` : "Prouver avec l'agent"}
-        </button>
-        {etat === "termine" && (
-          <button className="btn sec" onClick={() => setEtat("attente")}>Actualiser</button>
-        )}
+    <section className="card proof">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <div>
+          <p className="eyebrow">Preuve</p>
+          <h2 style={{ margin: 0 }}>L'agent H refait la tâche, chronomètre en main</h2>
+        </div>
+        <div className="row">
+          <button className="btn" onClick={lancer} disabled={etat === "en_cours"}>
+            {etat === "en_cours" ? `Agent en cours… ${secondes} s` : "Prouver avec l'agent"}
+          </button>
+          {etat === "termine" && <button className="btn sec" onClick={() => setEtat("attente")}>Actualiser</button>}
+        </div>
       </div>
+
+      <div className="sites" aria-live="polite">
+        {sites.map((s, i) => (
+          <span key={s} className={`site ${etat === "termine" || (etat === "en_cours" && faits > i) ? "done" : ""}`}>
+            {etat === "termine" || (etat === "en_cours" && faits > i) ? "✓" : "○"} {s}
+          </span>
+        ))}
+      </div>
+      {etat === "en_cours" && <div className="progress"><i style={{ width: `${(faits / 3) * 100}%` }} /></div>}
+
       {etat === "termine" ? (
         <>
-          <div className="bars" aria-label="Durée avant et après">
-            <div style={{ background: "var(--bad)", height: "100%" }}>{formatDuree(exemple.duree_humaine_s)}<br />à la main</div>
-            <div style={{ background: "var(--ok)", height: `${hauteurAgent}%` }}>{formatDuree(exemple.duree_s)}</div>
+          <div className="row" style={{ gap: 28, marginTop: 18, alignItems: "flex-end" }}>
+            <div>
+              <div className="big-gain num">−{gain} %</div>
+              <div className="muted">de temps sur cette tâche · {exemple.portails_publies.length} sites sur 3</div>
+            </div>
           </div>
-          <p>
-            <b>{gain} %</b> de temps en moins · {exemple.portails_publies.length} sites sur 3 :{" "}
-            {exemple.portails_publies.join(" · ")}
-          </p>
+          <div className="compare" aria-label="Durée avant et après">
+            <div className="col">
+              <div className="bar" style={{ background: "#c93636", height: 150 }}><span className="num">{formatDuree(exemple.duree_humaine_s)}</span></div>
+              <div className="lbl">À la main</div>
+            </div>
+            <div className="col">
+              <div className="bar" style={{ background: "#0b7a55", height: Math.round((150 * hauteurAgent) / 100) }}>
+                {hauteurAgent > 22 && <span className="num">{formatDuree(exemple.duree_s)}</span>}
+              </div>
+              <div className="lbl"><b className="num">{formatDuree(exemple.duree_s)}</b> avec l'agent H</div>
+            </div>
+          </div>
           <p className="note">
             Valeurs d'exemple (statut « {exemple.statut} »). Jeudi : durée mesurée par notre code, médiane de 5 essais.
           </p>
         </>
       ) : (
-        <p className="muted" style={{ marginTop: 12 }}>
-          L'agent H refait la tâche sur les 3 sites, la durée est mesurée par notre code. Aucun temps réel : « Actualiser » suffit.
+        <p className="muted" style={{ marginTop: 14 }}>
+          L'agent H ouvre les 3 sites, remplit le formulaire et publie. La durée est mesurée par notre code.
+          Pas de temps réel : « Actualiser » suffit.
         </p>
       )}
-    </div>
+    </section>
   );
 }

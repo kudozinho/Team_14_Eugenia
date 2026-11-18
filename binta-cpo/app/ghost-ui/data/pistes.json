@@ -1,0 +1,60 @@
+{
+ "_note": "Copie réduite de commun/donnees/taches-semaine-agence.json (source unique). Les pistes à confirmer ne sont JAMAIS additionnées au chiffre de 205 h/an.",
+ "a_confirmer": [
+  {
+   "id": "t06",
+   "nom": "Dossier du compromis : PV d'AG, règlement et carnet d'entretien sur les extranets des syndics",
+   "methode": "agent_h",
+   "heures_an": 21,
+   "pourquoi": "Un extranet différent par syndic, sans API"
+  },
+  {
+   "id": "t07",
+   "nom": "État des risques sur Géorisques pour chaque nouveau mandat",
+   "methode": "agent_h",
+   "heures_an": 14,
+   "pourquoi": "Formulaire web bien par bien (API Géorisques à vérifier)"
+  },
+  {
+   "id": "t08",
+   "nom": "Rapport hebdo aux vendeurs : vues et contacts relevés dans les espaces pro des portails",
+   "methode": "agent_h",
+   "heures_an": 36,
+   "pourquoi": "Statistiques visibles seulement dans les espaces pro, sans API pour une petite agence"
+  },
+  {
+   "id": "t09",
+   "nom": "Prise de rendez-vous de visite (allers-retours SMS et mails)",
+   "methode": "n8n",
+   "heures_an": 77,
+   "pourquoi": "Lien de prise de rendez-vous relié à l'agenda"
+  },
+  {
+   "id": "t10",
+   "nom": "Demande de rendez-vous au diagnostiqueur",
+   "methode": "n8n",
+   "heures_an": 8,
+   "pourquoi": "Mail type pré-rempli depuis la fiche du bien"
+  }
+ ],
+ "deja_couvert": [
+  {
+   "id": "t01",
+   "nom": "Multidiffusion des annonces sur les grands portails",
+   "heures_an_aujourdhui": 50.0,
+   "pourquoi": "Déjà fait par la passerelle du logiciel d'agence : à activer, rien à construire"
+  },
+  {
+   "id": "t02",
+   "nom": "Import des contacts des portails dans le logiciel",
+   "heures_an_aujourdhui": 38.3,
+   "pourquoi": "Le logiciel d'agence importe déjà les contacts des portails"
+  },
+  {
+   "id": "t11",
+   "nom": "Tenue du registre des mandats (loi Hoguet)",
+   "heures_an_aujourdhui": 11.7,
+   "pourquoi": "Déjà géré par le logiciel d'agence ; numérotation sous contrôle humain"
+  }
+ ]
+}
