@@ -1,41 +1,46 @@
-import { getFiche, getExecution, formatDuree } from "@/lib/data";
+import { getFiche, getExecution, getExecutionMesuree, formatDuree } from "@/lib/data";
+import { tacheIdConfiguree } from "@/lib/tache";
 import { Rich, splitDetail, splitTitre, phrases } from "@/lib/rich";
 import Prouver from "../prouver";
+
+export const dynamic = "force-dynamic";
 
 function Anneau({ valeur }: { valeur: number }) {
   const r = 40, c = 2 * Math.PI * r;
   return (
     <svg width="116" height="116" viewBox="0 0 116 116" role="img" aria-label={`Score ${valeur} sur 100`}>
-      <circle cx="58" cy="58" r={r} fill="none" stroke="#e1e9e4" strokeWidth="11" />
+      <circle cx="58" cy="58" r={r} fill="none" stroke="#e8e2d6" strokeWidth="11" />
       <circle cx="58" cy="58" r={r} fill="none" stroke="url(#ag)" strokeWidth="11" strokeLinecap="round"
         strokeDasharray={`${(valeur / 100) * c} ${c}`} transform="rotate(-90 58 58)" />
-      <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#12a874" /><stop offset="1" stopColor="#0b7a55" /></linearGradient></defs>
-      <text x="58" y="62" textAnchor="middle" fontSize="32" fontWeight="800" fill="#0e1b14" style={{ fontFamily: "var(--font-jakarta)" }}>{valeur}</text>
-      <text x="58" y="80" textAnchor="middle" fontSize="11" fill="#66756c">sur 100</text>
+      <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#2e9a63" /><stop offset="1" stopColor="#1d6b47" /></linearGradient></defs>
+      <text x="58" y="62" textAnchor="middle" fontSize="32" fontWeight="800" fill="#18201b" style={{ fontFamily: "var(--font-jakarta)" }}>{valeur}</text>
+      <text x="58" y="80" textAnchor="middle" fontSize="11" fill="#6e776f">sur 100</text>
     </svg>
   );
 }
 
-function Titre({ id, n, children, sub }: { id: string; n: string; children: React.ReactNode; sub: string }) {
+function Section({ id, titre, sub }: { id: string; titre: string; sub: string }) {
   return (
     <div className="sec-title" id={id}>
-      <span className="sec-n">{n}</span>
-      <div><h2>{children}</h2><p className="muted">{sub}</p></div>
+      <div><h2>{titre}</h2><p className="sec-sub">{sub}</p></div>
     </div>
   );
 }
 
-export default function Rapport() {
+// Le rapport se lit comme une décision : avant / après (avec la preuve en direct),
+// puis ce qu'on gagne, ce qu'il faut construire, et les risques.
+export default async function Rapport() {
   const f = getFiche();
   const m = f.metier;
   const t = f.technique;
-  const exec = getExecution();
+  const mesure = await getExecutionMesuree(tacheIdConfiguree());
+  const exec = mesure ?? getExecution();
 
   const [freq, freqDetail] = splitDetail(m.frequence);
   const [duree, dureeDetail] = splitDetail(m.duree_aujourdhui);
   const gain = phrases(m.gain_attendu);
   const recette = t.recette.split(/,\s*/);
-  const dureeAgent = t.preuve.duree_agent_s;
+  const dureeAgent = mesure?.duree_s ?? t.preuve.duree_agent_s;
   const dureeHumaine = t.preuve.duree_humaine_s;
 
   return (
@@ -43,6 +48,7 @@ export default function Rapport() {
       <p className="eyebrow">Fiche d'opportunité n°{f.numero}</p>
       <h1>{f.titre}</h1>
 
+      {/* ---------- LA DÉCISION ---------- */}
       <section className="card lead-card">
         <div className="report-head">
           <Anneau valeur={f.score} />
@@ -68,80 +74,75 @@ export default function Rapport() {
       </section>
 
       <nav className="anchors" aria-label="Sections du rapport">
-        <a href="#metier">1 · Métier</a>
-        <a href="#technique">2 · Technique</a>
-        <a href="#preuve">3 · Preuve</a>
+        <a href="#avant-apres">Avant, après</a>
+        <a href="#gain">Ce qu'on gagne</a>
+        <a href="#construire">Ce qu'il faut construire</a>
+        <a href="#risques">Les risques</a>
       </nav>
 
-      {/* ---------- AXE MÉTIER ---------- */}
-      <Titre id="metier" n="1" sub="Ce que vit l'équipe, en clair, sans jargon.">Axe métier</Titre>
+      {/* ---------- AVANT / APRÈS ---------- */}
+      <Section id="avant-apres" titre="Avant, après" sub="La même tâche, à la main puis avec l'agent H." />
 
-      <section className="card">
-        <h3 style={{ marginTop: 0 }}>Le process aujourd'hui</h3>
-        <p className="lead-text"><Rich>{m.process}</Rich></p>
-        <div className="facts-row">
-          <div className="fr"><span>Déclencheur</span><b>{m.declencheur}</b></div>
-          <div className="fr"><span>Fréquence</span><b><Rich>{freq}</Rich></b>{freqDetail && <em><Rich>{freqDetail}</Rich></em>}</div>
-          <div className="fr"><span>Durée aujourd'hui</span><b><Rich>{duree}</Rich></b>{dureeDetail && <em>{dureeDetail}</em>}</div>
-        </div>
-      </section>
+      <div className="duel">
+        <section className="card dcard avant">
+          <h4 className="dcard-tag">Aujourd'hui, à la main</h4>
+          <div className="dcard-time num">{formatDuree(dureeHumaine)}<span>par opération</span></div>
+          <p className="lead-text"><Rich>{m.process}</Rich></p>
+          <dl className="dcard-facts">
+            <div><dt>Déclencheur</dt><dd>{m.declencheur}</dd></div>
+            <div><dt>Fréquence</dt><dd><Rich>{freq}</Rich>{freqDetail && <em><Rich>{freqDetail}</Rich></em>}</dd></div>
+            <div><dt>Durée</dt><dd><Rich>{duree}</Rich>{dureeDetail && <em>{dureeDetail}</em>}</dd></div>
+          </dl>
+        </section>
 
-      <div className="grid g2" style={{ marginTop: 18 }}>
+        <div className="duel-arrow" aria-hidden="true">→</div>
+
+        <section className="card dcard apres">
+          <h4 className="dcard-tag">Demain, avec l'agent H</h4>
+          <div className="dcard-time num">{formatDuree(dureeAgent)}<span>par opération, mesuré</span></div>
+          <p className="lead-text">{t.raison} L'agent fait le travail, l'assistante valide.</p>
+          <ol className="steps">{t.etapes.map((e: string) => <li key={e}>{e}</li>)}</ol>
+        </section>
+      </div>
+
+      <div id="preuve" className="duel-proof">
+        <Prouver exemple={exec} />
+      </div>
+
+      {/* ---------- CE QU'ON GAGNE ---------- */}
+      <Section id="gain" titre="Ce qu'on gagne" sub="En temps, en argent et pour l'équipe." />
+
+      <div className="grid g2">
         <section className="callout good">
           <h3>Gain attendu</h3>
           <ul className="bullets">{gain.map((g) => <li key={g}><Rich>{g}</Rich></li>)}</ul>
         </section>
         <section className="card">
-          <h3 style={{ marginTop: 0 }}>Pour l'équipe</h3>
+          <h3>Pour l'équipe</h3>
           <ul className="bullets">{phrases(m.impact_equipe).map((p) => <li key={p}><Rich>{p}</Rich></li>)}</ul>
-          <h3>Le temps libéré sert à</h3>
+          <h4>Le temps libéré sert à</h4>
           <p style={{ margin: 0 }}><Rich>{m.temps_libere}</Rich></p>
         </section>
       </div>
 
-      <section className="callout info" style={{ marginTop: 18 }}>
-        <h3>À vérifier avec l'agence</h3>
-        <p style={{ margin: 0 }}><Rich>{m.hypotheses}</Rich></p>
-      </section>
+      {/* ---------- CE QU'IL FAUT CONSTRUIRE ---------- */}
+      <Section id="construire" titre="Ce qu'il faut construire" sub="L'outil, ce qui entre et sort, et comment on sait que ça marche." />
 
-      {/* ---------- AXE TECHNIQUE ---------- */}
-      <Titre id="technique" n="2" sub="Ce qu'il faut construire, avec quoi, et comment vérifier que ça marche.">Axe technique</Titre>
-
-      <div className="grid g2">
-        <section className="card tool">
-          <h3 style={{ marginTop: 0 }}>Outil recommandé</h3>
-          <div className="row"><span className="pill agent_h big">Agent H</span></div>
-          <p className="lead-text" style={{ marginTop: 10 }}>{t.raison}</p>
-          <h3>Options écartées</h3>
-          <div className="rejects">
-            {t.options_ecartees.map((o: string) => {
-              const [titre, corps] = splitTitre(o);
-              return <div key={o} className="reject"><span aria-hidden="true">✕</span><div><b>{titre}</b>{corps && <p>{corps}</p>}</div></div>;
-            })}
-          </div>
-        </section>
-
+      <div className="flow">
         <section className="card">
-          <h3 style={{ marginTop: 0 }}>Étapes de l'automatisation</h3>
-          <ol className="steps">{t.etapes.map((e: string) => <li key={e}>{e}</li>)}</ol>
-        </section>
-      </div>
-
-      <div className="flow" style={{ marginTop: 18 }}>
-        <section className="card">
-          <h3 style={{ marginTop: 0 }}>Données en entrée</h3>
+          <h3>Données en entrée</h3>
           <p style={{ margin: 0 }}>{t.entrees}</p>
         </section>
         <div className="flow-arrow" aria-hidden="true">→</div>
         <section className="card">
-          <h3 style={{ marginTop: 0 }}>Données en sortie</h3>
+          <h3>Données en sortie</h3>
           <p style={{ margin: 0 }}>{t.sorties}</p>
         </section>
       </div>
 
-      <div className="grid g2" style={{ marginTop: 18 }}>
+      <div className="grid g2" style={{ marginTop: 20 }}>
         <section className="card">
-          <h3 style={{ marginTop: 0 }}>Comment on sait que ça marche</h3>
+          <h3>Comment on sait que ça marche</h3>
           <ul className="checks">{recette.map((r: string) => <li key={r}><Rich>{r}</Rich></li>)}</ul>
           <div className="stats">
             <div className="stat"><b>1 jour</b><span><Rich>{t.effort}</Rich></span></div>
@@ -150,6 +151,23 @@ export default function Rapport() {
           <p className="muted" style={{ marginTop: 12 }}>Maintenance : <Rich>{t.maintenance}</Rich></p>
         </section>
 
+        <section className="card tool">
+          <h3>Pourquoi l'agent H, et pas autre chose</h3>
+          <div className="row"><span className="pill agent_h big">Agent H</span></div>
+          <h4>Options écartées</h4>
+          <div className="rejects">
+            {t.options_ecartees.map((o: string) => {
+              const [titre, corps] = splitTitre(o);
+              return <div key={o} className="reject"><span aria-hidden="true">✕</span><div><b>{titre}</b>{corps && <p>{corps}</p>}</div></div>;
+            })}
+          </div>
+        </section>
+      </div>
+
+      {/* ---------- LES RISQUES ---------- */}
+      <Section id="risques" titre="Les risques" sub="Ce qu'il faut surveiller, et ce qui reste à vérifier avec l'agence." />
+
+      <div className="grid g2">
         <section className="callout warn">
           <h3>Points de vigilance</h3>
           <ul className="vigil">
@@ -159,11 +177,11 @@ export default function Rapport() {
             })}
           </ul>
         </section>
+        <section className="callout info">
+          <h3>À vérifier avec l'agence</h3>
+          <p style={{ margin: 0 }}><Rich>{m.hypotheses}</Rich></p>
+        </section>
       </div>
-
-      {/* ---------- PREUVE ---------- */}
-      <Titre id="preuve" n="3" sub="On ne promet pas : on mesure, en direct.">Preuve</Titre>
-      <Prouver exemple={exec} />
     </>
   );
 }
