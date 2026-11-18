@@ -12,8 +12,8 @@ Ce guide vérifie le bouton avec le PC Windows d’Henriquet. Le Recorder n’es
 ## Conditions avant de cliquer
 
 1. Mettre le dépôt à jour depuis `main` sur le PC d’Henriquet.
-2. Utiliser les portails actifs et inscriptibles : `ghost-portail-a.vercel.app`, `ghost-portail-b.vercel.app` et `ghost-portail-c.vercel.app`. Ne pas utiliser les prévisualisations `*-v2.vercel.app` : elles sont en lecture seule et bloquent les publications et remises à zéro.
-3. Vérifier que les portails actifs sont accessibles sans connexion, et que le site C accepte une photo.
+2. Utiliser les domaines de référence configurés par défaut dans `portails.py` : `ghost-portail-a.vercel.app`, `ghost-portail-b.vercel.app` et `ghost-portail-c.vercel.app`. Ne pas utiliser les prévisualisations `*-v2.vercel.app` : elles sont en lecture seule et bloquent les publications et remises à zéro.
+3. Vérifier que les trois domaines de référence sont accessibles sans connexion, acceptent une publication et relisent celle-ci par leur API ; vérifier aussi que le site C accepte une photo. Leur disponibilité et leur configuration Vercel actuelles n’ont pas encore été confirmées.
 4. Dans un fichier `.env` local à la racine du dépôt, vérifier que `HAI_API_KEY`, `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` sont renseignées. `lancer_agent.py` charge ce fichier. Confirmer qu’il s’agit bien de la clé H d’équipe prévue pour la démo : la qualification précédente de la tâche a utilisé un accès personnel, et la clé d’équipe restait à valider dans le bilan CAIO. Garder les clés sur le PC ; ne pas les copier dans un message, une capture ou GitHub.
 5. Garder `PORTAIL_A_URL`, `PORTAIL_B_URL` et `PORTAIL_C_URL` absentes pour utiliser les domaines actifs par défaut, ou les régler sur ces domaines sans chemin `/deposer`, `/nouvelle` ou `/publier`. Ne pas les faire pointer vers les prévisualisations `*-v2`.
 6. Le script vide les portails au début si `RESET_TOKEN` est défini. Confirmer que ces sites ne contiennent que les annonces fictives de test et qu’aucun autre essai n’est en cours avant de le lancer.
@@ -30,6 +30,8 @@ py -3 -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
+
+Python doit être en version 3.10 ou plus récente. Node.js doit également être installé pour lancer l’interface locale.
 
 Si PowerShell bloque l’activation, ne change pas la politique de sécurité du poste : ouvre `cmd.exe`, active avec `.venv\Scripts\activate.bat`, puis continue.
 
