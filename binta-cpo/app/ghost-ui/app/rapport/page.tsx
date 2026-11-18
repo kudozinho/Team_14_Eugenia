@@ -1,4 +1,7 @@
-import { getFiche, getExecution, formatDuree } from "@/lib/data";
+import { getFiche, getExecution, getExecutionMesuree, formatDuree } from "@/lib/data";
+import { tacheIdConfiguree } from "@/lib/tache";
+
+export const dynamic = "force-dynamic";
 import { Rich, splitDetail, splitTitre, phrases } from "@/lib/rich";
 import Prouver from "../prouver";
 
@@ -25,17 +28,18 @@ function Titre({ id, n, children, sub }: { id: string; n: string; children: Reac
   );
 }
 
-export default function Rapport() {
+export default async function Rapport() {
   const f = getFiche();
   const m = f.metier;
   const t = f.technique;
-  const exec = getExecution();
+  const mesure = await getExecutionMesuree(tacheIdConfiguree());
+  const exec = mesure ?? getExecution();
 
   const [freq, freqDetail] = splitDetail(m.frequence);
   const [duree, dureeDetail] = splitDetail(m.duree_aujourdhui);
   const gain = phrases(m.gain_attendu);
   const recette = t.recette.split(/,\s*/);
-  const dureeAgent = t.preuve.duree_agent_s;
+  const dureeAgent = mesure?.duree_s ?? t.preuve.duree_agent_s;
   const dureeHumaine = t.preuve.duree_humaine_s;
 
   return (

@@ -56,3 +56,26 @@ export function getPistes() {
     dejaCouvert: pistesJson.deja_couvert as Piste[],
   };
 }
+
+// Dernière exécution TERMINÉE de l'agent pour la tâche de démo, lue dans Supabase (côté serveur uniquement).
+// Sans clés, ou si la base ne répond pas : null, et la page garde les valeurs d'exemple.
+export async function getExecutionMesuree(tacheId: string): Promise<Execution | null> {
+  const url = process.env.SUPABASE_URL;
+  const cle = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !cle) return null;
+  try {
+    const r = await fetch(
+      `${url}/rest/v1/executions_agent?tache_id=eq.${encodeURIComponent(tacheId)}&statut=eq.completed&order=cree_le.desc&limit=1`,
+      { headers: { apikey: cle, Authorization: `Bearer ${cle}` }, cache: "no-store" },
+    );
+    if (!r.ok) return null;
+    const [l] = await r.json();
+    if (!l || !l.duree_s) return null;
+    return {
+      tache_id: l.tache_id, session_id: l.session_id ?? "", statut: l.statut, duree_s: l.duree_s,
+      duree_humaine_s: l.duree_humaine_s ?? 720, portails_publies: l.portails_publies ?? [], resume: l.resume ?? "",
+    };
+  } catch {
+    return null;
+  }
+}
