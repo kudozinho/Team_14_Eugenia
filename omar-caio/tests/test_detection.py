@@ -65,3 +65,42 @@ def test_export_recorder_vers_analyse(monkeypatch):
     assert tache['methode'] == 'agent_h'
     assert tache['instructions_agent']
     assert tache['prompt_empreinte']
+
+
+def test_audit_supabase_cli(monkeypatch, capsys):
+    import sys
+
+    from analyser_audit import main
+    from detection.analyse_llm import simulateur_local
+    from detection.supabase_audit import SupabaseAudit
+
+    audit = EVENTS[0]['audit_id']
+    requetes = []
+
+    def requete(self, table, parametres, *, lignes=None):
+        requetes.append((table, parametres, lignes))
+        if table == 'evenements':
+            assert parametres['audit_id'] == f'eq.{audit}'
+            assert parametres['horodatage'] == 'gte.2026-11-18T08:55:00+01:00'
+            return EVENTS if parametres['offset'] == 0 else []
+        assert table == 'taches_detectees'
+        assert parametres['on_conflict'] == 'id'
+        return [{'id': tache['id']} for tache in lignes]
+
+    monkeypatch.setenv('SUPABASE_URL', 'https://ghost.example')
+    monkeypatch.setenv('SUPABASE_SERVICE_ROLE_KEY', 'cle-fictive')
+    monkeypatch.setattr(SupabaseAudit, '_requete', requete)
+    monkeypatch.setattr('analyser_audit.HoloProvider', lambda _: simulateur_local)
+    monkeypatch.setattr(sys, 'argv', ['analyser_audit.py', '--audit', audit, '--depuis', '2026-11-18T08:55:00+01:00',
+                                      '--modele', 'holo-test', '--ecrire'])
+
+    main()
+    premier = json.loads(capsys.readouterr().out)
+    main()
+    second = json.loads(capsys.readouterr().out)
+    assert premier['inserees'] == second['inserees']
+    tache = premier['taches'][0]
+    assert tache['audit_id'] == audit
+    assert (tache['methode'], tache['occurrences'], tache['duree_moyenne_s']) == ('agent_h', 3, 745)
+    assert tache['prompt_empreinte']
+    assert {'score', 'fiche'}.isdisjoint(requetes[-1][2][0])

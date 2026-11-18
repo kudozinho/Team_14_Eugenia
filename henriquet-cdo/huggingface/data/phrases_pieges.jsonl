@@ -18,3 +18,6 @@
 {"id": "piege_18", "phrase": "Mandat M-0142 à publier", "attendu": "Mandat M-0142 à publier"}
 {"id": "piege_19", "phrase": "Contact: 06 39 98 00 05, email: x.y@example.org", "attendu": "Contact: [TELEPHONE], email: [EMAIL]"}
 {"id": "piege_20", "phrase": "Propriétaire : Jean-Pierre Brisedune ; adresse : 7 rue des Lanternes Bleues, Paris", "attendu": "Propriétaire : [NOM]; adresse : [ADRESSE]"}
+{"id": "piege_21", "phrase": "Portail B - Nouvelle annonce", "attendu": "Portail B - Nouvelle annonce"}
+{"id": "piege_22", "phrase": "Visite avec Jean-Pierre Brisedune", "attendu": "Visite avec [NOM]"}
+{"id": "piege_23", "phrase": "Annonce publiée sur Portail A", "attendu": "Annonce publiée sur Portail A"}

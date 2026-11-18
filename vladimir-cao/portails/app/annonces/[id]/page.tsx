@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { portailCourant } from '@/lib/portail';
-import { lireAnnonce, urlPhoto, aUnePhoto } from '@/lib/store';
+import { lireAnnonce, urlPhoto, aUnePhoto, modeLocal } from '@/lib/store';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Annonce' };
@@ -13,6 +13,17 @@ export default async function Annonce({ params, searchParams }: Props) {
   const { publiee } = await searchParams;
   const p = portailCourant();
   const a = await lireAnnonce(p.nom, id);
+  // Mode local sur Vercel : le dépôt et cette page tournent dans des fonctions séparées qui ne partagent
+  // pas leur mémoire. L'annonce a été reçue mais ne peut pas être relue tant que Supabase n'est pas branché.
+  if (!a && modeLocal() && publiee) {
+    return (
+      <div className="carte">
+        <div className="succes" role="status" id="confirmation">Annonce reçue par {p.nom}. Référence : <strong>{id}</strong></div>
+        <p>La base de données n'est pas encore branchée : l'annonce ne peut pas être réaffichée ici. Elle le sera une fois Supabase branché.</p>
+        <div className="actions"><Link className="bouton secondaire" href={p.chemin}>{p.action}</Link></div>
+      </div>
+    );
+  }
   if (!a) notFound();
   const [photo, avecPhoto] = p.code === 'C' ? await Promise.all([urlPhoto(id), aUnePhoto(id)]) : [null, false];
 
