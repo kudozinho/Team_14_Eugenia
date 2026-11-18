@@ -113,6 +113,12 @@ export async function getHistoriqueExecutions(tacheId: string): Promise<Historiq
   }
 }
 
+// Une exécution compte seulement si l'agent a fini ET que les annonces sont vérifiées sur les portails
+// (« Vérifiée sur : aucun » ou « Absente ou fausse » = échec de vérification, même si le statut est « completed »).
+export function executionValide(l: { statut: string; duree_s: number | null; resume: string }): boolean {
+  return l.statut === "completed" && !!l.duree_s && !/absente ou fausse|vérifiée sur : aucun/i.test(l.resume);
+}
+
 export function mediane(valeurs: number[]): number | null {
   if (!valeurs.length) return null;
   const v = valeurs.slice().sort((a, b) => a - b);
@@ -141,7 +147,11 @@ async function lireTaches(filtre = ""): Promise<LigneTache[] | null> {
   if (!a) return null;
   try {
     const r = await fetch(`${a.url}/rest/v1/taches_detectees?select=*&order=cree_le.desc${filtre}`, { headers: a.entetes, cache: "no-store" });
-    return r.ok ? ((await r.json()) as LigneTache[]) : null;
+    if (!r.ok) return null;
+    // Exemples du kit (tâche d'exemple du 17/11, 49 h, 12 min) : jamais mélangés aux vraies tâches de l'audit.
+    // On ne les efface pas de la base (traces à sauvegarder) : on les masque ici.
+    const kit = ["tache_001"].filter((id) => id !== process.env.TACHE_ID);
+    return ((await r.json()) as LigneTache[]).filter((l) => !kit.includes(l.id));
   } catch {
     return null;
   }

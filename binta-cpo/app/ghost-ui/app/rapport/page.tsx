@@ -1,4 +1,4 @@
-import { mediane, chargerFiche, getExecution, getExecutionMesuree, getHistoriqueExecutions, formatDuree } from "@/lib/data";
+import { executionValide, mediane, chargerFiche, getExecution, getExecutionMesuree, getHistoriqueExecutions, formatDuree } from "@/lib/data";
 import RapportExecution from "./execution";
 import { tacheIdConfiguree } from "@/lib/tache";
 import { Rich, splitDetail, splitTitre, phrases } from "@/lib/rich";
@@ -46,7 +46,7 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
   const gain = phrases(m.gain_attendu);
   const recette = t.recette.split(/,\s*/);
   // Durée de l'agent : médiane des exécutions terminées (plus fiable qu'un seul essai), sinon l'exemple.
-  const terminees = historique.lignes.filter((l) => l.statut === "completed" && l.duree_s);
+  const terminees = historique.lignes.filter(executionValide);
   const dureeAgent = mediane(terminees.map((l) => l.duree_s as number)) ?? mesure?.duree_s ?? t.preuve.duree_agent_s;
   const dureeHumaine = mesure?.duree_humaine_s ?? t.preuve.duree_humaine_s;
   // Avec une exécution mesurée : la référence « à la main » est celle de la tâche en base, pas les 12 min de l'exemple.

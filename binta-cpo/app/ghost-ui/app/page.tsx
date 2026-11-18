@@ -25,7 +25,7 @@ export default async function Dashboard() {
         <div className="hero">
           <span className="hero-label">Heures récupérables</span>
           <div className="big num">{total}<small>h / an</small></div>
-          <p>sur {taches.length} tâches, justifiées une par une.</p>
+          <p>sur {taches.length} {taches.length > 1 ? "tâches" : "tâche"}, justifiées une par une.</p>
           <div className="split-bar" role="img" aria-label={`${agentH} heures par l'agent H, ${n8n} heures par n8n`}>
             <i style={{ flex: agentH, background: "var(--g-300)" }} />
             <i style={{ flex: n8n, background: "var(--o-400)" }} />
