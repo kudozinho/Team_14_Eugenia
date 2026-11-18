@@ -2,7 +2,9 @@
 // Le code des nœuds « Code » est écrit ici en clair pour rester lisible et relu.
 // Attention : dans ces gabarits, ne jamais écrire de "\n" (il deviendrait un vrai saut de ligne) :
 // utiliser String.fromCharCode(10).
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const logoPng = readFileSync(new URL('./logo-ghost.png', import.meta.url)).toString('base64');
 
 const SUPABASE = 'https://bvxmnrvqehemqsjiasdr.supabase.co';
 const CRED_SUPABASE = { supabaseApi: { id: 'te9bIHUOLzve2fhc', name: 'Supabase Ghost (équipe)' } };
@@ -23,6 +25,7 @@ const EXPEDITEUR = 'Ghost <ADRESSE_GMAIL@gmail.com>'; // doit être l'adresse Gm
 const LIEN_RAPPORT = ''; // adresse du tableau de bord ou du rapport (Binta), laisser vide si pas encore en ligne
 // =================================
 
+const LOGO_PNG = '${logoPng}';
 const mode = $('Mode automatique').isExecuted ? 'auto' : 'test';
 const memoire = $getWorkflowStaticData('global');
 const dejaEnvoyees = memoire.envoyees || {};
@@ -30,10 +33,10 @@ const taches = $input.all().map(i => i.json).filter(t => t && t.id);
 const plusRecente = taches.map(t => t.cree_le).sort().at(-1) || null;
 
 const COMMENT = {
-  agent_h: "l'agent de H Company peut la refaire à ta place dans le navigateur (ces sites n'ont pas d'API)",
-  n8n: "un workflow n8n peut la faire à ta place (l'outil a une API)",
-  les_deux: "un workflow n8n et l'agent de H Company peuvent la faire à ta place",
-  outil_existant: "ton logiciel sait déjà le faire : il suffit d'activer la fonction",
+  agent_h: "L’agent de H Company peut reprendre cette tâche dans le navigateur.",
+  n8n: "Un workflow n8n peut automatiser cette tâche via l’API de ton outil.",
+  les_deux: "Un workflow n8n peut piloter la tâche et appeler l’agent de H Company pour les étapes dans le navigateur.",
+  outil_existant: "Ton logiciel dispose déjà d’une fonction pour cette tâche."
 };
 const connu = n => n !== null && n !== undefined && n !== '';
 const nombre = n => String(n).replace('.', ',');
@@ -56,28 +59,87 @@ if (mode === 'auto' && aEnvoyer.length === 0) {
 }
 
 return aEnvoyer.map(t => {
-  const sujet = \`Ghost : tu fais « \${t.nom} » à la main, on peut l'automatiser\`;
-  const repetition = connu(t.occurrences) ? \` \${nombre(t.occurrences)} fois\` : '';
-  const gain = connu(t.gain_estime_h_semaine) ? \` Gain estimé : \${nombre(t.gain_estime_h_semaine)} h par semaine.\` : '';
+  const titre = String(t.nom ?? 'Tâche détectée');
+  const sujet = \`Ghost · Résultat de ton audit : \${titre}\`;
+  const chiffres = [
+    ...(connu(t.occurrences) ? [['Occurrences observées', nombre(t.occurrences)]] : []),
+    ...(connu(t.temps_perdu_semaine_min) ? [['Temps consacré par semaine', \`\${nombre(t.temps_perdu_semaine_min)} min\`]] : []),
+    ...(connu(t.gain_estime_h_semaine) ? [['Gain hebdomadaire estimé', \`\${nombre(t.gain_estime_h_semaine)} h\`]] : []),
+  ];
+  const lienRapport = /^https?:[/][/]\\S+$/i.test(LIEN_RAPPORT.trim()) ? LIEN_RAPPORT.trim() : '';
+  const suite = 'Tu pourras voir la solution en action et donner ton accord avant sa mise en place.';
+  const confidentialite = 'Ce mail résume la tâche observée. Les captures de ton écran restent sur ton poste.';
   const lignes = [
     'Bonjour,',
     '',
-    \`Pendant l'audit, Ghost a repéré une tâche répétée\${repetition} : « \${t.nom} ».\`,
-    ...(connu(t.temps_perdu_semaine_min) ? [\`Elle te prend environ \${nombre(t.temps_perdu_semaine_min)} min par semaine.\`] : []),
+    'Ghost a repéré cette tâche récurrente pendant ton audit :',
+    titre,
+    ...chiffres.map(([libelle, valeur]) => \`\${libelle} : \${valeur}\`),
     '',
-    \`Bonne nouvelle : \${COMMENT[t.methode]}.\${gain}\`,
+    \`Solution proposée : \${COMMENT[t.methode]}\`,
+    suite,
+    ...(lienRapport ? ['', \`Voir le rapport : \${lienRapport}\`] : []),
     '',
-    "Rien ne change sans ton accord : tu pourras voir l'agent faire la tâche et valider avant toute mise en place.",
-    "Ce message ne parle que de la tâche : ni ton écran ni tes données n'y figurent.",
-    ...(LIEN_RAPPORT ? ['', \`Voir le détail : \${LIEN_RAPPORT}\`] : []),
+    'À bientôt,',
+    'L’équipe Ghost',
+    'Audit d’automatisation',
     '',
-    'Ghost · See the work. Ghost the task.',
+    confidentialite,
   ];
-  const html = lignes.map(l => (l ? \`<p style="margin:0 0 4px">\${echapper(l)}</p>\` : '<br>')).join('');
-  return { json: {
-    mode, cle: t.audit_id + '|' + t.nom, tache_id: t.id, plus_recente: plusRecente, nb_alertes: aEnvoyer.length,
-    a: DESTINATAIRE, de: EXPEDITEUR, sujet, texte: lignes.join(String.fromCharCode(10)), html,
-  } };
+  const donnees = chiffres.map(([libelle, valeur]) => \`
+        <tr>
+          <td style="padding:9px 0;border-top:1px solid #dce8e0;color:#3b5549;font-size:14px;">\${echapper(libelle)}</td>
+          <td align="right" style="padding:9px 0 9px 12px;border-top:1px solid #dce8e0;color:#123b2c;font-size:15px;font-weight:bold;white-space:nowrap;">\${echapper(valeur)}</td>
+        </tr>\`).join('');
+  const html = \`
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>\${echapper(sujet)}</title></head>
+<body style="margin:0;padding:0;background:#eef4ef;font-family:Arial,sans-serif;color:#13291f;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#eef4ef">
+  <tr><td align="center" style="padding:24px 12px;">
+    <!--[if mso]><table role="presentation" width="600"><tr><td><![endif]-->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="max-width:600px;border:1px solid #dbe7df;border-radius:16px;">
+      <tr><td bgcolor="#04382a" style="padding:24px;border-radius:15px 15px 0 0;color:#ffffff;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td width="44" valign="middle"><img src="cid:logo_ghost" width="36" height="36" alt="" style="display:block;border:0;border-radius:9px;"></td>
+            <td valign="middle" style="color:#ffffff;font-size:21px;line-height:26px;font-weight:bold;">Ghost</td>
+          </tr>
+        </table>
+        <p style="margin:18px 0 0;color:#b8f3cf;font-size:14px;line-height:20px;">Résultat de ton audit</p>
+      </td></tr>
+      <tr><td style="padding:26px 24px 24px;color:#13291f;font-size:16px;line-height:25px;">
+        <p style="margin:0 0 9px;">Bonjour,</p>
+        <p style="margin:0 0 19px;color:#3b5549;">Ghost a repéré cette tâche récurrente pendant ton audit.</p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f2f7f3" style="border:1px solid #dbe7df;border-radius:12px;">
+          <tr><td style="padding:17px 16px;">
+            <h1 style="margin:0;font-family:Arial,sans-serif;font-size:23px;line-height:29px;word-break:break-word;color:#123b2c;">\${echapper(titre)}</h1>
+            \${donnees ? \`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;">\${donnees}</table>\` : ''}
+          </td></tr>
+        </table>
+        <h2 style="margin:23px 0 6px;font-size:17px;line-height:23px;color:#123b2c;">Solution proposée</h2>
+        <p style="margin:0 0 10px;color:#3b5549;">\${echapper(COMMENT[t.methode])}</p>
+        <p style="margin:0;color:#3b5549;">\${echapper(suite)}</p>
+        \${lienRapport ? \`<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;"><tr><td bgcolor="#0b7a55" style="border-radius:8px;">
+          <a href="\${echapper(lienRapport)}" style="display:inline-block;padding:12px 17px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;">Voir le rapport</a>
+        </td></tr></table>\` : ''}
+        <p style="margin:23px 0 0;">À bientôt,<br><strong>L’équipe Ghost</strong><br><span style="color:#50635a;font-size:14px;">Audit d’automatisation</span></p>
+      </td></tr>
+      <tr><td bgcolor="#f2f7f3" style="padding:15px 24px;border-top:1px solid #dbe7df;border-radius:0 0 15px 15px;color:#465d51;font-size:13px;line-height:19px;">\${echapper(confidentialite)}</td></tr>
+    </table>
+    <!--[if mso]></td></tr></table><![endif]-->
+  </td></tr>
+</table>
+</body>
+</html>\`;
+  return {
+    json: {
+      mode, cle: t.audit_id + '|' + t.nom, tache_id: t.id, plus_recente: plusRecente, nb_alertes: aEnvoyer.length,
+      a: DESTINATAIRE, de: EXPEDITEUR, sujet, texte: lignes.join(String.fromCharCode(10)), html,
+    },
+    binary: { logo_ghost: { data: LOGO_PNG, mimeType: 'image/png', fileName: 'logo-ghost.png', fileExtension: 'png' } },
+  };
 });`;
 
 const codeMemoriser = `// Après l'envoi : on ne note comme « traitées » que les alertes réellement envoyées.
@@ -119,7 +181,7 @@ const workflow = {
     { id: 'n7', name: "Envoyer l'e-mail", type: 'n8n-nodes-base.emailSend', typeVersion: 2.1, position: [1000, 110],
       onError: 'continueErrorOutput',
       parameters: { fromEmail: '={{ $json.de }}', toEmail: '={{ $json.a }}', subject: '={{ $json.sujet }}', emailFormat: 'both',
-        text: '={{ $json.texte }}', html: '={{ $json.html }}', options: { appendAttribution: false } } },
+        text: '={{ $json.texte }}', html: '={{ $json.html }}', options: { appendAttribution: false, attachments: 'logo_ghost' } } },
     { id: 'n8', name: 'Mémoriser les envois', type: 'n8n-nodes-base.code', typeVersion: 2, position: [1240, 40], parameters: { jsCode: codeMemoriser } },
     { id: 'n9', name: 'Échec : retenté au prochain passage', type: 'n8n-nodes-base.noOp', typeVersion: 1, position: [1240, 220], parameters: {} },
   ],
