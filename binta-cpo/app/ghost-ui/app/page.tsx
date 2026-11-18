@@ -66,7 +66,6 @@ export default function Dashboard() {
         <section className="card">
           <h2>Matrice gain / effort</h2>
           <Matrice taches={taches} />
-          <p className="muted" style={{ marginTop: 10 }}>Taille du point : heures par an · couleur : outil recommandé. Survolez un point pour le détail.</p>
         </section>
       </div>
 
