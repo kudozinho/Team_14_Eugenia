@@ -1,6 +1,6 @@
 """Lance l'agent H tout seul quand quelqu'un clique sur « Prouver avec l'agent ».
 
-    python attendre_prouver.py                 # tourne sur le Mac de démo, Ctrl+C pour arrêter
+    python attendre_prouver.py                 # tourne sur le PC de démo, Ctrl+C pour arrêter
     python attendre_prouver.py --mandat M-0143
 
 Le bouton crée une ligne dans executions_agent : {"tache_id": "...", "statut": "en_cours"}.
