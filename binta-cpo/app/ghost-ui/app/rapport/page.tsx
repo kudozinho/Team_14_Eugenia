@@ -6,12 +6,12 @@ function Anneau({ valeur }: { valeur: number }) {
   const r = 40, c = 2 * Math.PI * r;
   return (
     <svg width="116" height="116" viewBox="0 0 116 116" role="img" aria-label={`Score ${valeur} sur 100`}>
-      <circle cx="58" cy="58" r={r} fill="none" stroke="#e1e9e4" strokeWidth="11" />
+      <circle cx="58" cy="58" r={r} fill="none" stroke="#e8e2d6" strokeWidth="11" />
       <circle cx="58" cy="58" r={r} fill="none" stroke="url(#ag)" strokeWidth="11" strokeLinecap="round"
         strokeDasharray={`${(valeur / 100) * c} ${c}`} transform="rotate(-90 58 58)" />
-      <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#12a874" /><stop offset="1" stopColor="#0b7a55" /></linearGradient></defs>
-      <text x="58" y="62" textAnchor="middle" fontSize="32" fontWeight="800" fill="#0e1b14" style={{ fontFamily: "var(--font-jakarta)" }}>{valeur}</text>
-      <text x="58" y="80" textAnchor="middle" fontSize="11" fill="#66756c">sur 100</text>
+      <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#2e9a63" /><stop offset="1" stopColor="#1d6b47" /></linearGradient></defs>
+      <text x="58" y="62" textAnchor="middle" fontSize="32" fontWeight="800" fill="#18201b" style={{ fontFamily: "var(--font-jakarta)" }}>{valeur}</text>
+      <text x="58" y="80" textAnchor="middle" fontSize="11" fill="#6e776f">sur 100</text>
     </svg>
   );
 }

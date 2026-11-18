@@ -18,22 +18,27 @@ export default function Dashboard() {
         Ghost classe des tâches, jamais des personnes.
       </p>
 
-      <section className="hero" aria-label="Heures récupérables">
-        <div>
+      <section className="kpis" aria-label="Chiffres clés">
+        <div className="hero">
+          <span className="hero-label">Heures récupérables</span>
           <div className="big num">{total}<small>h / an</small></div>
-          <p>récupérables sur 3 tâches, justifiées une par une.</p>
+          <p>sur {taches.length} tâches, justifiées une par une.</p>
           <div className="split-bar" role="img" aria-label={`${agentH} heures par l'agent H, ${n8n} heures par n8n`}>
-            <i style={{ flex: agentH, background: "#7ee0b4" }} />
-            <i style={{ flex: n8n, background: "#c9c9ff" }} />
+            <i style={{ flex: agentH, background: "var(--g-300)" }} />
+            <i style={{ flex: n8n, background: "var(--o-400)" }} />
           </div>
           <div className="legend">
-            <span><span className="dot" style={{ background: "#7ee0b4" }} /><b className="num">{agentH} h</b> par l'agent H</span>
-            <span><span className="dot" style={{ background: "#c9c9ff" }} /><b className="num">{n8n} h</b> par n8n</span>
+            <span><span className="dot" style={{ background: "var(--g-300)" }} /><b className="num">{agentH} h</b> par l'agent H</span>
+            <span><span className="dot" style={{ background: "var(--o-400)" }} /><b className="num">{n8n} h</b> par n8n</span>
           </div>
         </div>
-        <div className="facts">
-          <div className="fact"><b className="num">{taches.length}</b><span>tâches classées par score</span></div>
-          <div className="fact"><b>0</b><span>donnée par personne affichée</span></div>
+        <div className="kpi">
+          <b className="num">{taches.length}</b>
+          <span>tâches classées par score, la meilleure en premier</span>
+        </div>
+        <div className="kpi">
+          <b>0</b>
+          <span>donnée par personne : Ghost classe des tâches, jamais des gens</span>
         </div>
       </section>
 

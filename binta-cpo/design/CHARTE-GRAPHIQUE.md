@@ -1,57 +1,145 @@
-# Charte graphique Ghost (v1)
+# Charte graphique Ghost (v2)
 
-Blanc et vert, sobre, lisible sur un écran projeté. Les tokens sont dans `binta-cpo/app/ghost-ui/app/globals.css`.
-Le logo définitif se remplace dans `binta-cpo/app/ghost-ui/app/logo.tsx` (un seul fichier).
+Vert forêt, blanc cassé, orange. Pensée pour un écran projeté et lisible par tous (contrastes mesurés, voir plus bas).
+Les valeurs vivent dans `binta-cpo/app/ghost-ui/app/globals.css` (variables CSS) : ce document les explique, le CSS fait foi.
 
-## Principes (inspirés des meilleurs tableaux de bord : Stripe, Linear, Vercel, Notion)
-Ces principes viennent de pratiques connues de ces produits, pas d'une recherche en ligne faite aujourd'hui.
-1. **Un chiffre héros.** La première chose vue est « 205 h / an ». Tout le reste le justifie.
-2. **Peu de couleurs, chacune a un sens.** Vert = marque et agent H. Indigo = n8n. Ambre = vigilance. Rouge = « à la main » (avant).
-3. **Beaucoup d'air.** Marges de 8 pt, cartes arrondies, bordures fines, ombres très légères.
-4. **Étiquettes directes.** Le nom de la tâche est écrit sur le graphique, pas seulement dans une légende.
-5. **Détail à la demande.** Les pistes secondaires sont repliées. Survol d'un point = infobulle.
-6. **Une action claire par écran.** Dans le rapport : le bouton « Prouver avec l'agent ».
-7. **Confiance visible.** « 0 donnée par personne affichée » est affiché dans le bandeau principal.
+![Tableau de bord](apercu-tableau-de-bord.png)
 
-## Couleurs
-| Rôle | Nom | Valeur | Usage |
+## 1. Ce que l'interface doit dire
+
+Ghost regarde le travail répétitif, le classe et le prouve. L'interface sert ce message dans cet ordre :
+
+1. **Un chiffre d'abord.** « 205 h / an récupérables » est la première chose vue. Tout le reste le justifie.
+2. **La preuve est le moment fort.** Le bouton « Prouver avec l'agent » et le duel « 12 min à la main contre l'agent » sont l'élément dont on doit se souvenir. C'est là qu'on met l'orange.
+3. **Des tâches, jamais des personnes.** Aucune donnée par personne n'est affichée, et l'interface le dit.
+4. **Une couleur, un sens.** Vert = marque et agent H. Orange = n8n et l'action principale. Ocre = vigilance. Jamais la couleur seule : toujours un mot à côté (pastille, légende).
+5. **Le détail à la demande.** Les pistes secondaires sont repliées, le détail d'une tâche s'affiche au survol ou au clavier.
+
+## 2. Logo
+
+Fantôme bleu nuit, visière noire, deux yeux. Fichier vectoriel : [`logo-ghost.svg`](logo-ghost.svg). Dans l'application : `app/logo.tsx` (composant `GhostMark`).
+
+| Règle | Détail |
+|---|---|
+| Où | **Une seule fois par écran** : en haut de la barre latérale. Pas de filigrane, pas de répétition. |
+| Fond | Posé sur une tuile blanc cassé (`#F4F1EA`), arrondie à 14 px, jamais directement sur le vert foncé. |
+| Taille | 34 px dans une tuile de 44 px (36 px sur téléphone). Minimum 24 px. |
+| Couleurs du logo | Corps `#0D1B3E`, visière `#050608`, yeux `#24407F`. Le bleu nuit est réservé au logo. |
+| Mot « Ghost » | Bricolage Grotesque 800, blanc sur la barre latérale. |
+| Signature | « See the work. Ghost the task. » sous le logo, en petit. |
+
+## 3. Couleurs
+
+### Rôles
+
+| Rôle | Variable | Valeur | Usage |
 |---|---|---|---|
-| Marque | Vert 700 | `#0B7A55` | Boutons, liens, score, agent H |
-| Marque sombre | Vert 900 / 950 | `#064E3B` / `#04382A` | Bandeau principal, survol |
-| Accent clair | Vert 500 | `#12A874` | Dégradé, barres de progression |
-| Fond de teinte | Vert 100 / 50 | `#DDF3E8` / `#EFFAF4` | Pastilles, quadrant « gain rapide » |
-| Fond de page | Gris vert | `#F5F8F6` | Arrière-plan |
-| Surface | Blanc | `#FFFFFF` | Cartes |
-| Texte | Encre | `#0E1B14` | Texte principal (contraste très élevé) |
-| Texte secondaire | Gris vert | `#3F4E45` / `#66756C` | Descriptions, légendes |
-| Filet | Gris vert clair | `#E1E9E4` | Bordures |
-| Outil n8n | Indigo 600 | `#5B5BD6` | Points, pastilles n8n |
-| Vigilance | Ambre 600 / 50 | `#B97308` / `#FFF4DE` | Points de vigilance, badge démo |
-| Avant / à la main | Rouge 600 | `#C93636` | Barre « 12 min » |
+| Fond de page | `--bg` | `#F4F1EA` | Blanc cassé, toute la page |
+| Surface | `--card` | `#FFFDF8` | Cartes |
+| Texte | `--ink` | `#18201B` | Texte principal |
+| Texte secondaire | `--ink-2` | `#45514A` | Paragraphes, légendes |
+| Texte discret | `--mute` | `#5C655D` | Libellés, notes |
+| Filets | `--line` / `--line-2` | `#E8E2D6` / `#D4CCBD` | Bordures, séparateurs |
+| Marque | `--g-700` | `#1D6B47` | Liens, scores, agent H, étapes |
+| Marque sombre | `--g-900` / `--g-950` | `#123D2C` / `#0B2A1F` | Grand bloc, en-tête du rapport, barre latérale |
+| Vert clair | `--g-500` / `--g-300` | `#2E9A63` / `#8FD1A8` | Barres de score, part agent H |
+| Teintes vertes | `--g-100` / `--g-50` | `#DDEFE3` / `#EEF6F0` | Pastille agent H, zone « gain rapide » |
+| Action et n8n | `--o-600` | `#C25418` | Bouton principal, numéros de section, n8n |
+| Orange sombre | `--o-700` | `#9A4212` | Texte orange sur fond clair (sur-titres, pastille n8n) |
+| Orange clair | `--o-400` | `#F4A261` | Chiffres et libellés orange sur fond vert foncé |
+| Teintes orange | `--o-100` / `--o-50` | `#FBE3CF` / `#FDF2E7` | Pastille n8n, carte « Preuve » |
+| Vigilance | `--ochre-700` / `--ochre-50` | `#86590B` / `#F8EED3` | Points de vigilance, pastille « hypothèse » |
+| Logo | `--navy` | `#0D1B3E` | Logo seulement |
 
-Palette des graphiques (vert agent H, indigo n8n) validée avec le script de contraste et de daltonisme : lisible, aucun échec sur ces deux séries. Le gris « rien à construire » est un neutre, pas une série.
+### Règles
 
-## Typographie
-- **Titres et chiffres : Plus Jakarta Sans** (600, 700, 800). Géométrique, moderne, chiffres nets.
-- **Texte courant : Inter** (400, 500). Très lisible à l'écran.
-- Chiffres alignés (`tabular-nums`) dans tous les tableaux.
-- Échelle : héros 3,4 à 6,4 em · H1 1,9 à 2,8 em · H2 1,12 em · corps 15 à 21 px (grandit sur grand écran) · légende 0,8 em.
+- **L'orange est rare.** Un seul bouton orange par écran : l'action principale. Le reste de l'orange sert à n8n et aux repères (sur-titres, numéros de section).
+- **Le vert foncé porte les chiffres forts** : grand bloc du tableau de bord, en-tête du rapport.
+- **Pas de dégradés décoratifs** sur les cartes. Une seule lueur légère est permise sur le grand bloc vert.
+- **Pas de violet ni d'indigo** (l'ancienne couleur n8n de la v1 est remplacée par l'orange).
 
-## Espacement et formes
-- Grille de 8 pt ; écart entre cartes 18 px ; padding de carte 22 px.
-- Rayons : cartes 16 px, bandeau 22 px, boutons 12 px, pastilles 999 px.
-- Ombre : `0 1px 2px` + `0 4px 16px` à 5 % d'opacité.
+### Contrastes mesurés (WCAG, minimum 4,5:1 pour le texte courant)
 
-## Composants
-- **Bandeau héros** : grand chiffre, barre répartie agent H / n8n, 2 faits.
-- **Liste classée** : rang, nom, outil, heures, durée aujourd'hui, score avec barre.
-- **Matrice gain / effort** : quadrant « gain rapide » teinté, taille = heures, couleur = outil.
-- **Fiche rapport** : anneau de score, 4 chiffres clés, axe métier / axe technique, étapes numérotées, vigilance en ambre.
-- **Preuve de l'agent** : 3 sites qui se cochent, avant / après, gain en %.
+| Texte | Fond | Contraste |
+|---|---|---|
+| Encre `#18201B` | Fond `#F4F1EA` | 14,8:1 |
+| Texte secondaire `#45514A` | Fond `#F4F1EA` | 7,4:1 |
+| Texte discret `#5C655D` | Fond `#F4F1EA` | 5,4:1 |
+| Vert marque `#1D6B47` | Fond `#F4F1EA` | 5,7:1 |
+| Blanc | Vert marque `#1D6B47` | 6,5:1 |
+| Blanc | Vert sombre `#123D2C` | 12,1:1 |
+| Blanc (bouton) | Orange `#C25418` | 4,6:1 |
+| Orange sombre `#9A4212` | Teinte `#FBE3CF` | 5,4:1 |
+| Ocre `#86590B` | Teinte `#F8EED3` | 5,3:1 |
 
-## Accessibilité
-Contraste du texte courant au moins 7 sur 1 ; boutons blancs sur vert 700 (environ 5,3 sur 1) ; focus visible ; couleur jamais seule (étiquettes et légendes) ; animations réduites si demandé.
+À ne pas faire : du texte orange `#F4A261` sur fond clair (trop pâle), ou du texte gris plus clair que `#5C655D`.
 
-## À faire
-- Remplacer le logo (`logo.tsx`) et ajuster le vert si le logo impose une autre teinte.
-- Version sombre : non faite, volontairement (démo projetée en mode clair).
+## 4. Typographie
+
+| Usage | Police | Graisse | Taille |
+|---|---|---|---|
+| Titres, chiffres, boutons | **Bricolage Grotesque** | 600 à 800 | H1 2 à 3,1 em · H2 1,18 em · titres de section 1,7 em |
+| Grand chiffre | Bricolage Grotesque | 800 | 3,6 à 6,6 em, interlettrage serré (-0,05 em) |
+| Texte courant | **Inter** | 400 à 600 | 15 à 19 px (grandit avec l'écran) |
+| Sur-titres, libellés | Bricolage Grotesque | 700 | 0,76 em, capitales, espacées, précédées d'un trait orange |
+
+- Deux polices, pas plus.
+- Chiffres alignés (`tabular-nums`) partout où l'on compare des nombres.
+- **Rien sous 12 px à l'écran**, y compris dans les graphiques (le texte de la matrice fait 13 à 14 px affichés).
+
+## 5. Mise en page
+
+```
+┌──────────┬──────────────────────────────────────────────┐
+│  Logo    │  Sur-titre                                   │
+│  Ghost   │  Titre de la page                            │
+│          │  ┌─────────────────────────┐ ┌────────────┐  │
+│ Tableau  │  │ 205 h / an  (vert foncé) │ │ 3 tâches   │  │
+│ Rapport  │  │ barre agent H / n8n      │ ├────────────┤  │
+│          │  └─────────────────────────┘ │ 0 donnée   │  │
+│          │                              └────────────┘  │
+│          │  ┌──────────────────┐ ┌──────────────────┐   │
+│ Mode     │  │ Tâches classées  │ │ Matrice          │   │
+│ démo     │  └──────────────────┘ └──────────────────┘   │
+│          │  [ Pistes à confirmer           + ]          │
+└──────────┴──────────────────────────────────────────────┘
+```
+
+- **Barre latérale** vert foncé de 252 px : logo, navigation (icône + mot), mention « Mode démo » en bas. Sous 900 px, elle devient une barre en haut.
+- **Contenu** limité à 1 480 px de large, marges de 40 px (16 px sur téléphone).
+- **Grilles** : écart de 16 à 20 px entre les cartes. Sur téléphone, une colonne, et les chiffres clés sur deux colonnes.
+- **Rayons** : cartes 18 px, grand bloc 22 px, boutons 14 px, pastilles arrondies.
+- **Ombres** : très légères au repos, un peu plus marquées au survol.
+
+## 6. Composants
+
+| Composant | Règle |
+|---|---|
+| **Grand bloc** | Fond `--g-900`, libellé orange clair, chiffre blanc, barre répartie vert clair (agent H) / orange clair (n8n) avec sa légende. |
+| **Chiffres clés** | Cartes blanches : un chiffre en gras, une phrase qui dit quelque chose de vrai. Pas d'icône décorative. |
+| **Liste classée** | Rang dans une tuile (le n°1 en vert plein), nom, pastilles (outil, heures, durée), score sur 100 avec sa barre. Soulèvement de 2 px au survol. |
+| **Matrice gain / effort** | Zone « gain rapide » teintée de vert, taille du point = heures, couleur = outil, nom de la tâche écrit à côté. Le détail s'affiche au survol et au clavier. |
+| **Pastilles** | Agent H : vert clair / vert foncé. n8n : orange clair / orange sombre. Rien à construire : beige / gris. |
+| **Bouton principal** | Orange `--o-600`, texte blanc, monte de 1 px au survol, s'enfonce au clic. Le bouton secondaire est un contour. |
+| **Sections repliables** | Rond « + » orange fermé, « − » vert ouvert. |
+| **Rapport** | En-tête vert foncé (anneau de score, phrase clé, 4 chiffres), sections numérotées en orange (Métier, Technique, Preuve), encadrés vert (gain), orange (à vérifier), ocre (vigilance). |
+| **Preuve de l'agent** | Carte teintée orange : les 3 sites passent au vert un par un, puis le gain en % et la comparaison « à la main » (orange) / « agent H » (vert). |
+
+## 7. Mouvement
+
+- Survol : cartes et lignes montent de 2 px, liens soulignés par un trait orange qui se dessine.
+- Durées courtes (0,15 à 0,25 s), aucune animation en boucle.
+- Si l'utilisateur demande moins d'animations (réglage du système), tout s'arrête.
+
+## 8. Accessibilité (vérifié le 18/11)
+
+- Contrastes : tous les textes au-dessus de 4,5:1 (tableau en section 3).
+- Focus clavier visible partout (contour orange de 3 px).
+- La couleur n'est jamais seule : pastilles écrites, légendes, détail de la matrice.
+- Pas de défilement horizontal sur téléphone (vérifié à 390 px).
+
+## 9. À faire
+
+- **Mode sombre** : pas fait. Les directives d'Apple demandent les deux apparences ; pour une démo projetée, le clair suffit.
+- **Matrice** : la couleur reste le principal repère de l'outil sur les points eux-mêmes (la légende et le détail l'écrivent). Une forme différente par outil serait plus sûre.
+- **Icône d'onglet** (favicon) : à créer à partir du logo.

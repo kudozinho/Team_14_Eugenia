@@ -63,11 +63,11 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
           </div>
           <div className="compare" aria-label="Durée avant et après">
             <div className="col">
-              <div className="bar" style={{ background: "#c93636", height: 150 }}><span className="num">{formatDuree(exemple.duree_humaine_s)}</span></div>
+              <div className="bar" style={{ background: "var(--o-600)", height: 150 }}><span className="num">{formatDuree(exemple.duree_humaine_s)}</span></div>
               <div className="lbl">À la main</div>
             </div>
             <div className="col">
-              <div className="bar" style={{ background: "#0b7a55", height: Math.round((150 * hauteurAgent) / 100) }}>
+              <div className="bar" style={{ background: "var(--g-700)", height: Math.round((150 * hauteurAgent) / 100) }}>
                 {hauteurAgent > 22 && <span className="num">{formatDuree(exemple.duree_s)}</span>}
               </div>
               <div className="lbl"><b className="num">{formatDuree(exemple.duree_s)}</b> avec l'agent H</div>
