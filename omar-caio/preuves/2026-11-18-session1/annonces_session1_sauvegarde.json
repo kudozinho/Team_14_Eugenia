@@ -1,0 +1,108 @@
+{
+ "_note": "Sauvegarde des 11 annonces publiées à la main par Henriquet pendant la session 1 (18/11, 14h29-14h41, audit aud_demo), relevées dans annonces_portails à 14h58, avant que le lancement de l'agent (14h59, RESET_TOKEN) ne vide les 3 sites. Données fictives.",
+ "remarques": [
+  "2 doublons (double clic) : M-0142 sur A, M-0143 sur B",
+  "Erreur humaine : M-0142 publiée à 328981 € au lieu de 329000 sur C"
+ ],
+ "annonces": [
+  {
+   "id": "3da40124",
+   "portail": "Portail A",
+   "titre": "Appartement T3 lumineux proche RER",
+   "prix": 329000,
+   "surface_m2": 68,
+   "ville": "Massy",
+   "publiee_a_paris": "2026-11-18 14:33:01"
+  },
+  {
+   "id": "53b21039",
+   "portail": "Portail A",
+   "titre": "Appartement T3 lumineux proche RER",
+   "prix": 329000,
+   "surface_m2": 68,
+   "ville": "Massy",
+   "publiee_a_paris": "2026-11-18 14:33:02"
+  },
+  {
+   "id": "4e92974f",
+   "portail": "Portail B",
+   "titre": "Appartement T3 lumineux proche RER",
+   "prix": 329000,
+   "surface_m2": 68,
+   "ville": "Massy",
+   "publiee_a_paris": "2026-11-18 14:34:22"
+  },
+  {
+   "id": "0d058d58",
+   "portail": "Portail C",
+   "titre": "Appartement T3 lumineux proche RER",
+   "prix": 328981,
+   "surface_m2": 68,
+   "ville": "Massy",
+   "publiee_a_paris": "2026-11-18 14:36:02"
+  },
+  {
+   "id": "17518fcb",
+   "portail": "Portail A",
+   "titre": "Maison familiale avec jardin",
+   "prix": 615000,
+   "surface_m2": 120,
+   "ville": "Palaiseau",
+   "publiee_a_paris": "2026-11-18 14:37:26"
+  },
+  {
+   "id": "ab2f931d",
+   "portail": "Portail B",
+   "titre": "Maison familiale avec jardin",
+   "prix": 615000,
+   "surface_m2": 120,
+   "ville": "Palaiseau",
+   "publiee_a_paris": "2026-11-18 14:38:05"
+  },
+  {
+   "id": "31d579b6",
+   "portail": "Portail B",
+   "titre": "Maison familiale avec jardin",
+   "prix": 615000,
+   "surface_m2": 120,
+   "ville": "Palaiseau",
+   "publiee_a_paris": "2026-11-18 14:38:05"
+  },
+  {
+   "id": "28d6c08c",
+   "portail": "Portail C",
+   "titre": "Maison familiale avec jardin",
+   "prix": 615000,
+   "surface_m2": 120,
+   "ville": "Palaiseau",
+   "publiee_a_paris": "2026-11-18 14:38:51"
+  },
+  {
+   "id": "c840a7d8",
+   "portail": "Portail A",
+   "titre": "Studio étudiant proche université",
+   "prix": 139000,
+   "surface_m2": 24,
+   "ville": "Orsay",
+   "publiee_a_paris": "2026-11-18 14:40:01"
+  },
+  {
+   "id": "82835dd4",
+   "portail": "Portail B",
+   "titre": "Studio étudiant proche université",
+   "prix": 139000,
+   "surface_m2": 24,
+   "ville": "Orsay",
+   "publiee_a_paris": "2026-11-18 14:40:30"
+  },
+  {
+   "id": "86d4f2c5",
+   "portail": "Portail C",
+   "titre": "Studio étudiant proche université",
+   "prix": 139000,
+   "surface_m2": 24,
+   "ville": "Orsay",
+   "publiee_a_paris": "2026-11-18 14:41:05"
+  }
+ ]
+}

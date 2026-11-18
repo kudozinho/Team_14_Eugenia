@@ -2,9 +2,11 @@
 
 ## Statut et vérifications
 
-**Ce qui est livré et testé sans connexion externe :** nettoyage local, contrats §1 / §9, détection par répétitions, analyse LLM contractuelle (avec fournisseur injecté), prompts vocaux, banc de test, jeux d'exemples, éléments pour les checkpoints.
+Le nettoyage local et la détection sont couverts par 72 tests. Assel a validé le floutage sur le Mac de démonstration. Le branchement Supabase est fusionné dans la PR #48.
 
-**Ce qui n'est pas testé en réel :** capture Mac, Supabase, n8n, agent H Company, modèles Claude. Les résultats de simulation ne doivent **pas** être présentés comme des performances de ces services.
+Le 18 novembre, la session Windows a permis de repérer trois passages A → B → C. Après accord d’Assel, la qualification Holo a utilisé la moyenne des trois chronos humains, soit 244 s. La tâche `tache_a1a0c7545c805f328eba1e25` a été insérée et relue dans Supabase. [Preuves et limites de cette session](preuves/2026-11-18-session1/README.md)
+
+Les deux prompts vocaux sont disponibles. La transcription Whisper sur un audio fictif d’une minute, l’extraction et la validation des règles restent à valider de bout en bout. Le benchmark de deux modèles en appels réels reste à produire selon la priorité donnée par Assel.
 
 ### Dossiers
 
