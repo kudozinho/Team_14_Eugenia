@@ -31,8 +31,21 @@ function Section({ id, titre, sub }: { id: string; titre: string; sub: string })
 
 // Le rapport se lit comme une décision : avant / après (avec la preuve en direct),
 // puis ce qu'on gagne, ce qu'il faut construire, et les risques.
-export default async function Rapport({ searchParams }: { searchParams?: { tache?: string } }) {
-  const choix = await chargerFiche(searchParams?.tache || process.env.TACHE_ID || undefined);
+export default async function Rapport({ searchParams }: { searchParams?: { tache?: string; audit?: string } }) {
+  const demandee = searchParams?.tache;
+  const choix = await chargerFiche(demandee || process.env.TACHE_ID || undefined, { strict: !!demandee, audit: searchParams?.audit });
+  if (choix.source === "introuvable") {
+    return (
+      <>
+        <p className="eyebrow">Fiche d'opportunité</p>
+        <h1>Tâche introuvable</h1>
+        <div className="alert" role="alert">
+          <p style={{ margin: 0 }}>{"motif" in choix ? choix.motif : "Tâche introuvable."} Aucune autre tâche n'est affichée à sa place.</p>
+        </div>
+        <p><a className="btn" href="/rapport">Voir le rapport de la tâche configurée</a></p>
+      </>
+    );
+  }
   const f = choix.fiche;
   const m = f.metier;
   const t = f.technique;

@@ -130,7 +130,7 @@ export function mediane(valeurs: number[]): number | null {
 export type SourceDonnees = "base" | "exemple";
 
 type LigneTache = {
-  id: string; nom: string; sequence: string[] | null; occurrences: number | null; duree_moyenne_s: number | null;
+  id: string; audit_id?: string | null; nom: string; sequence: string[] | null; occurrences: number | null; duree_moyenne_s: number | null;
   methode: string | null; gain_estime_h_semaine: number | null; confiance: number | null;
   score: (Partial<Score> & { heures_an?: number; hypotheses?: string[] }) | null;
   fiche: { metier?: unknown; technique?: unknown } | null; instructions_agent: string | null; cree_le: string;
@@ -196,8 +196,15 @@ export async function chargerTaches(): Promise<{ source: SourceDonnees; taches: 
 
 // Fiche opportunité : celle de la base si elle existe, sinon composée à partir de la tâche détectée.
 // Pour la tâche de démo (recopie d'annonces), on garde les textes de la fiche d'exemple et on remplace les chiffres connus.
-export async function chargerFiche(tacheId?: string) {
+// `strict` : la tâche demandée dans l'adresse (?tache=) doit exister, et appartenir à l'audit demandé (?audit=) si on le précise.
+// Sinon on ne montre JAMAIS une autre tâche à sa place : source « introuvable ».
+export async function chargerFiche(tacheId?: string, opts: { strict?: boolean; audit?: string } = {}) {
   const lignes = await lireTaches();
+  if (opts.strict && tacheId) {
+    const l0 = lignes?.find((x) => x.id === tacheId);
+    if (!l0) return { source: "introuvable" as const, fiche: ficheJson, tacheId, provisoire: false, motif: lignes ? "Cette tâche n'existe pas dans la base." : "La base n'est pas joignable : impossible de vérifier cette tâche." };
+    if (opts.audit && l0.audit_id !== opts.audit) return { source: "introuvable" as const, fiche: ficheJson, tacheId, provisoire: false, motif: "Cette tâche n'appartient pas à l'audit demandé." };
+  }
   if (!lignes || lignes.length === 0) return { source: "exemple" as SourceDonnees, fiche: ficheJson, tacheId: ficheJson.tache_id, provisoire: false };
   const l = (tacheId && lignes.find((x) => x.id === tacheId)) || lignes.map((x) => ({ x, t: versTache(x) })).filter((a) => a.t).sort((a, b) => b.t!.score.total - a.t!.score.total)[0]?.x || lignes[0];
   if (l.fiche?.metier && l.fiche?.technique) return { source: "base" as SourceDonnees, fiche: l.fiche as typeof ficheJson, tacheId: l.id, provisoire: false };
