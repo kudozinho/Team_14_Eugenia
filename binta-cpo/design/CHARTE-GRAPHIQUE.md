@@ -76,12 +76,31 @@ Fantôme bleu nuit, visière noire, deux yeux. Fichier vectoriel : [`logo-ghost.
 
 ## 4. Typographie
 
+### Hiérarchie du texte : 4 niveaux, pas plus
+
+Chaque écran se lit de haut en bas, du plus grand au plus petit. Un niveau = une taille = un rôle.
+
+| Niveau | Balise | Rôle | Exemple | Taille à 1 440 px |
+|---|---|---|---|---|
+| 1. Page | `h1` | Ce que montre l'écran | « Ce que Ghost a trouvé » | 43 px, Bricolage 800 |
+| 2. Section | `h2` + phrase `.sec-sub` | Un groupe de cartes, et ce qu'il faut en retenir | « Les tâches répétitives » / « Le score sur 100 combine… » | 26 px, Bricolage 800 |
+| 3. Carte | `h3` + phrase `.card-sub` | Le contenu d'une carte, écrit normalement (pas en capitales) | « Classement » / « La plus rentable en premier. » | 18 px, Bricolage 700 |
+| 4. Étiquette | `h4`, `.eyebrow`, libellés | Une précision dans une carte, en petites capitales | « OPTIONS ÉCARTÉES », « VIGILANCE » | 12 à 13 px, capitales espacées |
+
+Règles :
+- **Chaque section commence par un `h2` et une phrase** qui dit ce qu'il faut comprendre, pas seulement le nom du bloc.
+- **Les titres de carte sont des titres, pas des étiquettes** : écriture normale, couleur encre.
+- **Les petites capitales sont réservées aux étiquettes** (niveau 4) et au sur-titre au-dessus du `h1`.
+- **Un texte ne se répète pas** d'un niveau à l'autre (un titre de section ne redit pas le titre de la carte).
+
+### Polices et tailles
+
 | Usage | Police | Graisse | Taille |
 |---|---|---|---|
-| Titres, chiffres, boutons | **Bricolage Grotesque** | 600 à 800 | H1 2 à 3,1 em · H2 1,18 em · titres de section 1,7 em |
+| Titres, chiffres, boutons | **Bricolage Grotesque** | 600 à 800 | voir les 4 niveaux ci-dessus |
 | Grand chiffre | Bricolage Grotesque | 800 | 3,6 à 6,6 em, interlettrage serré (-0,05 em) |
-| Texte courant | **Inter** | 400 à 600 | 15 à 19 px (grandit avec l'écran) |
-| Sur-titres, libellés | Bricolage Grotesque | 700 | 0,76 em, capitales, espacées, précédées d'un trait orange |
+| Texte courant | **Inter** | 400 à 600 | 16 à 19 px (grandit avec l'écran) |
+| Sur-titres, étiquettes | Bricolage Grotesque | 700 | 0,76 à 0,8 em, capitales, espacées ; le sur-titre est précédé d'un trait orange |
 
 - Deux polices, pas plus.
 - Chiffres alignés (`tabular-nums`) partout où l'on compare des nombres.

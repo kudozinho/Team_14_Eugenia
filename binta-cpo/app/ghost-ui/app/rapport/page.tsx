@@ -20,7 +20,7 @@ function Titre({ id, n, children, sub }: { id: string; n: string; children: Reac
   return (
     <div className="sec-title" id={id}>
       <span className="sec-n">{n}</span>
-      <div><h2>{children}</h2><p className="muted">{sub}</p></div>
+      <div><h2>{children}</h2><p className="sec-sub">{sub}</p></div>
     </div>
   );
 }
@@ -94,7 +94,7 @@ export default function Rapport() {
         <section className="card">
           <h3 style={{ marginTop: 0 }}>Pour l'équipe</h3>
           <ul className="bullets">{phrases(m.impact_equipe).map((p) => <li key={p}><Rich>{p}</Rich></li>)}</ul>
-          <h3>Le temps libéré sert à</h3>
+          <h4>Le temps libéré sert à</h4>
           <p style={{ margin: 0 }}><Rich>{m.temps_libere}</Rich></p>
         </section>
       </div>
@@ -112,7 +112,7 @@ export default function Rapport() {
           <h3 style={{ marginTop: 0 }}>Outil recommandé</h3>
           <div className="row"><span className="pill agent_h big">Agent H</span></div>
           <p className="lead-text" style={{ marginTop: 10 }}>{t.raison}</p>
-          <h3>Options écartées</h3>
+          <h4>Options écartées</h4>
           <div className="rejects">
             {t.options_ecartees.map((o: string) => {
               const [titre, corps] = splitTitre(o);

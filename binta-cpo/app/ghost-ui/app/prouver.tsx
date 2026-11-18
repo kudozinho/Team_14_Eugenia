@@ -33,8 +33,7 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
     <section className="card proof">
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
-          <p className="eyebrow">Preuve</p>
-          <h2 style={{ margin: 0 }}>L'agent H refait la tâche, chronomètre en main</h2>
+          <h3 style={{ margin: 0 }}>L'agent H refait la tâche, chronomètre en main</h3>
         </div>
         <div className="row">
           <button className="btn" onClick={lancer} disabled={etat === "en_cours"}>
