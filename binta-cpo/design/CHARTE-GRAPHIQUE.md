@@ -141,8 +141,8 @@ Règles :
 | **Pastilles** | Agent H : vert clair / vert foncé. n8n : orange clair / orange sombre. Rien à construire : beige / gris. |
 | **Bouton principal** | Orange `--o-600`, texte blanc, monte de 1 px au survol, s'enfonce au clic. Le bouton secondaire est un contour. |
 | **Sections repliables** | Rond « + » orange fermé, « − » vert ouvert. |
-| **Rapport** | En-tête vert foncé (anneau de score, phrase clé, 4 chiffres), sections numérotées en orange (Métier, Technique, Preuve), encadrés vert (gain), orange (à vérifier), ocre (vigilance). |
-| **Preuve de l'agent** | Carte teintée orange : les 3 sites passent au vert un par un, puis le gain en % et la comparaison « à la main » (orange) / « agent H » (vert). |
+| **Rapport** | Se lit comme une décision : en-tête vert foncé (anneau de score, phrase clé, 4 chiffres), puis 4 sections : **Avant, après** (carte « à la main » filet orange, carte « avec l'agent H » filet vert, la durée en très grand, puis le bouton « Prouver » juste dessous), **Ce qu'on gagne**, **Ce qu'il faut construire**, **Les risques**. Encadrés vert (gain), ocre (vigilance), orange (à vérifier). |
+| **Preuve de l'agent** | Sous le face-à-face avant / après. Carte teintée orange : les 3 sites passent au vert un par un, puis le gain en % et la comparaison « à la main » (orange) / « agent H » (vert). |
 
 ## 7. Mouvement
 
