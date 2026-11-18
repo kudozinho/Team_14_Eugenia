@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Execution } from "@/lib/data";
 import { formatDuree } from "@/lib/data";
 
@@ -14,6 +15,7 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
   const [message, setMessage] = useState("");
   const [resultat, setResultat] = useState<Execution>(exemple);
   const [reel, setReel] = useState(false);
+  const router = useRouter();
   const minuteur = useRef<ReturnType<typeof setInterval> | null>(null);
   const chrono = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -54,6 +56,7 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
             if (l.statut === "completed") {
               setResultat({ ...exemple, ...l, portails_publies: l.portails_publies ?? [] });
               setFaits(3); setEtat("termine");
+              router.refresh(); // recharge le rapport lu dans la base
             } else {
               setMessage(l.resume || `L'agent s'est arrêté (${l.statut}).`); setEtat("echec");
             }

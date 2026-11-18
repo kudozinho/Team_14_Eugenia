@@ -1,4 +1,5 @@
-import { getFiche, getExecution, getExecutionMesuree, formatDuree } from "@/lib/data";
+import { getFiche, getExecution, getExecutionMesuree, getHistoriqueExecutions, formatDuree } from "@/lib/data";
+import RapportExecution from "./execution";
 import { tacheIdConfiguree } from "@/lib/tache";
 import { Rich, splitDetail, splitTitre, phrases } from "@/lib/rich";
 import Prouver from "../prouver";
@@ -33,15 +34,20 @@ export default async function Rapport() {
   const f = getFiche();
   const m = f.metier;
   const t = f.technique;
-  const mesure = await getExecutionMesuree(tacheIdConfiguree());
+  const tacheId = tacheIdConfiguree();
+  const mesure = await getExecutionMesuree(tacheId);
+  const historique = await getHistoriqueExecutions(tacheId);
   const exec = mesure ?? getExecution();
 
   const [freq, freqDetail] = splitDetail(m.frequence);
-  const [duree, dureeDetail] = splitDetail(m.duree_aujourdhui);
+  const [dureeFiche, dureeDetailFiche] = splitDetail(m.duree_aujourdhui);
   const gain = phrases(m.gain_attendu);
   const recette = t.recette.split(/,\s*/);
   const dureeAgent = mesure?.duree_s ?? t.preuve.duree_agent_s;
-  const dureeHumaine = t.preuve.duree_humaine_s;
+  const dureeHumaine = mesure?.duree_humaine_s ?? t.preuve.duree_humaine_s;
+  // Avec une exécution mesurée : la référence « à la main » est celle de la tâche en base, pas les 12 min de l'exemple.
+  const duree = mesure ? `${formatDuree(dureeHumaine)} par opération` : dureeFiche;
+  const dureeDetail = mesure ? "moyenne chronométrée à la main sur 3 essais" : dureeDetailFiche;
 
   return (
     <>
@@ -108,6 +114,7 @@ export default async function Rapport() {
       <div id="preuve" className="duel-proof">
         <Prouver exemple={exec} />
       </div>
+      <div style={{ marginTop: 18 }}><RapportExecution h={historique} tacheId={tacheId} /></div>
 
       {/* ---------- CE QU'ON GAGNE ---------- */}
       <Section id="gain" titre="Ce qu'on gagne" sub="En temps, en argent et pour l'équipe." />
