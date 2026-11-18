@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3a3f4b"/>
+    </marker>
+    <marker id="fv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f8a5b"/>
+    </marker>
+    <style>
+      .zone { fill: #f7f8fa; stroke: #c9ced8; stroke-width: 2; rx: 18; }
+      .zt { font-size: 22px; font-weight: 700; fill: #1d2230; }
+      .zs { font-size: 15px; fill: #5a6172; }
+      .b { fill: #fff; stroke: #3a3f4b; stroke-width: 1.6; rx: 10; }
+      .bm { fill: #eef4ff; stroke: #2f5fd0; stroke-width: 2; rx: 10; }
+      .bh { fill: #e9f7f0; stroke: #1f8a5b; stroke-width: 2; rx: 10; }
+      .bt { font-size: 17px; font-weight: 700; fill: #1d2230; }
+      .bx { font-size: 14px; fill: #3a3f4b; }
+      .qui { font-size: 13px; fill: #7a8193; font-style: italic; }
+      .l { stroke: #3a3f4b; stroke-width: 2; fill: none; marker-end: url(#f); }
+      .lv { stroke: #1f8a5b; stroke-width: 2.6; fill: none; marker-end: url(#fv); }
+      .ld { stroke: #3a3f4b; stroke-width: 2; fill: none; stroke-dasharray: 6 5; marker-end: url(#f); }
+      .n { fill: #1d2230; }
+      .nt { font-size: 14px; font-weight: 700; fill: #fff; text-anchor: middle; }
+      .et { font-size: 13px; fill: #1d2230; }
+      .tab { fill: #fff; stroke: #8a90a0; stroke-width: 1.2; rx: 6; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#ffffff"/>
+  <text x="40" y="52" font-size="30" font-weight="700" fill="#1d2230">Ghost : architecture de la démo</text>
+  <text x="40" y="82" font-size="16" fill="#5a6172">Les images ne quittent jamais le Mac : seul le texte masqué part dans la base. Le chiffre affiché est mesuré et vérifié par notre code, pas déclaré par l'agent.</text>
+
+  <!-- ZONE MAC -->
+  <rect class="zone" x="30" y="110" width="560" height="860"/>
+  <text class="zt" x="55" y="148">Mac de démo</text>
+  <text class="zs" x="55" y="170">Python · clés dans des .env locaux, jamais sur GitHub</text>
+
+  <rect class="bm" x="60" y="195" width="500" height="200"/>
+  <text class="bt" x="80" y="225">1. Recorder</text>
+  <text class="qui" x="545" y="225" text-anchor="end">Alejandro</text>
+  <text class="bx" x="80" y="252">• Capture seulement les fenêtres et sites autorisés</text>
+  <text class="bx" x="96" y="272">(Portails A, B, C) · Gmail, Google : ignorés</text>
+  <text class="bx" x="80" y="296">• Rognage de Chrome : onglets, adresse, favoris retirés</text>
+  <text class="bx" x="80" y="320">• OCR du texte de l'écran</text>
+  <text class="bx" x="80" y="344">• Miniature floutée gardée en local (journal du salarié)</text>
+  <text class="bx" x="80" y="368">• Hors périmètre : un événement « hors_perimetre », sans image</text>
+
+  <rect class="bm" x="60" y="420" width="500" height="120"/>
+  <text class="bt" x="80" y="450">2. Masquage</text>
+  <text class="qui" x="545" y="450" text-anchor="end">Omar · Alejandro</text>
+  <text class="bx" x="80" y="476">• nettoyer() : noms, e-mails, téléphones, adresses masqués</text>
+  <text class="bx" x="80" y="500">• Libellés d'interface et titres gardés lisibles</text>
+  <text class="bx" x="80" y="524">• Sortie : événement texte (contrat §1)</text>
+
+  <rect class="b" x="60" y="565" width="500" height="110"/>
+  <text class="bt" x="80" y="595">3. Détection + analyse, puis score</text>
+  <text class="qui" x="545" y="595" text-anchor="end">Omar · Henriquet</text>
+  <text class="bx" x="80" y="621">• Séquences répétées dans les événements, analyse Holo</text>
+  <text class="bx" x="80" y="645">• Tâche détectée, méthode (agent H / n8n / rien), score</text>
+
+  <rect class="bh" x="60" y="700" width="500" height="245"/>
+  <text class="bt" x="80" y="730">5. Clic « Prouver » : agent H</text>
+  <text class="qui" x="545" y="730" text-anchor="end">Alejandro</text>
+  <text class="bx" x="80" y="757">• attendre_prouver.py : guette le clic « Prouver » (toutes les 2 s)</text>
+  <text class="bx" x="80" y="781">• lancer_agent.py : vide les sites, envoie le mandat M-0142</text>
+  <text class="bx" x="96" y="801">et la consigne (contrôles prix/m² et classe énergie)</text>
+  <text class="bx" x="80" y="825">• Vérifie chaque annonce sur les 3 sites (/api/annonces)</text>
+  <text class="bx" x="80" y="849">• Erreur trouvée : correction demandée à l'agent (2 max)</text>
+  <text class="bx" x="80" y="873">• Durée mesurée par notre code</text>
+  <text class="bx" x="80" y="905" font-weight="700" fill="#1f8a5b">Série du 18/11 : 10/10 vérifiés, médiane 102 s,</text>
+  <text class="bx" x="80" y="925" font-weight="700" fill="#1f8a5b">0,14 $ par session</text>
+
+  <!-- ZONE SUPABASE -->
+  <rect class="zone" x="640" y="110" width="330" height="860"/>
+  <text class="zt" x="665" y="148">Supabase</text>
+  <text class="zs" x="665" y="170">Base partagée · temps réel</text>
+
+  <rect class="tab" x="670" y="440" width="270" height="70"/>
+  <text class="bt" x="690" y="470">evenements</text>
+  <text class="et" x="690" y="493">texte masqué, horodaté</text>
+
+  <rect class="tab" x="670" y="580" width="270" height="80"/>
+  <text class="bt" x="690" y="610">taches_detectees</text>
+  <text class="et" x="690" y="633">tâche, durée à la main,</text>
+  <text class="et" x="690" y="651">consigne de l'agent, score</text>
+
+  <rect class="tab" x="670" y="715" width="270" height="110"/>
+  <text class="bt" x="690" y="745">executions_agent</text>
+  <text class="et" x="690" y="768">ligne « en_cours » créée au clic,</text>
+  <text class="et" x="690" y="786">puis remplie : statut, durée,</text>
+  <text class="et" x="690" y="804">portails vérifiés, résumé</text>
+
+  <rect class="tab" x="670" y="860" width="270" height="70"/>
+  <text class="bt" x="690" y="890">annonces_portails</text>
+  <text class="et" x="690" y="913">écrites par les sites A, B, C</text>
+
+  <!-- ZONE VERCEL -->
+  <rect class="zone" x="1020" y="110" width="550" height="500"/>
+  <text class="zt" x="1045" y="148">Vercel</text>
+  <text class="zs" x="1045" y="170">Next.js · en ligne</text>
+
+  <rect class="b" x="1050" y="195" width="490" height="170"/>
+  <text class="bt" x="1070" y="225">4. Interface Ghost</text>
+  <text class="qui" x="1525" y="225" text-anchor="end">Binta</text>
+  <text class="bx" x="1070" y="252">• Tableau de bord : heures récupérables, tâches classées</text>
+  <text class="bx" x="1070" y="276">• Rapport : fiche opportunité, durée avant / après</text>
+  <text class="bx" x="1070" y="300">• Bouton « Prouver avec l'agent » : crée la ligne,</text>
+  <text class="bx" x="1086" y="320">relit executions_agent toutes les 5 s</text>
+  <text class="bx" x="1070" y="344">• Aucune donnée par personne pour le gérant</text>
+
+  <rect class="b" x="1050" y="400" width="490" height="180"/>
+  <text class="bt" x="1070" y="430">7. Sites de test : Portails A, B, C</text>
+  <text class="qui" x="1525" y="430" text-anchor="end">Vladimir</text>
+  <text class="bx" x="1070" y="457">• Formulaires différents (C : 2 étapes, menu, photo)</text>
+  <text class="bx" x="1070" y="481">• /api/annonces : lecture pour notre vérification</text>
+  <text class="bx" x="1070" y="505">• /api/reset : vidés avant chaque lancement (jeton)</text>
+  <text class="bx" x="1070" y="529">• Aucune passerelle entre eux : c'est le problème</text>
+  <text class="bx" x="1086" y="549">que l'agent résout</text>
+
+  <!-- ZONE H -->
+  <rect class="zone" x="1020" y="640" width="550" height="160"/>
+  <text class="zt" x="1045" y="678">H Company</text>
+  <rect class="bh" x="1050" y="695" width="490" height="85"/>
+  <text class="bt" x="1070" y="725">6. Agent API (hai-agents)</text>
+  <text class="bx" x="1070" y="751">h/web-surfer-pro : un navigateur hébergé remplit</text>
+  <text class="bx" x="1070" y="771">les 3 formulaires comme un humain</text>
+
+  <!-- ZONE n8n -->
+  <rect class="zone" x="1020" y="830" width="550" height="140"/>
+  <text class="zt" x="1045" y="868">n8n</text>
+  <rect class="b" x="1050" y="882" width="490" height="70"/>
+  <text class="bt" x="1070" y="910">Alerte J2</text>
+  <text class="qui" x="1525" y="910" text-anchor="end">Vladimir</text>
+  <text class="bx" x="1070" y="935">Lit taches_detectees : e-mail au salarié</text>
+
+  <!-- FLÈCHES -->
+  <path class="l" d="M310,395 L310,418"/>
+  <path class="l" d="M562,475 L668,475"/>
+  <path class="ld" d="M668,505 C620,505 610,590 564,590"/>
+  <path class="l" d="M562,622 L668,622"/>
+  <path class="l" d="M942,610 L985,610 L985,290 L1048,290"/>
+  <path class="lv" d="M1048,330 L1000,330 L1000,740 L944,740"/>
+  <path class="lv" d="M668,755 L564,755"/>
+  <path class="lv" d="M562,800 L668,800"/>
+  <path class="lv" d="M562,955 L1010,955 L1010,760 L1048,760"/>
+  <path class="lv" d="M1300,695 L1300,582"/>
+
+  <!-- Légende -->
+  <line x1="660" y1="200" x2="700" y2="200" class="lv"/>
+  <text class="et" x="708" y="204">chemin du bouton « Prouver »</text>
+  <line x1="660" y1="222" x2="700" y2="222" class="ld"/>
+  <text class="et" x="708" y="226">lecture</text>
+</svg>

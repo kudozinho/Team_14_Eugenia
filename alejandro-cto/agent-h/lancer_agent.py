@@ -174,7 +174,15 @@ def resume_verifie(verifie: dict[str, str]) -> str:
     return f"Vérifiée sur : {', '.join(ok) or 'aucun'}. Absente ou fausse sur : {', '.join(ko)}."
 
 
-def ecrire_resultat(resultat: dict) -> None:
+def ligne_execution(resultat: dict) -> dict:
+    """Les colonnes de executions_agent (contrat §4) tirées d'un résultat."""
+    return {k: resultat[k] for k in ("tache_id", "session_id", "statut", "duree_s",
+                                     "duree_humaine_s", "portails_publies", "resume")}
+
+
+def ecrire_resultat(resultat: dict, ligne_id: str | None = None) -> None:
+    """Nouvelle ligne dans executions_agent, ou mise à jour de la ligne `ligne_id`
+    (celle créée par le bouton « Prouver », voir attendre_prouver.py)."""
     dossier = ICI / "resultats"
     dossier.mkdir(exist_ok=True)
     (dossier / f"{resultat['session_id']}.json").write_text(
@@ -183,11 +191,14 @@ def ecrire_resultat(resultat: dict) -> None:
     if not (url and cle):
         log.info("Supabase non configuré : résultat gardé dans resultats/ seulement.")
         return
-    ligne = {k: resultat[k] for k in ("tache_id", "session_id", "statut", "duree_s",
-                                      "duree_humaine_s", "portails_publies", "resume")}
-    r = requests.post(f"{url}/rest/v1/executions_agent", json=ligne, timeout=10, headers={
-        "apikey": cle, "Authorization": f"Bearer {cle}",
-        "Content-Type": "application/json", "Prefer": "return=minimal"})
+    entetes = {"apikey": cle, "Authorization": f"Bearer {cle}",
+               "Content-Type": "application/json", "Prefer": "return=minimal"}
+    if ligne_id:
+        r = requests.patch(f"{url}/rest/v1/executions_agent", params={"id": f"eq.{ligne_id}"},
+                           json=ligne_execution(resultat), timeout=10, headers=entetes)
+    else:
+        r = requests.post(f"{url}/rest/v1/executions_agent", json=ligne_execution(resultat),
+                          timeout=10, headers=entetes)
     if r.ok:
         log.info("Résultat écrit dans executions_agent.")
     else:

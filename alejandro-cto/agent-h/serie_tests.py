@@ -59,9 +59,11 @@ def code_erreur(r: dict) -> str | None:
         return None
     if r["statut"] == "completed" and not r["reponse_structuree"]:
         return "E5"
-    if "sans_photo" in r["verification_base"].values():
+    # Erreur de départ de l'agent : après une correction, la vérification finale est toute "ok".
+    verification = (r.get("premiere_verification") or r["verification_base"]).values()
+    if "sans_photo" in verification:
         return "E7"  # blocage sur l'envoi du fichier
-    if "faux" in r["verification_base"].values():
+    if "faux" in verification:
         return "E2"
     return "E1"
 
