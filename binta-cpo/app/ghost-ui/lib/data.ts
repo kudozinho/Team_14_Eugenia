@@ -79,3 +79,43 @@ export async function getExecutionMesuree(tacheId: string): Promise<Execution | 
     return null;
   }
 }
+
+// ---- Rapport des exécutions de l'agent (lu dans Supabase, côté serveur uniquement) ----
+export type LigneExecution = {
+  id: string; tache_id: string; session_id: string; statut: string; duree_s: number | null;
+  duree_humaine_s: number | null; portails_publies: string[]; resume: string; cree_le: string;
+};
+export type Historique = {
+  etat: "pas_de_cles" | "erreur" | "vide" | "autre_tache" | "ok";
+  lignes: LigneExecution[];
+  detail?: string;
+};
+
+export async function getHistoriqueExecutions(tacheId: string): Promise<Historique> {
+  const url = process.env.SUPABASE_URL;
+  const cle = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !cle) return { etat: "pas_de_cles", lignes: [] };
+  const entetes = { apikey: cle, Authorization: `Bearer ${cle}` };
+  const base = `${url}/rest/v1/executions_agent`;
+  try {
+    const r = await fetch(`${base}?tache_id=eq.${encodeURIComponent(tacheId)}&order=cree_le.desc&limit=10`, { headers: entetes, cache: "no-store" });
+    if (!r.ok) return { etat: "erreur", lignes: [], detail: `Supabase a répondu ${r.status}` };
+    const lignes = ((await r.json()) as LigneExecution[]).map((l) => ({ ...l, portails_publies: l.portails_publies ?? [], resume: l.resume ?? "", session_id: l.session_id ?? "" }));
+    if (lignes.length) return { etat: "ok", lignes };
+    // Aucune ligne pour cette tâche : y en a-t-il pour d'autres ? (TACHE_ID mal réglé)
+    const t = await fetch(`${base}?select=tache_id&limit=1`, { headers: entetes, cache: "no-store" });
+    const autres = t.ok ? ((await t.json()) as { tache_id: string }[]) : [];
+    return autres.length
+      ? { etat: "autre_tache", lignes: [], detail: autres[0].tache_id }
+      : { etat: "vide", lignes: [] };
+  } catch (e) {
+    return { etat: "erreur", lignes: [], detail: e instanceof Error ? e.message : "inconnue" };
+  }
+}
+
+export function mediane(valeurs: number[]): number | null {
+  if (!valeurs.length) return null;
+  const v = valeurs.slice().sort((a, b) => a - b);
+  const m = Math.floor(v.length / 2);
+  return v.length % 2 ? v[m] : Math.round((v[m - 1] + v[m]) / 2);
+}
