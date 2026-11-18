@@ -81,6 +81,7 @@ Le compte rendu donne, pour chaque tâche, le bon outil : **API disponible → n
 | Score et gain | `cd henriquet-cdo/scoring && python -m pytest -q` | aucune |
 | Sites de test en local | `cd vladimir-cao/portails && npm install && npm run dev:a` (`dev:b`, `dev:c`) | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (sinon mode mémoire) |
 | Interface | `cd binta-cpo/app/ghost-ui && npm install && npm run dev` | aucune |
+| Landing commerciale | `cd assel-ceo/landing && python3 -m http.server 8000 --bind 127.0.0.1` puis [localhost:8000](http://localhost:8000) | aucune |
 | Base | coller `commun/schema-supabase.sql`, puis les fichiers de `henriquet-cdo/supabase/` | - |
 
 **Permissions macOS pour le Recorder** (Réglages Système › Confidentialité et sécurité, pour Terminal) : Enregistrement de l'écran, Accessibilité, Automatisation › Google Chrome. Quitter et rouvrir Terminal après l'Enregistrement de l'écran.
@@ -156,6 +157,7 @@ Une passe de l'agent sur les 3 sites coûte **0,10 $**, contre environ 12 minute
 ```
 README.md                     ← cette fiche projet
 assel-ceo/                    ← organisation de l'équipe, journal des décisions, questions pour H
+                landing/      ← site commercial statique Ghost
 commun/                       ← partagé : contrats (formats communs), schéma Supabase, données fictives, roadmap
 alejandro-cto/  recorder/     ← Ghost Recorder (capture des fenêtres autorisées, Mac et Windows)
                 agent-h/      ← lancement de l'agent H, vérification sur les sites, série de tests
