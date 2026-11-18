@@ -123,3 +123,27 @@ les tâches §2 et liste les identifiants nouvellement insérés dans `inserees`
 La réexécution sur le même audit et la même séquence conserve la ligne
 existante, ainsi que son score et sa fiche. Analyser un audit complet avant
 l’insertion, car une nouvelle exécution ne recalcule pas les lignes existantes.
+
+### Vérifier les passages sur les trois formulaires
+
+Pour la session Windows du 18 novembre, cette commande affiche les passages
+A → B → C visibles sur les formulaires et le nombre d’interruptions entre
+la première et la dernière observation de formulaire de chaque passage.
+
+```sh
+python3 omar-caio/analyser_audit.py --audit aud_demo --depuis 2026-11-18T14:28:00+01:00 --avant 2026-11-18T14:44:00+01:00 --diagnostic-portails
+```
+
+Le diagnostic reste en lecture seule. Les visites d’une fiche publiée sont
+écartées du comptage. Chaque passage décrit l’ordre des formulaires visibles
+dans la fenêtre sélectionnée. Confirmer les publications dans les portails.
+Une interruption peut contenir une activité inconnue et empêche d’attribuer
+la durée écoulée à la recopie complète. Le diagnostic ne génère aucun ID de tâche.
+
+Le 18 novembre, sur cette fenêtre de 139 événements, le diagnostic donne
+15 captures de formulaire A, 17 de B et 26 de C. Il retrouve trois passages
+A → B → C, interrompus respectivement 26, 16 et 12 fois entre les observations
+de formulaires. Au total, la session comporte 61 sorties du périmètre.
+Les autres événements autorisés sont 20 vues de fiches d’annonces. Aucun
+événement autorisé de cette fenêtre n’identifie la feuille ImmoGest.
+Ces résultats sont agrégés et proviennent d’une seule session jouée.
