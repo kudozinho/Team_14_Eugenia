@@ -41,3 +41,11 @@ Assel a validé la moyenne manuelle pour ce test. Le score relève d’Henriquet
 - Des formulaires visités trois fois dans le même ordre prouvent une répétition. La réussite d’une publication se vérifie dans les sites.
 - Une interruption ou une étape invisible empêche d’attribuer la durée entière d’un parcours au travail observé.
 - Trois chronos sur des mandats fictifs décrivent cet essai. Le gain annuel dépend aussi de la fréquence du travail en agence.
+
+## Session 2 · Validation du 18 novembre à 16 h 29
+
+La sauvegarde couvre neuf annonces pour M-0145, M-0146 et M-0148 sur A, B et C. Titres, prix, surfaces et villes correspondent au CSV fictif. Le détecteur retrouve des fragments répétés, sans reconstituer trois recopies complètes.
+
+Assel valide 515 s de temps écoulé pour le lot entre la première capture ImmoGest et la dernière publication. Les 172 s par mandat sont calculées par division par trois. Les trois durées individuelles sont inconnues. Les champs de durée des événements totalisent 442 s, écart à éclaircir.
+
+Pour le bouton Prouver, la tâche tache_a1a0c7545c805f328eba1e25 garde la référence manuelle de 244 s. Le gain annuel attend une validation distincte. [Preuves de la session 2](../preuves/2026-11-18-session2/README.md)

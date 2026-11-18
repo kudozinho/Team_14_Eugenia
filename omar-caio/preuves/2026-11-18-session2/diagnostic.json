@@ -1,0 +1,317 @@
+{
+  "audit_id": "aud_demo",
+  "fenetre_debut": "2026-11-18T16:04:21+01:00",
+  "fenetre_fin_exclusive": "2026-11-18T16:13:03+01:00",
+  "evenements": 125,
+  "actions": {
+    "ImmoGest / fiche mandat": 47,
+    "hors_perimetre": 7,
+    "Portail A / fiche annonce": 12,
+    "Portail A / formulaire": 14,
+    "Portail B / formulaire": 10,
+    "Google Chrome / Suivi des publications - Google Sheets": 11,
+    "Portail B / fiche annonce": 4,
+    "Portail C / fiche annonce": 5,
+    "Portail C / formulaire": 15
+  },
+  "duree_somme_champs_evenements_s": 442,
+  "duree_somme_champs_hors_perimetre_s": 40,
+  "durees_manquantes": 0,
+  "duree_ecoulee_premiere_capture_derniere_publication_s": 515,
+  "duree_moyenne_lot_par_mandat_s": 171.66666666666666,
+  "origine_fin_mesure": "Horodatage dernière publication dans la sauvegarde fournie par Henriquet",
+  "premiere_capture_immogest": "2026-11-18T15:04:21+00:00",
+  "sauvegarde_sha256": "0f144c67d6a4ebc9f213dbe6f598aac9a0b2eaa2c4332c136d0b21a13724e9fd",
+  "annonces": {
+    "nombre": 9,
+    "couples_mandat_portail": 9,
+    "doublons": 0,
+    "ecarts_titre_prix_surface_ville": 0,
+    "descriptions_photos": "absentes de la sauvegarde"
+  },
+  "sequences_detectees": [
+    {
+      "sequence": [
+        "Portail A / formulaire",
+        "ImmoGest / fiche mandat",
+        "Portail A / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 12,
+      "occurrences_duree_connue": 3
+    },
+    {
+      "sequence": [
+        "Portail A / fiche annonce",
+        "ImmoGest / fiche mandat",
+        "Portail B / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 11,
+      "occurrences_duree_connue": 3
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Portail C / formulaire",
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 15,
+      "occurrences_duree_connue": 3
+    },
+    {
+      "sequence": [
+        "Portail C / formulaire",
+        "ImmoGest / fiche mandat",
+        "Portail C / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 17,
+      "occurrences_duree_connue": 3
+    },
+    {
+      "sequence": [
+        "Portail C / formulaire",
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 9,
+      "duree_moyenne_s": 8,
+      "occurrences_duree_connue": 9
+    },
+    {
+      "sequence": [
+        "Portail B / formulaire",
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 7,
+      "duree_moyenne_s": 10,
+      "occurrences_duree_connue": 7
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Portail B / formulaire"
+      ],
+      "occurrences": 7,
+      "duree_moyenne_s": 9,
+      "occurrences_duree_connue": 7
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Portail A / formulaire"
+      ],
+      "occurrences": 6,
+      "duree_moyenne_s": 8,
+      "occurrences_duree_connue": 6
+    },
+    {
+      "sequence": [
+        "Portail A / formulaire",
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 6,
+      "duree_moyenne_s": 8,
+      "occurrences_duree_connue": 6
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Portail C / formulaire"
+      ],
+      "occurrences": 5,
+      "duree_moyenne_s": 11,
+      "occurrences_duree_connue": 5
+    },
+    {
+      "sequence": [
+        "Google Chrome / Suivi des publications - Google Sheets",
+        "Portail A / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 6,
+      "occurrences_duree_connue": 3
+    },
+    {
+      "sequence": [
+        "Google Chrome / Suivi des publications - Google Sheets",
+        "Portail C / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 6,
+      "occurrences_duree_connue": 3
+    },
+    {
+      "sequence": [
+        "Portail C / formulaire"
+      ],
+      "occurrences": 14,
+      "duree_moyenne_s": 4,
+      "occurrences_duree_connue": 14
+    },
+    {
+      "sequence": [
+        "Portail A / formulaire"
+      ],
+      "occurrences": 12,
+      "duree_moyenne_s": 4,
+      "occurrences_duree_connue": 12
+    },
+    {
+      "sequence": [
+        "Portail B / formulaire"
+      ],
+      "occurrences": 10,
+      "duree_moyenne_s": 4,
+      "occurrences_duree_connue": 10
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Portail A / fiche annonce",
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 12,
+      "occurrences_duree_connue": 3
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Google Chrome / Suivi des publications - Google Sheets"
+      ],
+      "occurrences": 8,
+      "duree_moyenne_s": 7,
+      "occurrences_duree_connue": 8
+    },
+    {
+      "sequence": [
+        "Portail A / fiche annonce",
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 8,
+      "duree_moyenne_s": 7,
+      "occurrences_duree_connue": 8
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Portail A / fiche annonce"
+      ],
+      "occurrences": 7,
+      "duree_moyenne_s": 8,
+      "occurrences_duree_connue": 7
+    },
+    {
+      "sequence": [
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 38,
+      "duree_moyenne_s": 4,
+      "occurrences_duree_connue": 38
+    },
+    {
+      "sequence": [
+        "Portail A / fiche annonce"
+      ],
+      "occurrences": 12,
+      "duree_moyenne_s": 3,
+      "occurrences_duree_connue": 12
+    },
+    {
+      "sequence": [
+        "Google Chrome / Suivi des publications - Google Sheets"
+      ],
+      "occurrences": 11,
+      "duree_moyenne_s": 3,
+      "occurrences_duree_connue": 11
+    },
+    {
+      "sequence": [
+        "Portail C / fiche annonce"
+      ],
+      "occurrences": 5,
+      "duree_moyenne_s": 3,
+      "occurrences_duree_connue": 5
+    },
+    {
+      "sequence": [
+        "Portail B / fiche annonce"
+      ],
+      "occurrences": 4,
+      "duree_moyenne_s": 3,
+      "occurrences_duree_connue": 4
+    }
+  ],
+  "taches_candidates": [
+    {
+      "nom": "Enchaînement répétitif : Portail A / formulaire → ImmoGest / fiche mandat → Portail A / formulaire",
+      "sequence": [
+        "Portail A / formulaire",
+        "ImmoGest / fiche mandat",
+        "Portail A / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 12,
+      "methode": "rien"
+    },
+    {
+      "nom": "Enchaînement répétitif : Portail A / fiche annonce → ImmoGest / fiche mandat → Portail B / formulaire",
+      "sequence": [
+        "Portail A / fiche annonce",
+        "ImmoGest / fiche mandat",
+        "Portail B / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 11,
+      "methode": "rien"
+    },
+    {
+      "nom": "Enchaînement répétitif : ImmoGest / fiche mandat → Portail C / formulaire → ImmoGest / fiche mandat",
+      "sequence": [
+        "ImmoGest / fiche mandat",
+        "Portail C / formulaire",
+        "ImmoGest / fiche mandat"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 15,
+      "methode": "rien"
+    },
+    {
+      "nom": "Enchaînement répétitif : Google Chrome / Suivi des publications - Google Sheets → Portail C / formulaire",
+      "sequence": [
+        "Google Chrome / Suivi des publications - Google Sheets",
+        "Portail C / formulaire"
+      ],
+      "occurrences": 3,
+      "duree_moyenne_s": 6,
+      "methode": "rien"
+    },
+    {
+      "nom": "Enchaînement répétitif : Portail C / fiche annonce",
+      "sequence": [
+        "Portail C / fiche annonce"
+      ],
+      "occurrences": 5,
+      "duree_moyenne_s": 3,
+      "methode": "rien"
+    }
+  ],
+  "limite": "Les séquences détectées sont des fragments. La durée par mandat est la division du temps écoulé du lot par trois, pas une moyenne de trois cycles isolés. Les interruptions et le temps entre captures restent inclus dans le temps écoulé.",
+  "suite": "Consigne de repli appliquée au bilan : 515 s écoulées sur le lot. Aucun remplacement de la tâche session1 à 244 s. Retour préparé pour le fil d’équipe. Le clic réel et la référence affichée sont en attente des responsables.",
+  "consigne_assel_16h19": "Vérifier le regroupement des étapes. Si impossible, conserver 515 s sur le lot. Le clic Prouver et le rapport utilisent la tâche de session1 avec la référence manuelle de 244 s.",
+  "resultat_regroupement": "Le détecteur exige des séquences contiguës répétées et interrompt les séquences hors périmètre. Il ne relie pas les étapes d’un même mandat dispersées dans le lot. Les captures ImmoGest partagent un titre commun, sans identifiant de mandat exploité par ce détecteur. La sauvegarde prouve la couverture des neuf couples mandat/portail, mais ne donne pas trois bornes complètes de temps par mandat.",
+  "validation_assel_16h29": {
+    "temps_ecoule_lot_s": 515,
+    "moyenne_par_division_arrondie_s": 172,
+    "nombre_mandats": 3,
+    "trois_durees_individuelles_disponibles": false,
+    "provenance": "Première capture ImmoGest à 16:04:21 dans Supabase et dernière publication à 16:12:56 dans la sauvegarde fournie par Henriquet",
+    "somme_durees_evenements_s": 442,
+    "ecart_a_eclaircir": true,
+    "reference_bouton_prouver_s": 244,
+    "reference_bouton_prouver_origine": "Moyenne chronométrée à la main, session1",
+    "gain_annuel": "En attente de validation séparée"
+  }
+}
