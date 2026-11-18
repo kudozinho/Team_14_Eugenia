@@ -8,13 +8,13 @@ Le dashboard `/mon-audit` commande le Recorder grâce à un compagnon qui reste 
 2. Générer deux secrets **différents**, aléatoires, de 32 caractères minimum (`python -c "import secrets; print(secrets.token_urlsafe(32))"`, deux fois). Ne pas les committer.
 3. Sur Vercel, configurer `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GHOST_PORTAL_TOKEN` (code privé remis au client) et `GHOST_DEVICE_TOKEN` (secret réservé au compagnon). Redéployer le dashboard depuis cette branche après revue.
 4. Sur le PC, conserver les dépendances/configuration Supabase et Recorder existantes. Dans `alejandro-cto/recorder/.env`, ajouter `GHOST_PORTAL_URL` (origine HTTPS du **nouveau** déploiement sans slash final), `GHOST_DEVICE_TOKEN` identique à Vercel et `GHOST_ANALYSIS_MODEL` (identifiant Holo déjà qualifié par Omar). `HAI_API_KEY` doit être disponible pour le sous-processus d’analyse. Ne pas utiliser le code client comme secret du compagnon.
-5. Depuis la racine, lancer `python alejandro-cto/recorder/portail.py`. Garder cette console ouverte. Un verrou local empêche deux compagnons sur ce PC.
+5. Double-cliquer `alejandro-cto/recorder/LANCER-PORTAIL.cmd` (ou, depuis la racine, lancer `python alejandro-cto/recorder/portail.py`). Garder cette console ouverte. Un verrou local empêche deux compagnons sur ce PC.
 
 ## Utilisation client
 
 Ouvrir `/mon-audit`, entrer le code privé, attendre « PC Windows connecté ». Cocher Chrome, Excel ou Word. Pour Chrome, saisir uniquement les domaines autorisés, sans protocole ni chemin (portails de démo et ImmoGest). Garder Chrome dans une fenêtre dédiée en F11 : le problème de recadrage Windows reste ouvert. Cocher le consentement puis Démarrer. Arrêter et analyser déclenche l’analyse de cette session ; ses tâches apparaissent dans Mon audit. Les anciens écrans Tableau de bord/Rapport conservent leur fonctionnement existant et ne sont pas le résultat de cette nouvelle session.
 
-Chaque démarrage crée un nouvel `audit_id`. Le périmètre ne change pas pendant une session. Le PC confirme les commandes ; l’interface ne simule pas d’enregistrement. Si le réseau échoue, le compagnon arrête la capture lors du prochain contrôle (requête limitée à 5 s, contrôle toutes les 2 s). Une reconnexion exige une nouvelle session. Limite de sécurité : deux heures par session. Analyse limitée à trois minutes ; en cas d’échec, les événements restent disponibles.
+Chaque démarrage crée un nouvel `audit_id`. Le périmètre ne change pas pendant une session. Le PC confirme les commandes ; l’interface ne simule pas d’enregistrement. Si le réseau échoue, le compagnon arrête la capture lors du prochain contrôle (requête de commande limitée à 5 s, contrôle toutes les 2 s entre les captures ; une capture/OCR ou un envoi Supabase déjà en cours peut retarder ce contrôle). Une reconnexion exige une nouvelle session. Limite de sécurité : deux heures par session. Analyse limitée à trois minutes ; en cas d’échec, les événements restent disponibles.
 
 ## Recette sur le PC (à effectuer avec Henriquet)
 
