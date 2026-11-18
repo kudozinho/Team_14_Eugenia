@@ -43,6 +43,15 @@ def test_piege_publie_et_signale_a_tort():
                                 verification_base={"Portail A": "absent"})) == "E5"
 
 
+def test_essai_corrige_garde_l_erreur_de_depart():
+    def corrige(premiere):
+        return resultat(corrections=1, verification_base={"Portail A": "ok"},
+                        premiere_verification={"Portail A": premiere})
+    assert code_erreur(corrige("faux")) == "E2"
+    assert code_erreur(corrige("sans_photo")) == "E7"
+    assert code_erreur(corrige("absent")) == "E1"
+
+
 def test_mauvaise_valeur_contre_annonce_absente():
     assert code_erreur(resultat(reussi=False, verification_base={"Portail A": "faux"})) == "E2"
     assert code_erreur(resultat(reussi=False, verification_base={"Portail A": "absent"})) == "E1"
