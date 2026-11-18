@@ -60,7 +60,7 @@ export default async function Dashboard() {
                   <div className="t"><Link href={`/rapport?tache=${encodeURIComponent(t.id)}`}>{t.nom}</Link></div>
                   <div className="meta">
                     <span className={`pill ${t.methode}`}>{LABEL_METHODE[t.methode]}</span>
-                    <span className="chip num">{t.heures_an} h / an</span>
+                    <span className="chip num">{t.heures_an} h / an{t.provisoire ? " · provisoire" : ""}</span>
                     <span className="chip num">{formatDuree(t.duree_humaine_s)} aujourd'hui</span>
                   </div>
                   <div className="vig-line"><b>Vigilance</b> {t.vigilance}</div>

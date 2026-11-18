@@ -67,10 +67,10 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
             <p className="lead">
               L'agent H recopie l'annonce sur les 3 sites en <strong>{formatDuree(dureeAgent)}</strong>
               {terminees.length > 1 && <> (médiane de {terminees.length} exécutions)</>}, contre{" "}
-              <strong>{formatDuree(dureeHumaine)}</strong> à la main : <strong>{m.heures_an} h</strong> récupérables par an selon les hypothèses.
+              <strong>{formatDuree(dureeHumaine)}</strong> à la main : <strong>{m.heures_an} h</strong> récupérables par an{choix.provisoire ? <> (<strong>gain annuel provisoire</strong>)</> : " selon les hypothèses"}.
             </p>
             <div className="row">
-              <span className="pill ok">Gain rapide</span>
+              <span className={`pill ${f.quadrant === "gain_rapide" ? "ok" : "rien"}`}>{({ gain_rapide: "Gain rapide", projet: "Projet", a_regrouper: "À regrouper", a_ecarter: "À écarter" } as Record<string, string>)[f.quadrant] ?? "À classer"}</span>
               <span className="pill agent_h">Agent H</span>
               <span className="chip">Confiance {f.confiance}/5</span>
               <span className="chip">{m.qui}</span>
@@ -78,7 +78,7 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
           </div>
         </div>
         <div className="stats">
-          <div className="stat"><b className="num">{m.heures_an} h</b><span>récupérables par an</span></div>
+          <div className="stat"><b className="num">{m.heures_an} h</b><span>récupérables par an{choix.provisoire ? " (gain annuel provisoire)" : ""}</span></div>
           <div className="stat"><b className="num">{m.temps_par_an_h} h</b><span>passées aujourd'hui par an</span></div>
           <div className="stat"><b>1 jour</b><span>de mise en place</span></div>
           <div className="stat"><b>≈ 90 $</b><span>de coût d'exécution par an</span></div>

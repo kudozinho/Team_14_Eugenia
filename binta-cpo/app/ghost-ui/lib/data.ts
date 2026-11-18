@@ -9,7 +9,7 @@ export type Score = {
 };
 export type Tache = {
   id: string; nom: string; court: string; methode: "agent_h" | "n8n" | "rien";
-  heures_an: number; duree_humaine_s: number; score: Score; outil: string; vigilance: string;
+  heures_an: number; duree_humaine_s: number; score: Score; outil: string; vigilance: string; provisoire?: boolean;
 };
 export type Execution = {
   tache_id: string; session_id: string; statut: string; duree_s: number;
@@ -167,6 +167,7 @@ function versTache(l: LigneTache): Tache | null {
       confiance: s.confiance ?? 3, total: s.total, quadrant: s.quadrant ?? "",
     },
     outil: LABEL_METHODE[METHODES[l.methode ?? "rien"] ?? "rien"],
+    provisoire: (s.hypotheses ?? []).some((h) => /vérifier|provisoire/i.test(h)),
     vigilance: (l.fiche?.technique as { vigilance?: string[] } | undefined)?.vigilance?.[0] ?? "À préciser dans la fiche de la tâche",
   };
 }
@@ -187,9 +188,9 @@ export async function chargerTaches(): Promise<{ source: SourceDonnees; taches: 
 // Pour la tâche de démo (recopie d'annonces), on garde les textes de la fiche d'exemple et on remplace les chiffres connus.
 export async function chargerFiche(tacheId?: string) {
   const lignes = await lireTaches();
-  if (!lignes || lignes.length === 0) return { source: "exemple" as SourceDonnees, fiche: ficheJson, tacheId: ficheJson.tache_id };
+  if (!lignes || lignes.length === 0) return { source: "exemple" as SourceDonnees, fiche: ficheJson, tacheId: ficheJson.tache_id, provisoire: false };
   const l = (tacheId && lignes.find((x) => x.id === tacheId)) || lignes.map((x) => ({ x, t: versTache(x) })).filter((a) => a.t).sort((a, b) => b.t!.score.total - a.t!.score.total)[0]?.x || lignes[0];
-  if (l.fiche?.metier && l.fiche?.technique) return { source: "base" as SourceDonnees, fiche: l.fiche as typeof ficheJson, tacheId: l.id };
+  if (l.fiche?.metier && l.fiche?.technique) return { source: "base" as SourceDonnees, fiche: l.fiche as typeof ficheJson, tacheId: l.id, provisoire: false };
 
   const s = l.score ?? {};
   const duree = l.duree_moyenne_s ?? 0;
@@ -218,5 +219,5 @@ export async function chargerFiche(tacheId?: string) {
     f.technique.effort = "À estimer"; f.technique.competence = "À définir : ";
     f.technique.recette = "À définir"; f.technique.cout_execution = "À estimer"; f.technique.maintenance = "À estimer";
   }
-  return { source: "base" as SourceDonnees, fiche: f, tacheId: l.id };
+  return { source: "base" as SourceDonnees, fiche: f, tacheId: l.id, provisoire: (s.hypotheses ?? []).some((h) => /vérifier|provisoire/i.test(h)) };
 }
