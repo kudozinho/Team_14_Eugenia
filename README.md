@@ -83,6 +83,8 @@ Le compte rendu donne, pour chaque tâche, le bon outil : **API disponible → n
 | Interface | `cd binta-cpo/app/ghost-ui && npm install && npm run dev` | aucune |
 | Base | coller `commun/schema-supabase.sql`, puis les fichiers de `henriquet-cdo/supabase/` | - |
 
+Pour le parcours complet du bouton « Prouver » sur le PC Windows d’Henriquet, suivre [`alejandro-cto/agent-h/DEMO-WINDOWS.md`](alejandro-cto/agent-h/DEMO-WINDOWS.md). Utiliser les trois sites actifs, pas les prévisualisations Vercel en lecture seule.
+
 **Permissions macOS pour le Recorder** (Réglages Système › Confidentialité et sécurité, pour Terminal) : Enregistrement de l'écran, Accessibilité, Automatisation › Google Chrome. Quitter et rouvrir Terminal après l'Enregistrement de l'écran.
 
 ## 5. Tests
