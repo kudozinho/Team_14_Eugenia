@@ -62,6 +62,9 @@ def main():
                         actual = 'interrupted' if aid else 'ready'
                         message = 'Compagnon reconnecté. Démarrez une nouvelle session.' if aid else ''
                         boot = False
+                    elif state['desired'] == 'stopped' and remote_id != aid and rec is None and process is None:
+                        aid = remote_id
+                        actual, message = 'completed', 'Session arrêtée avant le début de l’enregistrement.'
                     elif state['desired'] == 'recording' and remote_id != aid and rec is None and process is None:
                         aid = remote_id
                         selected = replace(cfg, audit_id=aid, applis_autorisees=tuple(state['applications']), sites_autorises=tuple(state['sites']), mode_capture='fenetre')
