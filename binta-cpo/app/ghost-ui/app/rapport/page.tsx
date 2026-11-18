@@ -37,11 +37,14 @@ export default async function Rapport() {
   const exec = mesure ?? getExecution();
 
   const [freq, freqDetail] = splitDetail(m.frequence);
-  const [duree, dureeDetail] = splitDetail(m.duree_aujourdhui);
+  const [dureeFiche, dureeDetailFiche] = splitDetail(m.duree_aujourdhui);
   const gain = phrases(m.gain_attendu);
   const recette = t.recette.split(/,\s*/);
   const dureeAgent = mesure?.duree_s ?? t.preuve.duree_agent_s;
-  const dureeHumaine = t.preuve.duree_humaine_s;
+  const dureeHumaine = mesure?.duree_humaine_s ?? t.preuve.duree_humaine_s;
+  // Avec une exécution mesurée : la référence « à la main » est celle de la tâche en base, pas les 12 min de l'exemple.
+  const duree = mesure ? `${formatDuree(dureeHumaine)} par opération` : dureeFiche;
+  const dureeDetail = mesure ? "moyenne chronométrée à la main sur 3 essais" : dureeDetailFiche;
 
   return (
     <>
