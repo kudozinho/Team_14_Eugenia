@@ -71,3 +71,22 @@ def test_site_non_autorise_bascule_tout_de_suite(tmp_path):
     rec = _recorder_avec_faux_systeme(tmp_path, [("https://mail.google.com", False)])
     rec.tour()
     assert rec.hors_perimetre
+
+
+# Test sur Windows du 18/11 (Henriquet) : onglets et barre d'adresse de Chrome lus par l'OCR.
+def test_rognage_garde_seulement_la_zone_de_la_page():
+    from PIL import Image
+    from rognage import rogner_zone
+    fenetre = (100, 50, 1100, 850)              # 1000 x 800 à l'écran
+    page = (108, 170, 1092, 842)                # la page commence 120 px sous le haut de la fenêtre
+    image = Image.new("RGB", (1000, 800), "white")
+    rognee = rogner_zone(image, fenetre, page)
+    assert rognee.size == (984, 672)            # plus d'onglets ni d'adresse
+
+
+def test_rognage_zone_hors_fenetre_rend_la_main_au_secours():
+    from PIL import Image
+    from rognage import rogner_zone
+    image = Image.new("RGB", (1000, 800), "white")
+    assert rogner_zone(image, (0, 0, 1000, 800), (2000, 2000, 2500, 2500)) is None
+    assert rogner_zone(image, (0, 0, 1000, 800), (0, 0, 5, 5)) is None

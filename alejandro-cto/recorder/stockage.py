@@ -2,6 +2,8 @@
 
 duree_s = temps passé sur l'écran avant l'événement suivant : il est connu seulement
 quand l'événement suivant arrive, on met donc à jour l'événement précédent à ce moment-là.
+C'est l'écart entre les deux horodatages : la somme des duree_s d'une session égale sa durée
+(avant le 19/11, le temps de capture, d'OCR et d'envoi, environ 0,9 s par événement, n'était pas compté).
 """
 
 import json
@@ -50,10 +52,9 @@ class Stockage:
                 "Prefer": "return=minimal",
             }
         self._precedent: dict | None = None
-        self._debut_precedent = 0.0
 
     def ecrire(self, evt: dict) -> None:
-        self.clore_precedent()
+        self.clore_precedent(fin=evt["horodatage"])
         with self.fichier.open("a", encoding="utf-8") as f:
             f.write(json.dumps(evt, ensure_ascii=False) + "\n")
         if self.supabase:
@@ -63,14 +64,16 @@ class Stockage:
             except requests.RequestException as e:
                 log.error("Supabase : envoi refusé (%s). L'événement reste dans le journal local.", e)
         self._precedent = evt
-        self._debut_precedent = time.monotonic()
         log.info("%s  %s  %s", evt["type"], evt["appli"] or "-", evt["titre_fenetre"] or "")
 
-    def clore_precedent(self) -> None:
-        """Fixe duree_s de l'événement en cours (avant le suivant, une pause ou l'arrêt)."""
+    def clore_precedent(self, fin: str | None = None) -> None:
+        """Fixe duree_s de l'événement en cours : jusqu'à l'horodatage `fin` de l'événement suivant,
+        ou jusqu'à maintenant (pause, arrêt)."""
         if not self._precedent:
             return
-        duree = round(time.monotonic() - self._debut_precedent)
+        debut = datetime.fromisoformat(self._precedent["horodatage"])
+        fin_dt = datetime.fromisoformat(fin) if fin else datetime.now().astimezone()
+        duree = max(round((fin_dt - debut).total_seconds()), 0)
         evt_id = self._precedent["id"]
         with self.fichier.open("a", encoding="utf-8") as f:
             f.write(json.dumps({"maj": evt_id, "duree_s": duree}) + "\n")

@@ -13,7 +13,9 @@ import win32ui
 import winocr
 from PIL import Image, ImageGrab
 
+from config import HAUTEUR_BARRES_CHROME_PT, NAVIGATEURS
 from plateforme import Fenetre
+from rognage import rogner_haut, rogner_zone
 
 log = logging.getLogger("recorder")
 
@@ -29,6 +31,8 @@ NOMS_APPLIS = {
     "msedge.exe": "Microsoft Edge",
 }
 SUFFIXES_TITRE = (" - Google Chrome", " - Excel", " - Word", " - Outlook")
+# Sous-fenêtre de Chrome qui affiche la page web (sans onglets, adresse ni favoris).
+CLASSE_PAGE_CHROME = "Chrome_RenderWidgetHostHWND"
 
 _local = threading.local()
 _langue_ocr = ["fr", "en"]
@@ -44,10 +48,14 @@ def fenetre_active() -> Fenetre | None:
     except psutil.Error:
         return None
     appli = NOMS_APPLIS.get(exe.lower(), exe.removesuffix(".exe").removesuffix(".EXE"))
+    return Fenetre(appli=appli, titre=_titre(hwnd), ident=hwnd, pid=pid)
+
+
+def _titre(hwnd: int) -> str:
     titre = win32gui.GetWindowText(hwnd)
     for s in SUFFIXES_TITRE:
         titre = titre.removesuffix(s)
-    return Fenetre(appli=appli, titre=titre, ident=hwnd, pid=pid)
+    return titre
 
 
 def url_navigateur(fen: Fenetre) -> tuple[str | None, bool]:
@@ -66,7 +74,11 @@ def url_navigateur(fen: Fenetre) -> tuple[str | None, bool]:
     except Exception as e:  # UI Automation peut échouer pendant un changement d'onglet
         log.debug("Adresse illisible : %s", e)
         return None, False
-    from regles import normaliser_url
+    from regles import normaliser_url, titres_concordent
+    # L'adresse ne compte que si l'onglet n'a pas changé entre la lecture du titre et celle de l'adresse
+    # (test du 18/11 : titre « Recherche Brave » avec l'adresse du Portail A).
+    if not titres_concordent(fen.titre, _titre(fen.ident)):
+        return None, False
     return normaliser_url(valeur), False
 
 
@@ -95,7 +107,43 @@ def capturer(fen: Fenetre, mode: str = "fenetre") -> Image.Image | None:
 
     if not ok or image.getbbox() is None:  # image noire : on lit la zone de la fenêtre à l'écran
         image = ImageGrab.grab(bbox=(gauche, haut, droite, bas), all_screens=True)
+    if fen.appli in NAVIGATEURS:
+        image = _rogner_navigateur(image, fen.ident, (gauche, haut, droite, bas))
     return image
+
+
+def _rogner_navigateur(image: Image.Image, hwnd: int, fenetre: tuple[int, int, int, int]) -> Image.Image:
+    """Onglets, barre d'adresse et favoris ne doivent jamais être lus (test du 18/11 sur Windows).
+
+    On garde la zone exacte de la page (sous-fenêtre de rendu de Chrome). Si Windows ne la donne pas,
+    on retire une hauteur fixe de barres, mise à l'échelle de l'écran.
+    """
+    zone = _zone_page(hwnd)
+    if zone:
+        rognee = rogner_zone(image, fenetre, zone)
+        if rognee is not None:
+            return rognee
+    echelle = ctypes.windll.user32.GetDpiForWindow(hwnd) / 96 or 1
+    log.debug("Zone de page introuvable : rognage fixe de %s points", HAUTEUR_BARRES_CHROME_PT)
+    return rogner_haut(image, image.height / echelle, HAUTEUR_BARRES_CHROME_PT)
+
+
+def _zone_page(hwnd: int) -> tuple[int, int, int, int] | None:
+    """Rectangle écran de la page web dans la fenêtre Chrome (la plus grande zone de rendu visible)."""
+    zones: list[tuple[int, int, int, int]] = []
+
+    def garder(enfant: int, _: object) -> bool:
+        if win32gui.GetClassName(enfant) == CLASSE_PAGE_CHROME and win32gui.IsWindowVisible(enfant):
+            r = win32gui.GetWindowRect(enfant)
+            if r[2] > r[0] and r[3] > r[1]:
+                zones.append(r)
+        return True
+
+    try:
+        win32gui.EnumChildWindows(hwnd, garder, None)
+    except win32gui.error:
+        return None
+    return max(zones, key=lambda r: (r[2] - r[0]) * (r[3] - r[1])) if zones else None
 
 
 def ocr(image: Image.Image) -> str:

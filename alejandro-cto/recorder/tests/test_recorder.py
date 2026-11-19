@@ -104,3 +104,17 @@ def test_rognage_sans_hauteur_connue_garde_l_image():
     image = Image.new("RGB", (100, 100), "white")
     assert rogner_haut(image, 0, 120).size == (100, 100)
     assert rogner_haut(image, 50, 120).size == (100, 100)  # rognage plus grand que l'image
+
+
+def test_somme_des_durees_egale_la_duree_de_la_session(tmp_path):
+    # Session 2 du 18/11 : 515 s entre la 1re et la dernière capture, mais 406 s de duree_s
+    # (capture + OCR + envoi, environ 0,9 s par événement, n'étaient pas comptés).
+    s = Stockage(tmp_path, None, None)
+    heures = ["2026-11-18T16:04:21+01:00", "2026-11-18T16:04:24+01:00", "2026-11-18T16:05:02+01:00",
+              "2026-11-18T16:12:56+01:00"]
+    evts = [nouvel_evenement("aud_demo", "usr", "changement_fenetre", horodatage=h) for h in heures]
+    for e in evts:
+        s.ecrire(e)
+    majs = [json.loads(l) for l in s.fichier.read_text(encoding="utf-8").splitlines() if '"maj"' in l]
+    assert [m["duree_s"] for m in majs] == [3, 38, 474]
+    assert sum(m["duree_s"] for m in majs) == 515
