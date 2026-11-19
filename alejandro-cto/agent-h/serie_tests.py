@@ -61,7 +61,7 @@ def code_erreur(r: dict) -> str | None:
         return "E5"
     # Erreur de départ de l'agent : après une correction, la vérification finale est toute "ok".
     verification = (r.get("premiere_verification") or r["verification_base"]).values()
-    if "sans_photo" in verification:
+    if "sans_photo" in verification or "mauvaise_photo" in verification:
         return "E7"  # blocage sur l'envoi du fichier
     if "faux" in verification:
         return "E2"

@@ -4,6 +4,7 @@ La réussite est vérifiée par notre code (roadmap 06, règle 2) : on relit les
 publiées par chaque site et on compare chaque champ au mandat donné à l'agent.
 """
 
+import hashlib
 import os
 from datetime import datetime
 
@@ -15,6 +16,7 @@ PORTAILS = {
     "Portail C": os.getenv("PORTAIL_C_URL", "https://ghost-portail-c.vercel.app") + "/publier",
 }
 CHAMPS = ("titre", "prix", "surface_m2", "ville", "description")
+BUCKET_PHOTOS = "photos-annonces"  # site C : <id>/photo.<ext> (vladimir-cao/portails/lib/store.ts)
 
 
 def racine(url_formulaire: str) -> str:
@@ -31,10 +33,11 @@ def vider(noms: list[str]) -> None:
         r.raise_for_status()
 
 
-def verifier(noms: list[str], mandat: dict, depuis: datetime) -> dict[str, str]:
+def verifier(noms: list[str], mandat: dict, depuis: datetime, photo_attendue: str | None = None) -> dict[str, str]:
     """Pour chaque portail, parmi les annonces créées après `depuis` :
-    "ok" (tous les champs exacts, et la photo sur le site C), "sans_photo" (site C, champs justes
-    mais pas de fichier dans photos-annonces/<id>/), "faux" (un champ diffère) ou "absent"."""
+    "ok" (tous les champs exacts, et la bonne photo sur le site C), "sans_photo" (site C, champs justes
+    mais pas de fichier dans photos-annonces/<id>/), "mauvaise_photo" (site C, une autre image que
+    `photo_attendue`, empreinte SHA-256), "faux" (un champ diffère) ou "absent"."""
     resultat = {}
     for nom in noms:
         r = requests.get(racine(PORTAILS[nom]) + "/api/annonces", timeout=15)
@@ -43,13 +46,46 @@ def verifier(noms: list[str], mandat: dict, depuis: datetime) -> dict[str, str]:
                     if datetime.fromisoformat(a["cree_le"]) >= depuis]
         justes = [a for a in recentes if all(_egal(a.get(c), mandat[c]) for c in CHAMPS)]
         # Le site C donne photo: true/false (README de Vladimir) ; les sites A et B n'ont pas ce champ.
-        if any(a.get("photo", True) is not False for a in justes):
-            resultat[nom] = "ok"
+        avec_photo = [a for a in justes if a.get("photo", True) is not False]
+        if avec_photo:
+            # Les sites A et B n'ont pas de champ photo : rien à comparer.
+            empreintes = [empreinte_photo(a["id"]) for a in avec_photo if "photo" in a and photo_attendue]
+            resultat[nom] = etat_photo(empreintes, photo_attendue)
         elif justes:
             resultat[nom] = "sans_photo"
         else:
             resultat[nom] = "faux" if recentes else "absent"
     return resultat
+
+
+def etat_photo(empreintes: list[str | None], attendue: str | None) -> str:
+    """"ok" si une annonce porte la photo attendue (ou s'il n'y a rien à comparer), sinon "mauvaise_photo".
+
+    Une photo illisible (None : pas de clé Supabase, réseau) ne fait pas échouer l'essai :
+    on ne peut pas prouver qu'elle est fausse.
+    """
+    if not attendue or not empreintes or attendue in empreintes:
+        return "ok"
+    return "ok" if all(e is None for e in empreintes) else "mauvaise_photo"
+
+
+def empreinte_photo(id_annonce: str) -> str | None:
+    """Empreinte SHA-256 de la photo enregistrée par le site C pour cette annonce (None si illisible)."""
+    url, cle = os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    if not (url and cle):
+        return None
+    entetes = {"apikey": cle, "Authorization": f"Bearer {cle}"}
+    try:
+        r = requests.post(f"{url}/storage/v1/object/list/{BUCKET_PHOTOS}", headers=entetes, timeout=15,
+                          json={"prefix": f"{id_annonce}/", "limit": 5})
+        objets = r.json() if r.ok else []
+        if not objets:
+            return None
+        f = requests.get(f"{url}/storage/v1/object/{BUCKET_PHOTOS}/{id_annonce}/{objets[0]['name']}",
+                         headers=entetes, timeout=30)
+        return hashlib.sha256(f.content).hexdigest() if f.ok else None
+    except requests.RequestException:
+        return None
 
 
 def mandat_publie(noms: list[str], mandat: dict, depuis: datetime) -> list[str]:
