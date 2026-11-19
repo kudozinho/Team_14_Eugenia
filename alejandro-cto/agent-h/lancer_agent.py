@@ -148,6 +148,7 @@ def consigne_texte(demande: dict) -> str:
         "RÈGLE ABSOLUE : copie chaque valeur caractère par caractère, exactement comme entre les guillemets. "
         "Ne reformule rien, n'ajoute aucun mot, ne change aucun adjectif. "
         f"{PIEGES_TITRE} "
+        f"Le titre s'épelle exactement ainsi, lettre par lettre : {epeler(donnees.get('titre', ''))}. "
         "Avant de valider chaque formulaire, relis le titre mot par mot et compare-le à la valeur : "
         "si un seul mot diffère, vide entièrement le champ (Ctrl+A puis Suppr) et retape-le. "
         "Relis aussi les autres champs et corrige-les s'ils diffèrent. "
@@ -351,12 +352,18 @@ def message_correction(verifie: dict[str, str], mandat: dict, depuis: datetime) 
             "Puis réponds à nouveau avec portails_publies et resume.")
 
 
+def epeler(texte: str) -> str:
+    """« Appartement T3 » -> « A-p-p-a-r-t-e-m-e-n-t / T-3 » : l'agent tapait « Apartment » même en écrivant
+    « double p » (série du 19/11, essais 4 et 5). Épelé, chaque lettre est une consigne à part."""
+    return " / ".join("-".join(mot) for mot in str(texte).split())
+
+
 def mots_faux(lu: object, attendu: object) -> str:
     """Les mots qui diffèrent, pour que la correction pointe l'erreur (« Apartment » au lieu de « Appartement »)."""
     a, b = str(lu).split(), str(attendu).split()
     if len(a) != len(b):
         return ""
-    faux = [f"« {x} » au lieu de « {y} »" for x, y in zip(a, b) if x != y]
+    faux = [f"« {x} » au lieu de « {y} », qui s'épelle {epeler(y)}" for x, y in zip(a, b) if x != y]
     return f" (mot faux : {', '.join(faux)})" if faux else ""
 
 

@@ -25,3 +25,10 @@ def test_la_consigne_cite_les_pieges_et_les_guillemets():
     texte = lancer_agent.consigne_texte(demande)
     assert "« Appartement T3 lumineux proche RER »" in texte
     assert "jamais « Apartment »" in texte and "jamais « lumineuse »" in texte
+
+
+def test_le_titre_est_epele_dans_la_consigne_et_la_correction():
+    assert lancer_agent.epeler("Appartement T3") == "A-p-p-a-r-t-e-m-e-n-t / T-3"
+    demande = {"consignes": "Publie.", "portails": ["https://a"], "donnees": dict(lancer_agent.MANDAT_DEMO)}
+    assert "A-p-p-a-r-t-e-m-e-n-t" in lancer_agent.consigne_texte(demande)
+    assert "A-p-p-a-r-t-e-m-e-n-t" in lancer_agent.mots_faux("Apartment T3", "Appartement T3")
