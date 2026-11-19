@@ -275,6 +275,7 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: st
     corrections = 0
     a_publie = reponse is None or reponse.statut == "publie"
     while (attendu == "publie" and a_publie and corrections < MAX_CORRECTIONS and fin.status == "idle"
+           and "photo_non_verifiee" not in verifie.values()
            and any(v != "ok" for v in verifie.values())):
         corrections += 1
         log.info("Vérification : %s -> correction demandée à l'agent", verifie)
