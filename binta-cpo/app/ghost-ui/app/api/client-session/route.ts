@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
 import { allowedEmail, clientUser } from '@/lib/client-auth';
 export const dynamic='force-dynamic';
+// Limite d'envoi : un code par minute et par instance (en plus des limites de Supabase) pour éviter le spam de la boîte invitée.
+let dernierEnvoi=0;
 function originOk(req:Request){return req.headers.get('origin')===new URL(req.url).origin;}
 export async function GET(){const u=await clientUser();return Response.json({authenticated:!!u,email:u?.email},{headers:{'Cache-Control':'no-store'}});}
 export async function DELETE(req:Request){if(!originOk(req))return new Response(null,{status:403});cookies().delete('ghost_session');return Response.json({ok:true});}
@@ -12,6 +14,7 @@ export async function POST(req:Request){
  const b=await req.json(),email=String(b.email||'').trim().toLowerCase();
  if(email!==allowedEmail())return Response.json({error:'Cette adresse n’est pas invitée à ce projet.'},{status:403});
  const verify=b.action==='verify';
+ if(!verify){if(Date.now()-dernierEnvoi<60000)return Response.json({error:'Un code vient d’être envoyé. Patientez une minute avant d’en demander un autre.'},{status:429});dernierEnvoi=Date.now();}
  if(verify&&!/^\d{6,10}$/.test(String(b.code||'')))return Response.json({error:'Saisissez le code reçu par e-mail.'},{status:400});
  const r=await fetch(`${url}/auth/v1/${verify?'verify':'otp'}`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:JSON.stringify(verify?{email,token:b.code,type:'email'}:{email,create_user:true}),signal:AbortSignal.timeout(10000)});
  const d=await r.json();if(!r.ok)return Response.json({error:verify?'Code expiré ou incorrect. Demandez un nouveau code.':'Envoi indisponible. Patientez une minute ou contactez l’équipe.'},{status:r.status===429?429:400});
