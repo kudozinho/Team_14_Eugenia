@@ -13,6 +13,7 @@ export default async function Dashboard() {
 
   return (
     <>
+      <section className="card" style={{marginBottom:24}}><p className="eyebrow">Agent H en action</p><h2>Voyez l’agent exécuter une tâche</h2><p>Un mandat fictif, trois formulaires web et un résultat vérifié. Lancez une vraie exécution depuis le site.</p><Link className="btn" href="/agent-h">Ouvrir la démonstration H</Link></section>
       <Direct source={source} maj={maj} />
       <p className="eyebrow">Compte rendu d'audit · {getOrganisation()}</p>
       <h1>Ce que Ghost a trouvé</h1>

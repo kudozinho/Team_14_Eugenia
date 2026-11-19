@@ -373,3 +373,17 @@ ul.vigil li { background: rgba(255,255,255,.75); border: 1px solid var(--ochre-2
 .live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--g-500); box-shadow: 0 0 0 4px rgba(46, 154, 99, .18); }
 .live.demo { color: var(--ochre-700); border-color: #e9d9a8; background: var(--ochre-50); }
 .live-btn { border: 0; background: transparent; color: var(--g-700); font: 600 1em var(--font-body); cursor: pointer; text-decoration: underline; padding: 0; }
+
+/* Étapes de l'exécution de l'agent H */
+.etapes { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 18px 0 0; }
+.etape { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink-2); font-size: .9em; font-weight: 600; }
+.etape > span { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--line); font-size: .8em; }
+.etape.fait { border-color: var(--g-500); color: var(--g-700); }
+.etape.fait > span { background: var(--g-700); color: #fff; }
+.etape.actif { border-color: var(--o-600); color: var(--ink); background: var(--o-50); }
+.etape.actif > span { background: var(--o-600); color: #fff; }
+.etape.rate { border-color: var(--ochre-700); color: var(--ochre-700); }
+.etape.rate > span { background: var(--ochre-700); color: #fff; }
+.progress i.indef { width: 40%; animation: glisse 1.6s var(--ease) infinite; }
+@keyframes glisse { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+@media (prefers-reduced-motion: reduce) { .progress i.indef { animation: none; width: 100%; opacity: .6; } }

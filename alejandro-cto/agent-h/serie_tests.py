@@ -61,7 +61,7 @@ def code_erreur(r: dict) -> str | None:
         return "E5"
     # Erreur de départ de l'agent : après une correction, la vérification finale est toute "ok".
     verification = (r.get("premiere_verification") or r["verification_base"]).values()
-    if "sans_photo" in verification:
+    if "sans_photo" in verification or "mauvaise_photo" in verification:
         return "E7"  # blocage sur l'envoi du fichier
     if "faux" in verification:
         return "E2"
@@ -106,7 +106,14 @@ def essai(niveau: int, numero: int, agent: str, contournement: str | None,
         "erreur": f"{erreur} {r['erreur_h'] or ''}".strip() if erreur else None,
         "contournement": contournement,
         "session_id": r["session_id"],
+        # Preuves du bilan, gardées dans le fichier local seulement (pas de colonne dans tests_agent) :
+        # état final par portail, et photo de C comparée par empreinte (None = non lue).
+        "portails": r["verification_base"],
+        "photo_prouvee": r.get("photo_prouvee"),
     }
+
+
+LOCAL_SEULEMENT = ("portails", "photo_prouvee")
 
 
 def enregistrer(ligne: dict, fichier: Path) -> None:
@@ -115,7 +122,8 @@ def enregistrer(ligne: dict, fichier: Path) -> None:
     url, cle = os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_ROLE_KEY")
     if not (url and cle):
         return
-    r = requests.post(f"{url}/rest/v1/tests_agent", json=ligne, timeout=10, headers={
+    base = {k: v for k, v in ligne.items() if k not in LOCAL_SEULEMENT}
+    r = requests.post(f"{url}/rest/v1/tests_agent", json=base, timeout=10, headers={
         "apikey": cle, "Authorization": f"Bearer {cle}",
         "Content-Type": "application/json", "Prefer": "return=minimal"})
     if not r.ok:
