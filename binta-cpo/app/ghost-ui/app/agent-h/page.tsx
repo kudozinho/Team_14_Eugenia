@@ -19,16 +19,16 @@ export default function AgentH() {
         <div style={{ marginTop: 18 }}><Prouver tacheId={tacheIdConfiguree()} /></div>
         <p className="note">
           Un code de démonstration est requis. Une seule exécution à la fois. Chaque lancement crée sa propre demande :
-          le résultat affiché est celui de cette demande, jamais celui d'une exécution précédente. Les crédits de l'agent H sont limités : sans crédits, le lancement est refusé et rien n'est simulé.
+          le résultat affiché est celui de cette demande, jamais celui d'une exécution précédente. Les crédits de l'agent H sont limités : sans crédits suffisants ou confirmés, le lancement est refusé et rien n'est simulé.
         </p>
       </section>
 
       <section className="card" style={{ marginTop: 24 }}>
         <h2>Ce que vous pouvez vérifier</h2>
         <ol>
-          <li>La demande reçoit un identifiant et passe par cinq étapes : demande reçue, préparation du service, agent en cours, vérification, terminé.</li>
+          <li>La demande reçoit un identifiant et passe par cinq étapes : demande reçue, attente du service, agent en cours, vérification, terminé.</li>
           <li>Le résultat indique la session H, la durée et les portails réellement vérifiés (✓ seulement après contrôle des annonces).</li>
-          <li>Terminé mais non vérifié, échec ou crédits épuisés sont affichés comme tels, jamais comme un succès.</li>
+          <li>Terminé mais non vérifié, échec ou crédits insuffisants sont affichés comme tels, jamais comme un succès.</li>
         </ol>
         <p>
           <a href="https://ghost-portail-a.vercel.app/">Portail A</a> · <a href="https://ghost-portail-b.vercel.app/">Portail B</a> · <a href="https://ghost-portail-c.vercel.app/">Portail C</a>

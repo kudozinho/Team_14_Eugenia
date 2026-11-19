@@ -115,10 +115,18 @@ export async function getHistoriqueExecutions(tacheId: string): Promise<Historiq
   }
 }
 
-// Une exécution compte seulement si l'agent a fini ET que les annonces sont vérifiées sur les portails
+// Preuve POSITIVE de vérification fournie par le backend : le résumé dit que les annonces sont vérifiées sur les 3 portails
+// (ou le backend renverra verification === "ok"). L'absence d'une phrase d'erreur ne suffit pas.
+export function verificationPositive(resume: string | null | undefined, verification?: string | null): boolean {
+  if (verification === "ok") return true;
+  const r = resume ?? "";
+  return /vérifiée en base sur 3 portail|vérifiée sur : portail a, portail b, portail c/i.test(r) && !/absente ou fausse|vérifiée sur : aucun/i.test(r);
+}
+
+// Une exécution compte seulement si l'agent a fini ET que le backend prouve la vérification des annonces sur les portails
 // (« Vérifiée sur : aucun » ou « Absente ou fausse » = échec de vérification, même si le statut est « completed »).
-export function executionValide(l: { statut: string; duree_s: number | null; resume: string }): boolean {
-  return l.statut === "completed" && !!l.duree_s && !/absente ou fausse|vérifiée sur : aucun/i.test(l.resume);
+export function executionValide(l: { statut: string; duree_s: number | null; resume: string; verification?: string | null }): boolean {
+  return l.statut === "completed" && !!l.duree_s && verificationPositive(l.resume, l.verification);
 }
 
 export function mediane(valeurs: number[]): number | null {

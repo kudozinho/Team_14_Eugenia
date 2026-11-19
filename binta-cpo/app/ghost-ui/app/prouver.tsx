@@ -2,40 +2,42 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Execution } from "@/lib/data";
-import { formatDuree } from "@/lib/data";
+import { formatDuree, verificationPositive } from "@/lib/data";
 
 // Parcours « Agent H en action » : une demande, un identifiant, des états réels lus dans Supabase.
 // Aucune simulation : sans service H configuré, le bouton est désactivé et le dit.
 // Le résultat affiché est TOUJOURS celui de la demande lancée ici (même identifiant), jamais une exécution précédente.
 
 type Etat = "attente" | "demande" | "suivi" | "termine" | "non_verifie" | "echec" | "indisponible";
-type Etape = "reveil" | "recue" | "agent" | "verification" | "fin";
+type Etape = "recue" | "attente" | "agent" | "verification" | "fin";
 
 type Ligne = {
   id: string; statut: string; resume: string | null; duree_s: number | null; duree_humaine_s: number | null;
   session_id: string | null; portails_publies: string[] | null; cree_le?: string;
+  verification?: string | null;   // futur : « ok » fourni par le backend après contrôle réel des publications
 };
 
 const SITES = ["Portail A", "Portail B", "Portail C"];
 const ETAPES: { id: Etape; titre: string }[] = [
   { id: "recue", titre: "Demande reçue" },
-  { id: "reveil", titre: "Préparation du service" },
+  { id: "attente", titre: "En attente du service" },
   { id: "agent", titre: "Agent en cours" },
   { id: "verification", titre: "Vérification" },
   { id: "fin", titre: "Terminé" },
 ];
 
-// Une exécution compte seulement si l'agent a fini ET que les annonces sont vérifiées sur les 3 portails.
+// Une exécution n'est un succès que si le backend PROUVE la vérification des annonces (résumé positif ou verification === "ok")
+// et que les 3 portails sont listés. L'absence de message d'erreur ne suffit pas, et une liste déclarée par H ne suffit pas.
 function verifiee(l: Ligne): boolean {
   return l.statut === "completed" && !!l.duree_s && SITES.every((s) => (l.portails_publies ?? []).includes(s))
-    && !/absente ou fausse|vérifiée sur : aucun/i.test(l.resume ?? "");
+    && verificationPositive(l.resume, l.verification);
 }
 
 // Étape affichée, déduite de la ligne lue dans la base (aucune étape inventée).
 function etapeDe(l: Ligne | null): Etape {
   if (!l) return "recue";
   if (l.statut !== "en_cours") return "fin";
-  if (l.resume === "CLOUD_PENDING") return "reveil"; // posée en file, pas encore prise par le service (réveil possible)
+  if (l.resume === "CLOUD_PENDING") return "attente"; // en file : pas encore prise par le service (ne prouve pas un réveil en cours)
   if (/vérif/i.test(l.resume ?? "")) return "verification";
   return "agent";
 }
@@ -67,14 +69,14 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
     if (verrou.current) return;
     verrou.current = true;
     const entetes: Record<string, string> = { "Content-Type": "application/json", ...(code ? { Authorization: `Bearer ${code}` } : {}) };
-    setEtat("demande"); setEtape("recue"); setSecondes(0); setLigne(null); setDemandeId(null); setMessage("Envoi de la demande…");
+    setEtat("demande"); setEtape("recue"); setSecondes(0); setLigne(null); setDemandeId(null); setMessage("Envoi de la demande… si le service gratuit dormait, cela peut prendre jusqu'à environ une minute avant de recevoir un identifiant.");
     const debut = Date.now();
     chrono.current = setInterval(() => setSecondes(Math.round((Date.now() - debut) / 1000)), 500);
     try {
-      const r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId }) });
+      const r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId }), signal: AbortSignal.timeout(90_000) });
       const d = await r.json().catch(() => ({}));
       if (r.status === 401) { terminer("attente"); setCodeRequis(!!d.code_requis); setErreurAcces(d.erreur || "Accès refusé."); return; }
-      if (r.status === 402 || d.credits_indisponibles) { terminer("indisponible", "Les crédits de l'agent H sont épuisés : aucun lancement n'est possible pour le moment. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
+      if (r.status === 402 || d.credits_indisponibles) { terminer("indisponible", "Crédits de l'agent H insuffisants ou non confirmés : aucun lancement, aucune recharge. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
       if (r.status === 409) { terminer("indisponible", "Une exécution est déjà en cours. Une seule exécution à la fois : attendez qu'elle se termine avant de relancer."); return; }
       if (r.status === 503 || d.desactive) { terminer("indisponible", d.erreur || "Le service agent H n'est pas disponible pour le moment. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
       if (!r.ok || !d.id) { terminer("echec", d.erreur || "La demande n'a pas pu être créée."); return; }
@@ -92,7 +94,9 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
           const l: Ligne | undefined = j.ligne;
           if (!l || l.id !== d.id) return; // on ne montre que la ligne de CETTE demande
           setEtape(etapeDe(l));
-          setMessage(l.resume === "CLOUD_PENDING" ? "Le service gratuit se prépare : le premier réveil peut prendre environ une minute." : (l.resume ?? ""));
+          setMessage(l.resume === "CLOUD_PENDING"
+            ? (j.service === "reveil" ? "Le service gratuit se réveille (confirmé par le serveur) : environ une minute." : "Demande en file : le service ne l'a pas encore prise. S'il dormait, son réveil peut prendre environ une minute.")
+            : (l.resume ?? ""));
           if (l.statut === "en_cours") return;
           setLigne({ ...l, portails_publies: l.portails_publies ?? [] });
           if (verifiee(l)) { terminer("termine"); router.refresh(); }
@@ -101,7 +105,8 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
         } catch { /* on réessaie au prochain tour */ }
       }, 5000);
     } catch (e) {
-      terminer("echec", e instanceof Error ? e.message : "Erreur inconnue");
+      const delai = e instanceof DOMException && (e.name === "TimeoutError" || e.name === "AbortError");
+      terminer("echec", delai ? "Le service n'a pas répondu en 90 secondes (il dormait peut-être). Aucune relance automatique : vérifiez avant de relancer." : (e instanceof Error ? e.message : "Erreur inconnue"));
     }
   }
 
