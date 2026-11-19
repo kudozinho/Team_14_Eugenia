@@ -13,6 +13,7 @@ en base → résultat §4 dans executions_agent (Supabase) et dans resultats/.
 
 import argparse
 import base64
+import hashlib
 import json
 import logging
 import os
@@ -44,6 +45,12 @@ SECONDES_PAR_PORTAIL = 150
 # Relances quand la vérification en base trouve une erreur. Session 17299d5f : après une
 # première relance, l'agent a encore tapé « luminosieux » ; on en autorise donc 2.
 MAX_CORRECTIONS = 2
+# Erreurs de titre observées sur M-0142 « Appartement T3 lumineux proche RER » (17 et 18/11) :
+# « Apartment T3 lumineux », « Apartamento T3 lumineuse » (969ac9f2), « luminosieux » (17299d5f),
+# « Apartment T3 lumineuse » (15h53 le 18/11, 452 s, refusé par la vérification). L'agent traduit ou accorde.
+PIEGES_TITRE = ("Le texte est en français : ne traduis aucun mot (« Appartement » reste « Appartement », "
+                "jamais « Apartment » ni « Apartamento ») et ne change jamais le genre d'un adjectif "
+                "(« lumineux » reste « lumineux », jamais « lumineuse »).")
 SESSION_OUVERTE_S = 120   # temps pendant lequel la session attend une correction après sa réponse
 
 # Contrôles avant publication : fourchette retenue par Henriquet pour le secteur (champ « piege » de M-T02).
@@ -53,6 +60,10 @@ CHAMPS_ANNONCE = ("titre", "prix", "surface_m2", "ville", "description", "classe
 
 # Les mandats viennent des données fictives d'Henriquet, jamais de valeurs écrites dans le code.
 FICHIER_MANDATS = RACINE / "henriquet-cdo/donnees/agence-belvedere.json"
+# Photo de chaque bien (M-0142.jpg...), celle que le site C doit recevoir.
+DOSSIER_PHOTOS = RACINE / "henriquet-cdo/sessions/photos"
+# Seul dossier où H accepte un fichier : un chemin relatif répond 403 « Path must be absolute ».
+DOSSIER_FICHIERS_H = "/home/hai/Downloads"
 REF_DEMO = "M-0142"
 
 
@@ -122,7 +133,7 @@ def construire_demande(tache: dict, noms: list[str], mandat: dict, agent: str) -
 def consigne_texte(demande: dict) -> str:
     sites = "\n".join(f"- {u}" for u in demande["portails"])
     donnees = demande["donnees"]
-    champs = "\n".join(f"- {cle} : {valeur}" for cle, valeur in donnees.items()
+    champs = "\n".join(f"- {cle} : « {valeur} »" for cle, valeur in donnees.items()
                        if cle not in ("classe_energie", "ref"))
     classe = donnees.get("classe_energie") or "non renseignée"
     return (
@@ -134,9 +145,13 @@ def consigne_texte(demande: dict) -> str:
         f"{demande['consignes']}\n\n"
         f"Portails, dans cet ordre :\n{sites}\n\n"
         f"Valeurs à saisir :\n{champs}\n\n"
-        "RÈGLE ABSOLUE : copie chaque valeur caractère par caractère, exactement comme ci-dessus. "
+        "RÈGLE ABSOLUE : copie chaque valeur caractère par caractère, exactement comme entre les guillemets. "
         "Ne reformule rien, n'ajoute aucun mot, ne change aucun adjectif. "
-        "Avant de valider chaque formulaire, relis chaque champ et corrige-le s'il diffère. "
+        f"{PIEGES_TITRE} "
+        f"Le titre s'épelle exactement ainsi, lettre par lettre : {epeler(donnees.get('titre', ''))}. "
+        "Avant de valider chaque formulaire, relis le titre mot par mot et compare-le à la valeur : "
+        "si un seul mot diffère, vide entièrement le champ (Ctrl+A puis Suppr) et retape-le. "
+        "Relis aussi les autres champs et corrige-les s'ils diffèrent. "
         "Les libellés des champs changent d'un site à l'autre : associe-les par leur sens "
         "(titre/intitulé/accroche, prix/montant, surface/superficie, ville/commune/localisation, "
         "description/texte/descriptif). "
@@ -148,17 +163,27 @@ def consigne_texte(demande: dict) -> str:
     )
 
 
-def deposer_photo(client: Client, session_id: str, attente_max_s: int = 60) -> str | None:
+def photo_du_mandat(ref: str | None) -> Path:
+    """La photo du bien (henriquet-cdo/sessions/photos/<ref>.jpg), sinon la photo générique."""
+    fichier = DOSSIER_PHOTOS / f"{ref}.jpg"
+    return fichier if ref and fichier.exists() else ICI / "photo-annonce.png"
+
+
+def empreinte_fichier(fichier: Path) -> str:
+    return hashlib.sha256(fichier.read_bytes()).hexdigest()
+
+
+def deposer_photo(client: Client, session_id: str, fichier: Path, attente_max_s: int = 60) -> str | None:
     """Met la photo du bien dans l'espace de fichiers de la session (site C).
 
     Le navigateur de la session met quelques secondes à démarrer : avant, l'API répond 404.
     """
-    contenu = base64.b64encode((ICI / "photo-annonce.png").read_bytes()).decode()
+    contenu = base64.b64encode(fichier.read_bytes()).decode()
     limite = time.monotonic() + attente_max_s
     while True:
         try:
             return client.session_files.write_file(
-                session_id, path="photo-annonce.png", content_base64=contenu).path
+                session_id, path=f"{DOSSIER_FICHIERS_H}/{fichier.name}", content_base64=contenu).path
         except ApiError as e:
             if e.status_code != 404 or time.monotonic() > limite:
                 log.error("Photo non déposée (%s) : le Portail C échouera.", e.status_code)
@@ -205,7 +230,7 @@ def ecrire_resultat(resultat: dict, ligne_id: str | None = None) -> None:
         log.error("executions_agent a refusé l'écriture (%s) : %s", r.status_code, r.text[:300])
 
 
-def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: str = "publie") -> dict:
+def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: str = "publie", *, on_session=None, on_verification=None) -> dict:
     """attendu = "publie" (mandat correct) ou "signale" (mandat piégé : rien ne doit être publié)."""
     tache = charger_tache(tache_id)
     demande = construire_demande(tache, noms, mandat, agent)
@@ -225,16 +250,23 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: st
         overrides={"agent.environments[kind=web].start_url": demande["start_url"]},
     )
     log.info("Session %s lancée sur %s", session.id, ", ".join(noms))
+    if on_session:
+        on_session(session.id)
+    fichier_photo = photo_du_mandat(mandat.get("ref"))
+    photo_attendue = empreinte_fichier(fichier_photo) if "Portail C" in noms else None
     if "Portail C" in noms:
-        chemin = deposer_photo(client, session.id)
+        chemin = deposer_photo(client, session.id, fichier_photo)
         if chemin:
             session.send_message({"type": "user_message", "message":
-                                  f"Pour la photo demandée par le Portail C, envoie le fichier {chemin}."})
+                                  f"Pour la photo demandée par le Portail C, envoie exactement le fichier {chemin} "
+                                  "(dossier Téléchargements). C'est la photo du bien : n'en crée et n'en choisis aucune autre."})
             log.info("Photo déposée pour l'agent : %s", chemin)
 
     fin = session.wait_for_completion()
     reponse = fin.answer if isinstance(fin.answer, ReponseAgent) else None
-    verifie = portails.verifier(noms, mandat, depuis)
+    if on_verification:
+        on_verification()
+    verifie = portails.verifier(noms, mandat, depuis, photo_attendue)
     # Mesuré sur la première réponse : la fiabilité brute de l'agent reste visible.
     premiere_verification = dict(verifie)
     faux_succes = bool(reponse) and any(
@@ -250,7 +282,7 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: st
                               "message": message_correction(verifie, mandat, depuis)})
         _attendre_reprise(session)
         fin = session.wait_for_completion()
-        verifie = portails.verifier(noms, mandat, depuis)
+        verifie = portails.verifier(noms, mandat, depuis, photo_attendue)
 
     duree_s = round(time.monotonic() - debut)
     etat = session.status()
@@ -290,6 +322,7 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: st
         "reponse_structuree": reponse is not None,
         "verification_base": verifie,
         "premiere_verification": premiere_verification,
+        "photo_prouvee": portails.photo_prouvee(depuis, photo_attendue) if photo_attendue else None,
         "corrections": corrections,
         "reussi": reussi,
         "attendu": attendu,
@@ -310,14 +343,33 @@ def message_correction(verifie: dict[str, str], mandat: dict, depuis: datetime) 
             lignes.append(f"- {nom} : aucune annonce publiée. Publie-la.")
         elif etat == "sans_photo":
             lignes.append(f"- {nom} : l'annonce n'a pas de photo. Republie-la avec la photo.")
+        elif etat == "mauvaise_photo":
+            lignes.append(f"- {nom} : la photo n'est pas celle du bien. Republie l'annonce avec le fichier "
+                          f"déposé dans {DOSSIER_FICHIERS_H}, sans créer d'autre image.")
         elif etat == "faux":
             ecarts = portails.ecarts(nom, mandat, depuis)
-            detail = " ; ".join(f"{c} enregistré « {lu} » au lieu de « {attendu} »"
+            detail = " ; ".join(f"{c} enregistré « {lu} » au lieu de « {attendu} »{mots_faux(lu, attendu)}"
                                 for c, (lu, attendu) in ecarts.items())
             lignes.append(f"- {nom} : {detail}. Republie une nouvelle annonce avec les valeurs exactes.")
     return ("Notre vérification en base a trouvé des erreurs :\n" + "\n".join(lignes) +
-            "\nNe touche pas aux portails corrects. Recopie les valeurs exactement, sans les traduire "
-            "ni les reformuler, puis réponds à nouveau avec portails_publies et resume.")
+            "\nNe touche pas aux portails corrects. Pour chaque champ faux, vide-le entièrement (Ctrl+A puis Suppr) "
+            "avant de retaper la valeur exacte, sans la traduire ni l'accorder. "
+            "Puis réponds à nouveau avec portails_publies et resume.")
+
+
+def epeler(texte: str) -> str:
+    """« Appartement T3 » -> « A-p-p-a-r-t-e-m-e-n-t / T-3 » : l'agent tapait « Apartment » même en écrivant
+    « double p » (série du 19/11, essais 4 et 5). Épelé, chaque lettre est une consigne à part."""
+    return " / ".join("-".join(mot) for mot in str(texte).split())
+
+
+def mots_faux(lu: object, attendu: object) -> str:
+    """Les mots qui diffèrent, pour que la correction pointe l'erreur (« Apartment » au lieu de « Appartement »)."""
+    a, b = str(lu).split(), str(attendu).split()
+    if len(a) != len(b):
+        return ""
+    faux = [f"« {x} » au lieu de « {y} », qui s'épelle {epeler(y)}" for x, y in zip(a, b) if x != y]
+    return f" (mot faux : {', '.join(faux)})" if faux else ""
 
 
 def _attendre_reprise(session, attente_max_s: int = 30) -> None:

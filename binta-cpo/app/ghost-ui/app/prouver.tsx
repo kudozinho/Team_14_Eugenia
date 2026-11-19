@@ -37,7 +37,7 @@ function verifiee(l: Ligne): boolean {
 function etapeDe(l: Ligne | null): Etape {
   if (!l) return "recue";
   if (l.statut !== "en_cours") return "fin";
-  if (l.resume === "CLOUD_PENDING") return "attente"; // en file : pas encore prise par le service (ne prouve pas un réveil en cours)
+  if (l.resume === "CLOUD_PENDING" || l.resume === "HTTP_PENDING") return "attente"; // en file : pas encore prise par le service (ne prouve pas un réveil en cours)
   if (/vérif/i.test(l.resume ?? "")) return "verification";
   return "agent";
 }
@@ -57,12 +57,23 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
   const chrono = useRef<ReturnType<typeof setInterval> | null>(null);
   const verrou = useRef(false); // bloque un deuxième clic avant même le re-rendu
   // Clé de demande envoyée au serveur pour éviter un doublon : réutilisée tant qu'aucune réponse n'a été reçue (délai dépassé),
-  // changée seulement après une réponse. Le serveur doit la traiter comme idempotente (champ cle_demande).
+  // conservée jusqu’à une nouvelle intention explicite. Le serveur la traite comme idempotente.
   const cle = useRef<string | null>(null);
+  const [reprise, setReprise] = useState(false);
+  const lecture = useRef(false);
+  const generation = useRef(0);
+  function garderCle(value: string | null) {
+    cle.current = value; setReprise(!!value);
+    try { if (value) sessionStorage.setItem("ghost.h.request", value); else sessionStorage.removeItem("ghost.h.request"); } catch { /* reprise limitée à cette page si stockage bloqué */ }
+  }
+  useEffect(() => {
+    try { const value = sessionStorage.getItem("ghost.h.request"); if (value) garderCle(value); } catch { /* stockage indisponible */ }
+  }, []);
 
   useEffect(() => () => { if (minuteur.current) clearInterval(minuteur.current); if (chrono.current) clearInterval(chrono.current); }, []);
 
   function arreter() {
+    generation.current++;
     if (minuteur.current) clearInterval(minuteur.current);
     if (chrono.current) clearInterval(chrono.current);
   }
@@ -76,29 +87,41 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
     const debut = Date.now();
     chrono.current = setInterval(() => setSecondes(Math.round((Date.now() - debut) / 1000)), 500);
     try {
-      const r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId, cle_demande: (cle.current ??= crypto.randomUUID()) }), signal: AbortSignal.timeout(90_000) });
-      cle.current = null; // une réponse est arrivée : la prochaine demande aura une nouvelle clé
-      const d = await r.json().catch(() => ({}));
+      if (!cle.current) garderCle(crypto.randomUUID());
+      let r: Response, d;
+      do {
+        r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId, cle_demande: cle.current }), signal: AbortSignal.timeout(20_000) });
+        d = await r.json().catch(() => ({}));
+        if (!d.preparation) break;
+        setEtape("attente"); setMessage("Préparation du service gratuit… La même demande est conservée.");
+        if (Date.now() - debut > 90_000) throw new DOMException("Préparation trop longue", "TimeoutError");
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } while (true);
+      // Conserver la clé même après une erreur HTTP ambiguë.
       if (r.status === 401) { terminer("attente"); setCodeRequis(!!d.code_requis); setErreurAcces(d.erreur || "Accès refusé."); return; }
       if (r.status === 402 || d.credits_indisponibles) { terminer("indisponible", "Crédits de l'agent H insuffisants ou non confirmés : aucun lancement, aucune recharge. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
-      if (r.status === 409) { terminer("indisponible", "Une exécution est déjà en cours. Une seule exécution à la fois : attendez qu'elle se termine avant de relancer."); return; }
+      if (r.status === 409) { terminer("indisponible", d.erreur || "Une exécution est déjà en cours ou nécessite une vérification avant reprise."); return; }
       if (r.status === 503 || d.desactive) { terminer("indisponible", d.erreur || "Le service agent H n'est pas disponible pour le moment. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
       if (!r.ok || !d.id) { terminer("echec", d.erreur || "La demande n'a pas pu être créée."); return; }
       setErreurAcces(""); setCodeRequis(false);
       setDemandeId(d.id); setEtat("suivi");
       setMessage("Demande enregistrée. Le service H la prend en charge.");
+      const tour = generation.current;
       minuteur.current = setInterval(async () => {
+        if (lecture.current || tour !== generation.current) return;
+        lecture.current = true;
         if (Date.now() - debut > 11 * 60 * 1000) {
           terminer("echec", "Délai dépassé (plus de 10 minutes). Aucune relance automatique : vérifiez les portails avant de relancer.");
-          return;
+          lecture.current = false; return;
         }
         try {
-          const g = await fetch(`/api/prouver?id=${encodeURIComponent(d.id)}`, { cache: "no-store", headers: entetes });
+          const g = await fetch(`/api/prouver?id=${encodeURIComponent(d.id)}`, { cache: "no-store", headers: entetes, signal: AbortSignal.timeout(15000) });
           const j = await g.json();
+          if (tour !== generation.current) return;
           const l: Ligne | undefined = j.ligne;
           if (!l || l.id !== d.id) return; // on ne montre que la ligne de CETTE demande
           setEtape(etapeDe(l));
-          setMessage(l.resume === "CLOUD_PENDING"
+          setMessage((l.resume === "CLOUD_PENDING" || l.resume === "HTTP_PENDING")
             ? (j.service === "reveil" ? "Le service gratuit se réveille (confirmé par le serveur) : environ une minute." : "Demande en file : le service ne l'a pas encore prise. S'il dormait, son réveil peut prendre environ une minute.")
             : (l.resume ?? ""));
           if (l.statut === "en_cours") return;
@@ -106,7 +129,7 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
           if (verifiee(l)) { terminer("termine"); router.refresh(); }
           else if (l.statut === "completed") terminer("non_verifie", "L'agent a terminé, mais les annonces n'ont pas été vérifiées sur les 3 portails : ce n'est pas un succès.");
           else terminer("echec", l.resume || `L'agent s'est arrêté (${l.statut}).`);
-        } catch { /* on réessaie au prochain tour */ }
+        } catch { /* relire la même demande */ } finally { lecture.current = false; }
       }, 5000);
     } catch (e) {
       const delai = e instanceof DOMException && (e.name === "TimeoutError" || e.name === "AbortError");
@@ -126,10 +149,10 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
         <h3 style={{ margin: 0 }}>L'agent H refait la tâche, chronomètre en main</h3>
         <div className="row">
           <button className="btn" onClick={lancer} disabled={occupe || etat === "indisponible"} aria-busy={occupe}>
-            {occupe ? `En cours… ${secondes} s` : "Lancer l'agent H"}
+            {occupe ? `En cours… ${secondes} s` : reprise ? "Retrouver ma demande" : "Lancer l'agent H"}
           </button>
           {(etat === "termine" || etat === "non_verifie" || etat === "echec" || etat === "indisponible") && (
-            <button className="btn sec" onClick={() => { setEtat("attente"); setLigne(null); setDemandeId(null); setMessage(""); setEtape("recue"); }}>Effacer</button>
+            <button className="btn sec" onClick={() => { setEtat("attente"); setLigne(null); setDemandeId(null); setMessage(""); setEtape("recue"); if (ligne && ligne.statut !== "en_cours") garderCle(null); }}>{ligne && ligne.statut !== "en_cours" ? "Nouvelle demande" : "Masquer le message"}</button>
           )}
         </div>
       </div>

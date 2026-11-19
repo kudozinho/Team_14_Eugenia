@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ghost-agent-h
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/agent-h/Dockerfile
+    healthCheckPath: /healthz
+    autoDeployTrigger: "off"
+    envVars:
+      - key: TACHE_ID
+        value: tache_a1a0c7545c805f328eba1e25
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: HAI_API_KEY
+        sync: false
+      - key: GHOST_WORKER_TOKEN
+        sync: false
