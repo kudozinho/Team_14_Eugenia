@@ -30,6 +30,41 @@ def test_mauvaise_photo_compte_comme_e7():
     assert code_erreur(r) == "E7"
 
 
+def test_photo_prouvee_distingue_non_lue_de_fausse(monkeypatch):
+    from datetime import datetime, timezone
+
+    import portails
+
+    class Rep:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"annonces": [{"id": "x", "cree_le": "2026-11-19T07:32:00+00:00", "photo": True}]}
+
+    monkeypatch.setattr(portails.requests, "get", lambda *a, **k: Rep())
+    depuis = datetime(2026, 11, 19, 7, 0, tzinfo=timezone.utc)
+    for lue, attendu in (("bonne", True), ("autre", False), (None, None)):
+        monkeypatch.setattr(portails, "empreinte_photo", lambda _id, e=lue: e)
+        assert portails.photo_prouvee(depuis, "bonne") is attendu
+
+
+def test_preuves_locales_pas_envoyees_a_tests_agent(monkeypatch, tmp_path):
+    import serie_tests
+    envoye = {}
+    monkeypatch.setenv("SUPABASE_URL", "http://x")
+    monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "k")
+
+    class Ok:
+        ok = True
+
+    monkeypatch.setattr(serie_tests.requests, "post", lambda url, json, **k: envoye.update(json) or Ok())
+    serie_tests.enregistrer({"essai": 1, "portails": {"Portail C": "ok"}, "photo_prouvee": True},
+                            tmp_path / "t.jsonl")
+    assert envoye == {"essai": 1}
+    assert '"photo_prouvee": true' in (tmp_path / "t.jsonl").read_text(encoding="utf-8")
+
+
 def test_le_chemin_envoye_a_h_est_absolu():
     import lancer_agent
     assert lancer_agent.DOSSIER_FICHIERS_H.startswith("/")

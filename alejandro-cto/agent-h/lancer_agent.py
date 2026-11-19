@@ -318,6 +318,7 @@ def lancer(tache_id: str, noms: list[str], agent: str, mandat: dict, attendu: st
         "reponse_structuree": reponse is not None,
         "verification_base": verifie,
         "premiere_verification": premiere_verification,
+        "photo_prouvee": portails.photo_prouvee(depuis, photo_attendue) if photo_attendue else None,
         "corrections": corrections,
         "reussi": reussi,
         "attendu": attendu,

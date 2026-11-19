@@ -69,6 +69,18 @@ def etat_photo(empreintes: list[str | None], attendue: str | None) -> str:
     return "ok" if all(e is None for e in empreintes) else "mauvaise_photo"
 
 
+def photo_prouvee(depuis: datetime, attendue: str) -> bool | None:
+    """Preuve pour le bilan : une annonce du site C créée après `depuis` porte-t-elle exactement
+    la photo attendue ? None si aucune empreinte n'a pu être lue (etat_photo dit alors "ok")."""
+    r = requests.get(racine(PORTAILS["Portail C"]) + "/api/annonces", timeout=15)
+    r.raise_for_status()
+    empreintes = [empreinte_photo(a["id"]) for a in r.json().get("annonces", [])
+                  if datetime.fromisoformat(a["cree_le"]) >= depuis and a.get("photo")]
+    if all(e is None for e in empreintes):
+        return None
+    return attendue in empreintes
+
+
 def empreinte_photo(id_annonce: str) -> str | None:
     """Empreinte SHA-256 de la photo enregistrée par le site C pour cette annonce (None si illisible)."""
     url, cle = os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_ROLE_KEY")
