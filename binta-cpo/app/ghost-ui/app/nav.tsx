@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const ICONES: Record<string, JSX.Element> = {
+  "/mon-audit": <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10" r="3"/></svg>,
   "/": (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
       <rect x="3" y="3" width="7" height="9" rx="2" /><rect x="14" y="3" width="7" height="5" rx="2" />
@@ -19,6 +20,7 @@ const ICONES: Record<string, JSX.Element> = {
 export default function Nav() {
   const path = usePathname();
   const items = [
+    { href: "/mon-audit", label: "Mon audit" },
     { href: "/", label: "Tableau de bord" },
     { href: "/rapport", label: "Rapport" },
   ];

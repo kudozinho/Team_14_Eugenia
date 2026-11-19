@@ -71,7 +71,11 @@ def main():
         if args.diagnostic_portails:
             print(json.dumps(diagnostic_portails(evenements), ensure_ascii=False, indent=2))
             return
-        fournisseur = simulateur_local if args.simulation else HoloProvider(args.modele)
+        # Une session sans candidate se termine sans appel ni clé du fournisseur.
+        def fournisseur_holo(messages):
+            return HoloProvider(args.modele)(messages)
+
+        fournisseur = simulateur_local if args.simulation else fournisseur_holo
         taches = analyser_audit(evenements, fournisseur)
         resultat = {'taches': taches}
         if args.ecrire:
