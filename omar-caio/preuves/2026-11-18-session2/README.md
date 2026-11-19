@@ -10,7 +10,7 @@ Le diagnostic porte sur aud_demo entre 16 h 04 min 21 inclus et 16 h 13 min 03 e
 - Les champs de durée des sorties du périmètre totalisent 40 secondes. Leur cause, fenêtre de choix de la photo, est rapportée par Henriquet. Le contenu des événements hors périmètre est ignoré.
 - Neuf identifiants d’annonce distincts couvrent M-0145, M-0146 et M-0148 sur A, B et C. Titres, prix, surfaces et villes correspondent exactement au CSV des mandats. Descriptions et photos absentes de la sauvegarde.
 - La première capture ImmoGest est horodatée à 16 h 04 min 21. La dernière publication déclarée dans la sauvegarde est à 16 h 12 min 56. Leur différence donne 515 secondes, soit 8 min 35 pour le lot et 171,67 secondes par mandat en divisant par trois.
-- Les champs duree_s des 125 événements totalisent 442 secondes. Cette somme porte sur la fenêtre de capture complète, jusqu’à 16 h 13 min 02. Elle diffère du temps écoulé aux horodatages. L’origine de cet écart reste à qualifier avec le Recorder. La borne finale des 515 secondes provient de la sauvegarde des publications.
+- Les champs duree_s des 125 événements totalisent 442 secondes. Cette somme porte sur la fenêtre de capture complète, jusqu’à 16 h 13 min 02. Elle diffère du temps écoulé aux horodatages. La borne finale des 515 secondes provient de la sauvegarde des publications.
 - Les publications de la sauvegarde apparaissent dans l’ordre A, B, C, C, C, B, B, A, A. Cet ordre ne constitue pas trois cycles A → B → C distincts.
 
 ## Résultat du détecteur
@@ -37,6 +37,12 @@ Assel attend le clic réel sur Prouver et la bonne référence de durée dans le
 
 ## Validation d’Assel à 16 h 29
 
-Assel valide 515 secondes de temps écoulé pour le lot, de la première capture ImmoGest à la dernière publication. La valeur de 172 secondes par mandat est obtenue en divisant par trois et en arrondissant. Les trois durées individuelles sont inconnues. L’écart avec les 442 secondes cumulées dans les événements reste à éclaircir.
+Assel valide 515 secondes de temps écoulé pour le lot, de la première capture ImmoGest à la dernière publication. La valeur de 172 secondes par mandat est obtenue en divisant par trois et en arrondissant. Les trois durées individuelles sont inconnues. Le rapprochement des deux fenêtres figure ci-dessous.
 
 La référence du bouton Prouver reste la moyenne manuelle de 244 secondes sur la tâche tache_a1a0c7545c805f328eba1e25. Le gain annuel attend une validation distincte.
+
+## Rapprochement du 19 novembre
+
+La relecture en base retrouve 123 événements entre 16 h 04 min 21 et la publication de 16 h 12 min 56. Le dernier événement de cette fenêtre est horodaté à 16 h 12 min 55. Les 122 intervalles entre les 123 horodatages couvrent donc 514 s. Les durées des 122 premières lignes totalisent 406 s. La dernière ligne a une durée de 3 s qui s’étend au-delà du dernier horodatage. Additionner les 123 champs entiers donne 409 s.
+
+Selon Alejandro, l’ancien Recorder omettait le temps de capture, de reconnaissance du texte et d’envoi en base. Cela explique les 108 s manquantes entre les événements (514 − 406), soit environ 0,89 s par intervalle. La dernière seconde jusqu’à la publication porte la durée du lot à 515 s. Sur la sélection élargie à 125 événements, jusqu’à 16 h 13 min 02, la somme des champs reste de 442 s. La PR #63 change le calcul pour les prochaines captures. [Correctif du Recorder](https://github.com/kudozinho/Team_14_Eugenia/pull/63)

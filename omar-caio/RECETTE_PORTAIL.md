@@ -48,7 +48,7 @@ Faire ensuite une session courte sans répétition et confirmer zéro tâche et 
 
 ## Limites à conserver pour le Loom
 
-La session2 historique donne 515 secondes écoulées pour le lot et 172 secondes par mandat par division. Elle ne fournit pas trois durées individuelles. La somme de 442 secondes dans les événements reste une mesure distincte à expliquer.
+La session2 historique donne 515 secondes écoulées pour le lot et 172 secondes par mandat par division. Elle ne fournit pas trois durées individuelles. Les 442 s portent sur 125 événements. Le [rapprochement des horodatages](preuves/2026-11-18-session2/README.md) explique les 108 s omises sur les 122 intervalles comparables.
 
 L’affichage public historique peut encore montrer des exemples. Le résultat du nouvel audit est celui présenté dans Mon audit pour sa session. Le contexte métier du script CAIO reste le jeu fictif de l’Agence Belvédère. Le parcours multi-clients avec des profils et contextes propres demande un branchement supplémentaire.
 
@@ -74,3 +74,11 @@ L’injection d’une erreur ou d’un délai se prépare avec Henriquet et Alej
 La route du portail renseigne aussi audits.statut=termine pour les états completed, error et interrupted du compagnon. Ce champ seul ne prouve pas une analyse réussie. Croiser portail_recorder.actual, son message, les tâches et l’affichage client pour chaque scénario.
 
 À la réception du mail, l’envoi réel du code, le déploiement de cette version et la recette complète Windows restent à confirmer par l’équipe. Le compte personnel est rattaché au seul appareil de démonstration.
+
+## Point du 19 novembre à 14 h 06, heure de Paris
+
+La #61 est fusionnée et le portail en ligne répond en HTTP 200. Lecture de la table de pilotage à 14 h 06 min 29 : état ready, commande stopped, dernier signal à 14 h 06 min 28, audit_id vide. La recherche des audits du jour n’a retourné aucune ligne. La validation des quatre scénarios attend le premier lancement consenti. La vérification de la clé H d’équipe sur le PC reste à confirmer.
+
+Pour l’installation d’équipe, placer HAI_API_KEY dans le fichier .env privé à la racine et vérifier son accès depuis le compagnon. Le compagnon charge aussi le fichier recorder/.env, puis transmet son environnement au processus d’analyse. L’option --env du script configure l’accès Supabase.
+
+Le compagnon sur main dispose déjà d’un journal local et masque les flux de sortie de l’analyse. Pour diagnostiquer un échec, consigner l’étape, la catégorie d’erreur, la durée et le code de sortie sur le PC. Garder les textes capturés, consignes, réponses brutes et valeurs de configuration hors du journal.
