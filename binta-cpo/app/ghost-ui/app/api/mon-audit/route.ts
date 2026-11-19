@@ -1,3 +1,4 @@
+import { clientUser } from '@/lib/client-auth';
 import { createHash, timingSafeEqual } from 'node:crypto';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -5,10 +6,10 @@ const APPS = ['Google Chrome', 'Microsoft Excel', 'Microsoft Word'];
 function match(value: string, expected?: string) {
  return !!expected && expected.length >= 32 && timingSafeEqual(createHash('sha256').update(value).digest(), createHash('sha256').update(expected).digest());
 }
-function role(req: Request) {
+async function role(req: Request) {
  const token = (req.headers.get('authorization') || '').replace(/^Bearer /, '');
  if (match(token, process.env.GHOST_DEVICE_TOKEN)) return 'device';
- if (match(token, process.env.GHOST_PORTAL_TOKEN)) return 'client';
+ if (await clientUser()) return 'client';
  return null;
 }
 async function db(path: string, method='GET', body?: unknown) {
@@ -20,7 +21,7 @@ async function db(path: string, method='GET', body?: unknown) {
 }
 const endpoint='portail_recorder?id=eq.henriquet';
 export async function GET(req: Request) {
- const who=role(req); if(!who) return Response.json({error:'Code d’accès incorrect'},{status:401});
+ const who=await role(req); if(!who) return Response.json({error:'Code d’accès incorrect'},{status:401});
  try {
   const [state]=await db(endpoint); if(!state) throw new Error('Migration du portail manquante');
   const online=!!state.heartbeat && Date.now()-Date.parse(state.heartbeat)<10000;
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
  } catch(e) { return Response.json({error:(e as Error).message},{status:503}); }
 }
 export async function POST(req: Request) {
- if(role(req)!=='client') return Response.json({error:'Accès refusé'},{status:401});
+ if(await role(req)!=='client' || req.headers.get('origin')!==new URL(req.url).origin) return Response.json({error:'Accès refusé'},{status:401});
  try {
   const b=await req.json();
   if(b.action==='stop') {
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
  } catch(e){ return Response.json({error:(e as Error).message},{status:409}); }
 }
 export async function PUT(req: Request) {
- if(role(req)!=='device') return Response.json({error:'Accès refusé'},{status:401});
+ if(await role(req)!=='device') return Response.json({error:'Accès refusé'},{status:401});
  try {
   const b=await req.json();
   if(!['ready','recording','analysing','completed','error','interrupted'].includes(b.actual)) return Response.json({error:'État invalide'},{status:400});
