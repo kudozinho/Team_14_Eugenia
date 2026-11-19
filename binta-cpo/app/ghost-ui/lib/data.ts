@@ -205,9 +205,9 @@ export async function chargerFiche(tacheId?: string, opts: { strict?: boolean; a
     if (!l0) return { source: "introuvable" as const, fiche: ficheJson, tacheId, provisoire: false, motif: lignes ? "Cette tâche n'existe pas dans la base." : "La base n'est pas joignable : impossible de vérifier cette tâche." };
     if (opts.audit && l0.audit_id !== opts.audit) return { source: "introuvable" as const, fiche: ficheJson, tacheId, provisoire: false, motif: "Cette tâche n'appartient pas à l'audit demandé." };
   }
-  if (!lignes || lignes.length === 0) return { source: "exemple" as SourceDonnees, fiche: ficheJson, tacheId: ficheJson.tache_id, provisoire: false };
+  if (!lignes || lignes.length === 0) return { source: "exemple" as SourceDonnees, fiche: ficheJson, tacheId: ficheJson.tache_id, provisoire: false, generique: false, provenanceDuree: "inconnue" as const };
   const l = (tacheId && lignes.find((x) => x.id === tacheId)) || lignes.map((x) => ({ x, t: versTache(x) })).filter((a) => a.t).sort((a, b) => b.t!.score.total - a.t!.score.total)[0]?.x || lignes[0];
-  if (l.fiche?.metier && l.fiche?.technique) return { source: "base" as SourceDonnees, fiche: l.fiche as typeof ficheJson, tacheId: l.id, provisoire: false };
+  if (l.fiche?.metier && l.fiche?.technique) return { source: "base" as SourceDonnees, fiche: l.fiche as typeof ficheJson, tacheId: l.id, provisoire: false, generique: false, provenanceDuree: "inconnue" as const };
 
   const s = l.score ?? {};
   const duree = l.duree_moyenne_s ?? 0;
@@ -216,11 +216,15 @@ export async function chargerFiche(tacheId?: string, opts: { strict?: boolean; a
   f.id = `fiche_${l.id}`; f.tache_id = l.id; f.titre = l.nom.split(" — ")[0];
   f.score = s.total ?? 0; f.quadrant = s.quadrant ?? ""; f.confiance = s.confiance ?? 3;
   f.metier.heures_an = Math.round(s.heures_an ?? 0);
-  f.metier.duree_aujourdhui = `${formatDuree(duree)} par opération (chronométré)`;
+  f.metier.duree_aujourdhui = `${formatDuree(duree)} par opération`;
   f.metier.gain_attendu = `${Math.round(s.heures_an ?? 0)} h par an récupérables, selon les hypothèses ci-dessous.`;
   f.metier.hypotheses = (s.hypotheses ?? []).join(" ; ") || "À vérifier pendant l'audit.";
-  f.technique.outil = l.methode ?? "rien";
+  f.technique.outil = METHODES[l.methode ?? "rien"] ?? "rien";
   f.technique.preuve.duree_humaine_s = duree;
+  // Aucune valeur de preuve héritée de l'exemple : tant qu'il n'y a pas d'exécution vérifiée, on affiche « pas encore mesuré ».
+  (f.technique.preuve as { duree_agent_s: number | null }).duree_agent_s = null;
+  const hyp = (s.hypotheses ?? []).join(" ");
+  const provenanceDuree = /chronométr/i.test(hyp) && /(trois|3) essais/i.test(hyp) ? ("trois_essais" as const) : ("inconnue" as const);
   if (demo) {
     f.metier.temps_par_an_h = Math.round((600 * duree) / 3600);
   } else {
@@ -236,5 +240,5 @@ export async function chargerFiche(tacheId?: string, opts: { strict?: boolean; a
     f.technique.effort = "À estimer"; f.technique.competence = "À définir : ";
     f.technique.recette = "À définir"; f.technique.cout_execution = "À estimer"; f.technique.maintenance = "À estimer";
   }
-  return { source: "base" as SourceDonnees, fiche: f, tacheId: l.id, provisoire: (s.hypotheses ?? []).some((h) => /vérifier|provisoire/i.test(h)) };
+  return { source: "base" as SourceDonnees, fiche: f, tacheId: l.id, provisoire: (s.hypotheses ?? []).some((h) => /vérifier|provisoire/i.test(h)), generique: !demo, provenanceDuree };
 }
