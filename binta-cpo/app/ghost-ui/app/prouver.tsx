@@ -8,13 +8,16 @@ type Etat = "attente" | "en_cours" | "termine" | "echec";
 
 // Bouton « Prouver » : crée une demande via /api/prouver, puis relit la ligne toutes les 5 s
 // (le script d'Alejandro lance l'agent). Sans clés Supabase : simulation avec l'exemple, clairement étiquetée.
-export default function Prouver({ exemple }: { exemple: Execution }) {
+export default function Prouver({ exemple, tacheId }: { exemple: Execution; tacheId?: string }) {
   const [etat, setEtat] = useState<Etat>("attente");
   const [secondes, setSecondes] = useState(0);
   const [faits, setFaits] = useState(0);
   const [message, setMessage] = useState("");
   const [resultat, setResultat] = useState<Execution>(exemple);
   const [reel, setReel] = useState(false);
+  const [code, setCode] = useState("");          // gardé seulement en mémoire, jamais stocké
+  const [codeRequis, setCodeRequis] = useState(false);
+  const [erreurAcces, setErreurAcces] = useState("");
   const router = useRouter();
   const minuteur = useRef<ReturnType<typeof setInterval> | null>(null);
   const chrono = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -33,12 +36,19 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
   }
 
   async function lancer() {
+    const entetes: Record<string, string> = { "Content-Type": "application/json", ...(code ? { Authorization: `Bearer ${code}` } : {}) };
     setEtat("en_cours"); setSecondes(0); setFaits(0); setMessage("Envoi de la demande…");
     const debut = Date.now();
     chrono.current = setInterval(() => setSecondes(Math.round((Date.now() - debut) / 1000)), 500);
     try {
-      const r = await fetch("/api/prouver", { method: "POST" });
+      const r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId }) });
       const d = await r.json();
+      if (r.status === 401 || r.status === 503) {
+        arreter(); setEtat("attente"); setMessage("");
+        setCodeRequis(!!d.code_requis); setErreurAcces(d.erreur || "Accès refusé.");
+        return;
+      }
+      setErreurAcces(""); setCodeRequis(false);
       if (d.mode === "exemple") return simuler();
       if (!r.ok || !d.id) throw new Error(d.erreur || "La demande n'a pas pu être créée");
       setReel(true);
@@ -46,7 +56,7 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
       minuteur.current = setInterval(async () => {
         if (Date.now() - debut > 11 * 60 * 1000) { arreter(); setMessage("Délai dépassé (plus de 10 minutes)."); setEtat("echec"); return; }
         try {
-          const g = await fetch(`/api/prouver?id=${encodeURIComponent(d.id)}`, { cache: "no-store" });
+          const g = await fetch(`/api/prouver?id=${encodeURIComponent(d.id)}`, { cache: "no-store", headers: entetes });
           const j = await g.json();
           const l = j.ligne;
           if (!l) return;
@@ -85,6 +95,20 @@ export default function Prouver({ exemple }: { exemple: Execution }) {
           {(etat === "termine" || etat === "echec") && <button className="btn sec" onClick={() => { setEtat("attente"); setResultat(exemple); setMessage(""); setFaits(0); }}>Recommencer</button>}
         </div>
       </div>
+
+      {erreurAcces && (
+        <div className="alert" style={{ marginTop: 14 }} role="alert">
+          <p style={{ margin: 0 }}>{erreurAcces}</p>
+          {codeRequis && (
+            <form style={{ marginTop: 10 }} onSubmit={(e) => { e.preventDefault(); if (code.trim()) lancer(); }}>
+              <label>Code d'accès pour lancer l'agent<br />
+                <input type="password" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" style={{ padding: 10, width: "min(100%, 360px)" }} />
+              </label>{" "}
+              <button className="btn" type="submit" disabled={!code.trim() || etat === "en_cours"}>Valider et lancer</button>
+            </form>
+          )}
+        </div>
+      )}
 
       <div className="sites" aria-live="polite">
         {sites.map((s, i) => (
