@@ -367,3 +367,9 @@ ul.vigil li { background: rgba(255,255,255,.75); border: 1px solid var(--ochre-2
   .duel-arrow { transform: rotate(90deg); justify-self: center; }
   .dcard-facts > div { grid-template-columns: 1fr; gap: 2px; }
 }
+
+/* Indicateur de source des données */
+.live { display: inline-flex; align-items: center; gap: 8px; font-size: .84em; color: var(--ink-2); margin: 0 0 12px; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); }
+.live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--g-500); box-shadow: 0 0 0 4px rgba(46, 154, 99, .18); }
+.live.demo { color: var(--ochre-700); border-color: #e9d9a8; background: var(--ochre-50); }
+.live-btn { border: 0; background: transparent; color: var(--g-700); font: 600 1em var(--font-body); cursor: pointer; text-decoration: underline; padding: 0; }

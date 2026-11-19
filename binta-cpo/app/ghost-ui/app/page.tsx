@@ -1,16 +1,19 @@
-import { getTaches, getTotalHeures, getOrganisation, getPistes, formatDuree, LABEL_METHODE } from "@/lib/data";
+import { chargerTaches, getOrganisation, getPistes, formatDuree, LABEL_METHODE } from "@/lib/data";
+import Direct from "./direct";
 import Matrice from "./matrice";
 import Link from "next/link";
 
-export default function Dashboard() {
-  const taches = getTaches();
-  const total = getTotalHeures();
+export const dynamic = "force-dynamic";
+
+export default async function Dashboard() {
+  const { source, taches, total, enAttente, maj } = await chargerTaches();
   const pistes = getPistes();
   const agentH = taches.filter((t) => t.methode === "agent_h").reduce((s, t) => s + t.heures_an, 0);
   const n8n = taches.filter((t) => t.methode === "n8n").reduce((s, t) => s + t.heures_an, 0);
 
   return (
     <>
+      <Direct source={source} maj={maj} />
       <p className="eyebrow">Compte rendu d'audit · {getOrganisation()}</p>
       <h1>Ce que Ghost a trouvé</h1>
       <p className="sub">
@@ -22,7 +25,7 @@ export default function Dashboard() {
         <div className="hero">
           <span className="hero-label">Heures récupérables</span>
           <div className="big num">{total}<small>h / an</small></div>
-          <p>sur {taches.length} tâches, justifiées une par une.</p>
+          <p>sur {taches.length} {taches.length > 1 ? "tâches" : "tâche"}, justifiées une par une.</p>
           <div className="split-bar" role="img" aria-label={`${agentH} heures par l'agent H, ${n8n} heures par n8n`}>
             <i style={{ flex: agentH, background: "var(--g-300)" }} />
             <i style={{ flex: n8n, background: "var(--o-400)" }} />
@@ -54,10 +57,10 @@ export default function Dashboard() {
               <li key={t.id}>
                 <span className="n">{i + 1}</span>
                 <div>
-                  <div className="t">{t.id === "tache_001" ? <Link href="/rapport">{t.nom}</Link> : t.nom}</div>
+                  <div className="t"><Link href={`/rapport?tache=${encodeURIComponent(t.id)}`}>{t.nom}</Link></div>
                   <div className="meta">
                     <span className={`pill ${t.methode}`}>{LABEL_METHODE[t.methode]}</span>
-                    <span className="chip num">{t.heures_an} h / an</span>
+                    <span className="chip num">{t.heures_an} h / an{t.provisoire ? " · provisoire" : ""}</span>
                     <span className="chip num">{formatDuree(t.duree_humaine_s)} aujourd'hui</span>
                   </div>
                   <div className="vig-line"><b>Vigilance</b> {t.vigilance}</div>
@@ -69,6 +72,7 @@ export default function Dashboard() {
               </li>
             ))}
           </ol>
+          {enAttente > 0 && <p className="note">{enAttente} tâche(s) détectée(s), en attente de score (Henriquet).</p>}
           <p className="note">Règle d'outil : API disponible → n8n · pas d'API → agent H · déjà couvert par le logiciel → rien à construire.</p>
         </section>
 

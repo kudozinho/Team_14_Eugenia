@@ -1,8 +1,9 @@
-import { getFiche, getExecution, getExecutionMesuree, getHistoriqueExecutions, formatDuree } from "@/lib/data";
+import { LABEL_METHODE, executionValide, mediane, chargerFiche, getExecution, getExecutionMesuree, getHistoriqueExecutions, formatDuree } from "@/lib/data";
 import RapportExecution from "./execution";
 import { tacheIdConfiguree } from "@/lib/tache";
 import { Rich, splitDetail, splitTitre, phrases } from "@/lib/rich";
 import Prouver from "../prouver";
+import Direct from "../direct";
 
 export const dynamic = "force-dynamic";
 
@@ -30,11 +31,25 @@ function Section({ id, titre, sub }: { id: string; titre: string; sub: string })
 
 // Le rapport se lit comme une décision : avant / après (avec la preuve en direct),
 // puis ce qu'on gagne, ce qu'il faut construire, et les risques.
-export default async function Rapport() {
-  const f = getFiche();
+export default async function Rapport({ searchParams }: { searchParams?: { tache?: string; audit?: string } }) {
+  const demandee = searchParams?.tache;
+  const choix = await chargerFiche(demandee || process.env.TACHE_ID || undefined, { strict: !!demandee, audit: searchParams?.audit });
+  if (choix.source === "introuvable") {
+    return (
+      <>
+        <p className="eyebrow">Fiche d'opportunité</p>
+        <h1>Tâche introuvable</h1>
+        <div className="alert" role="alert">
+          <p style={{ margin: 0 }}>{"motif" in choix ? choix.motif : "Tâche introuvable."} Aucune autre tâche n'est affichée à sa place.</p>
+        </div>
+        <p><a className="btn" href="/rapport">Voir le rapport de la tâche configurée</a></p>
+      </>
+    );
+  }
+  const f = choix.fiche;
   const m = f.metier;
   const t = f.technique;
-  const tacheId = tacheIdConfiguree();
+  const tacheId = choix.source === "base" ? choix.tacheId : tacheIdConfiguree();
   const mesure = await getExecutionMesuree(tacheId);
   const historique = await getHistoriqueExecutions(tacheId);
   const exec = mesure ?? getExecution();
@@ -43,14 +58,28 @@ export default async function Rapport() {
   const [dureeFiche, dureeDetailFiche] = splitDetail(m.duree_aujourdhui);
   const gain = phrases(m.gain_attendu);
   const recette = t.recette.split(/,\s*/);
-  const dureeAgent = mesure?.duree_s ?? t.preuve.duree_agent_s;
-  const dureeHumaine = mesure?.duree_humaine_s ?? t.preuve.duree_humaine_s;
+  // Durée de l'agent : médiane des exécutions terminées (plus fiable qu'un seul essai), sinon l'exemple.
+  const terminees = historique.lignes.filter(executionValide);
+  // Tâche construite depuis la base : pas de chrono d'exemple. Sans exécution vérifiée : « pas encore mesuré ».
+  const dureeAgent: number | null = mediane(terminees.map((l) => l.duree_s as number)) ?? mesure?.duree_s ?? ((t.preuve as { duree_agent_s: number | null }).duree_agent_s);
+  const agentTxt = dureeAgent === null ? "pas encore mesuré" : formatDuree(dureeAgent);
+  const generique = "generique" in choix && choix.generique;
+  const lesDeux = "lesDeux" in choix && choix.lesDeux;
+  const outil = lesDeux ? "Agent H et n8n" : (LABEL_METHODE[t.outil as string] ?? "Agent H");
+  const trois = "provenanceDuree" in choix && choix.provenanceDuree === "trois_essais";
+  // Référence « à la main » : exécution valide, sinon durée de la tâche en base ; jamais une valeur par défaut inventée.
+  const dureeHumaine: number | null = mesure?.duree_humaine_s ?? (t.preuve.duree_humaine_s || null);
+  const humaineTxt = dureeHumaine === null ? "pas encore mesuré" : formatDuree(dureeHumaine);
+  const gainAbsent = !(m.heures_an > 0);
+  const gainTxt = gainAbsent ? "À estimer" : `${m.heures_an} h`;
+  const acteur = lesDeux ? "L'agent H et n8n" : t.outil === "n8n" ? "Le workflow n8n" : t.outil === "rien" ? "Aucun outil à construire : la tâche" : "L'agent H";
   // Avec une exécution mesurée : la référence « à la main » est celle de la tâche en base, pas les 12 min de l'exemple.
-  const duree = mesure ? `${formatDuree(dureeHumaine)} par opération` : dureeFiche;
-  const dureeDetail = mesure ? "moyenne chronométrée à la main sur 3 essais" : dureeDetailFiche;
+  const duree = mesure ? `${humaineTxt} par opération` : dureeFiche;
+  const dureeDetail = mesure ? (trois ? "moyenne chronométrée à la main sur 3 essais" : "durée de référence enregistrée pour cette tâche (provenance non précisée)") : dureeDetailFiche;
 
   return (
     <>
+      <Direct source={choix.source} maj={new Date().toISOString()} />
       <p className="eyebrow">Fiche d'opportunité n°{f.numero}</p>
       <h1>{f.titre}</h1>
 
@@ -60,22 +89,23 @@ export default async function Rapport() {
           <Anneau valeur={f.score} />
           <div>
             <p className="lead">
-              L'agent H recopie l'annonce sur les 3 sites en <strong>{formatDuree(dureeAgent)}</strong> au lieu de{" "}
-              <strong>{formatDuree(dureeHumaine)}</strong> à la main : <strong>{m.heures_an} h</strong> récupérées par an.
+              {generique ? `${acteur} fait cette tâche en ` : "L'agent H recopie l'annonce sur les 3 sites en "}<strong>{agentTxt}</strong>
+              {terminees.length > 1 && <> (médiane de {terminees.length} exécutions)</>}, contre{" "}
+              <strong>{humaineTxt}</strong> à la main : {gainAbsent ? <>gain annuel <strong>à estimer</strong></> : <><strong>{gainTxt}</strong> récupérables par an{choix.provisoire ? <> (<strong>gain annuel provisoire</strong>)</> : " selon les hypothèses"}</>}.
             </p>
             <div className="row">
-              <span className="pill ok">Gain rapide</span>
-              <span className="pill agent_h">Agent H</span>
+              <span className={`pill ${f.quadrant === "gain_rapide" ? "ok" : "rien"}`}>{({ gain_rapide: "Gain rapide", projet: "Projet", a_regrouper: "À regrouper", a_ecarter: "À écarter" } as Record<string, string>)[f.quadrant] ?? "À classer"}</span>
+              <span className={`pill ${t.outil === "n8n" ? "n8n" : t.outil === "rien" ? "rien" : "agent_h"}`}>{outil}</span>
               <span className="chip">Confiance {f.confiance}/5</span>
               <span className="chip">{m.qui}</span>
             </div>
           </div>
         </div>
         <div className="stats">
-          <div className="stat"><b className="num">{m.heures_an} h</b><span>récupérables par an</span></div>
+          <div className="stat"><b className="num">{gainTxt}</b><span>{gainAbsent ? "de gain annuel, pas encore chiffré" : `récupérables par an${choix.provisoire ? " (gain annuel provisoire)" : ""}`}</span></div>
           <div className="stat"><b className="num">{m.temps_par_an_h} h</b><span>passées aujourd'hui par an</span></div>
-          <div className="stat"><b>1 jour</b><span>de mise en place</span></div>
-          <div className="stat"><b>≈ 90 $</b><span>de coût d'exécution par an</span></div>
+          <div className="stat"><b>{generique ? "À estimer" : "1 jour"}</b><span>de mise en place</span></div>
+          <div className="stat"><b>{generique ? "À estimer" : "≈ 90 $"}</b><span>de coût d'exécution par an</span></div>
         </div>
       </section>
 
@@ -92,7 +122,7 @@ export default async function Rapport() {
       <div className="duel">
         <section className="card dcard avant">
           <h4 className="dcard-tag">Aujourd'hui, à la main</h4>
-          <div className="dcard-time num">{formatDuree(dureeHumaine)}<span>par opération</span></div>
+          <div className="dcard-time num">{humaineTxt}<span>{dureeHumaine === null ? "" : "par opération"}</span></div>
           <p className="lead-text"><Rich>{m.process}</Rich></p>
           <dl className="dcard-facts">
             <div><dt>Déclencheur</dt><dd>{m.declencheur}</dd></div>
@@ -104,15 +134,15 @@ export default async function Rapport() {
         <div className="duel-arrow" aria-hidden="true">→</div>
 
         <section className="card dcard apres">
-          <h4 className="dcard-tag">Demain, avec l'agent H</h4>
-          <div className="dcard-time num">{formatDuree(dureeAgent)}<span>par opération, mesuré</span></div>
-          <p className="lead-text">{t.raison} L'agent fait le travail, l'assistante valide.</p>
+          <h4 className="dcard-tag">{generique ? `Demain, avec ${outil}` : "Demain, avec l'agent H"}</h4>
+          <div className="dcard-time num">{agentTxt}<span>{dureeAgent === null ? "" : `par opération${terminees.length > 1 ? `, médiane de ${terminees.length}` : ", mesuré"}`}</span></div>
+          <p className="lead-text">{t.raison}{generique ? "" : " L'agent fait le travail, l'assistante valide."}</p>
           <ol className="steps">{t.etapes.map((e: string) => <li key={e}>{e}</li>)}</ol>
         </section>
       </div>
 
       <div id="preuve" className="duel-proof">
-        <Prouver exemple={exec} />
+        <Prouver exemple={exec} tacheId={tacheId} />
       </div>
       <div style={{ marginTop: 18 }}><RapportExecution h={historique} tacheId={tacheId} /></div>
 
@@ -152,15 +182,15 @@ export default async function Rapport() {
           <h3>Comment on sait que ça marche</h3>
           <ul className="checks">{recette.map((r: string) => <li key={r}><Rich>{r}</Rich></li>)}</ul>
           <div className="stats">
-            <div className="stat"><b>1 jour</b><span><Rich>{t.effort}</Rich></span></div>
-            <div className="stat"><b>Junior</b><span>{t.competence.replace(/^Junior : /, "")}</span></div>
+            <div className="stat"><b>{generique ? "À estimer" : "1 jour"}</b><span><Rich>{generique ? "" : t.effort}</Rich></span></div>
+            <div className="stat"><b>{generique ? "À définir" : "Junior"}</b><span>{t.competence.replace(/^Junior : /, "")}</span></div>
           </div>
           <p className="muted" style={{ marginTop: 12 }}>Maintenance : <Rich>{t.maintenance}</Rich></p>
         </section>
 
         <section className="card tool">
-          <h3>Pourquoi l'agent H, et pas autre chose</h3>
-          <div className="row"><span className="pill agent_h big">Agent H</span></div>
+          <h3>{generique ? `Pourquoi ${outil}, et pas autre chose` : "Pourquoi l'agent H, et pas autre chose"}</h3>
+          <div className="row"><span className={`pill ${t.outil === "n8n" ? "n8n" : t.outil === "rien" ? "rien" : "agent_h"} big`}>{outil}</span></div>
           <h4>Options écartées</h4>
           <div className="rejects">
             {t.options_ecartees.map((o: string) => {
