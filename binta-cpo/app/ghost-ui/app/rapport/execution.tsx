@@ -49,7 +49,7 @@ export default function RapportExecution({ h, tacheId }: { h: Historique; tacheI
             <div className="stat"><b className="num">{derniere.duree_s ? formatDuree(derniere.duree_s) : "…"}</b><span>durée de l'agent</span></div>
             <div className="stat"><b className="num">{derniere.duree_humaine_s ? formatDuree(derniere.duree_humaine_s) : "…"}</b><span>à la main (mesuré)</span></div>
             {derniere.duree_s && derniere.duree_humaine_s && executionValide(derniere) ? (
-              <div className="stat"><b className="num">−{Math.round((1 - derniere.duree_s / derniere.duree_humaine_s) * 100)} %</b><span>de temps</span></div>
+              (() => { const g = Math.round((1 - (derniere.duree_s as number) / (derniere.duree_humaine_s as number)) * 100); return <div className="stat"><b className="num">{g >= 0 ? `−${g}` : `+${-g}`} %</b><span>{g >= 0 ? "de temps, dernière exécution" : "de temps : cette dernière exécution est plus lente qu'à la main"}</span></div>; })()
             ) : null}
             {reussies.length > 1 && (
               <div className="stat"><b className="num">{formatDuree(mediane(reussies.map((l) => l.duree_s as number))!)}</b><span>médiane sur {reussies.length} exécutions vérifiées (sur {h.lignes.length} essais)</span></div>
