@@ -1,4 +1,5 @@
 """Compagnon du portail MVP Windows. Lancez une fois, puis utilisez Mon audit."""
+import logging
 import os
 import socket
 import subprocess
@@ -16,6 +17,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main():
+    logs = Path(__file__).resolve().parent / 'journal'
+    logs.mkdir(exist_ok=True)
+    # Messages techniques sans clés, corps réseau ou captures.
+    logging.basicConfig(filename=logs/'portail.log', level=logging.INFO,
+                        format='%(asctime)s %(levelname)s %(message)s')
     cfg = charger_config()
     origin = os.environ.get('GHOST_PORTAL_URL', '').rstrip('/')
     token = os.environ.get('GHOST_DEVICE_TOKEN', '')
@@ -92,6 +98,7 @@ def main():
                             process.wait()
                             actual, message, process = 'error', 'Analyse trop longue. Les événements sont conservés.', None
                         elif process.poll() is not None:
+                            logging.info('Analyse terminée, code de sortie %s', process.returncode)
                             actual = 'completed' if process.returncode == 0 else 'error'
                             message = '' if process.returncode == 0 else 'Analyse indisponible. Les événements sont conservés ; contactez l’équipe.'
                             process = None
@@ -104,6 +111,7 @@ def main():
                         actual, message = 'interrupted', 'Connexion perdue : enregistrement arrêté. Démarrez une nouvelle session.'
                     if actual == 'starting':
                         actual, message = 'error', 'Impossible de démarrer le Recorder. Vérifiez les dépendances et permissions Windows.'
+                    logging.error('Liaison portail ou démarrage indisponible ; capture arrêtée')
                     print('Liaison portail indisponible ; capture arrêtée.', flush=True)
                 next_poll = time.monotonic()+2
             if rec:
