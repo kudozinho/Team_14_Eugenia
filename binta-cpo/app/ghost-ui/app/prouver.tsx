@@ -56,6 +56,9 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
   const minuteur = useRef<ReturnType<typeof setInterval> | null>(null);
   const chrono = useRef<ReturnType<typeof setInterval> | null>(null);
   const verrou = useRef(false); // bloque un deuxième clic avant même le re-rendu
+  // Clé de demande envoyée au serveur pour éviter un doublon : réutilisée tant qu'aucune réponse n'a été reçue (délai dépassé),
+  // changée seulement après une réponse. Le serveur doit la traiter comme idempotente (champ cle_demande).
+  const cle = useRef<string | null>(null);
 
   useEffect(() => () => { if (minuteur.current) clearInterval(minuteur.current); if (chrono.current) clearInterval(chrono.current); }, []);
 
@@ -73,7 +76,8 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
     const debut = Date.now();
     chrono.current = setInterval(() => setSecondes(Math.round((Date.now() - debut) / 1000)), 500);
     try {
-      const r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId }), signal: AbortSignal.timeout(90_000) });
+      const r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId, cle_demande: (cle.current ??= crypto.randomUUID()) }), signal: AbortSignal.timeout(90_000) });
+      cle.current = null; // une réponse est arrivée : la prochaine demande aura une nouvelle clé
       const d = await r.json().catch(() => ({}));
       if (r.status === 401) { terminer("attente"); setCodeRequis(!!d.code_requis); setErreurAcces(d.erreur || "Accès refusé."); return; }
       if (r.status === 402 || d.credits_indisponibles) { terminer("indisponible", "Crédits de l'agent H insuffisants ou non confirmés : aucun lancement, aucune recharge. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
@@ -106,7 +110,7 @@ export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tac
       }, 5000);
     } catch (e) {
       const delai = e instanceof DOMException && (e.name === "TimeoutError" || e.name === "AbortError");
-      terminer("echec", delai ? "Le service n'a pas répondu en 90 secondes (il dormait peut-être). Aucune relance automatique : vérifiez avant de relancer." : (e instanceof Error ? e.message : "Erreur inconnue"));
+      terminer("echec", delai ? "Le service n'a pas répondu en 90 secondes (il dormait peut-être). La demande a peut-être été créée : si vous relancez, la même clé de demande est renvoyée pour éviter un doublon, mais vérifiez d'abord le rapport de l'agent. Aucune relance automatique." : (e instanceof Error ? e.message : "Erreur inconnue"));
     }
   }
 
