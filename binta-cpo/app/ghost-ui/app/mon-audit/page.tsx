@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import './portail.css';
 type State = {online:boolean;actual:string;desired:string;audit_id:string|null;consent_at?:string|null;message:string;tasks:{id:string;nom:string;occurrences:number;methode:string}[]};
 const ASSIST=process.env.NEXT_PUBLIC_ASSISTANCE_EMAIL||'';
-const METHODES:Record<string,string>={agent_h:'Agent H',les_deux:'Agent H',n8n:'n8n',outil_existant:'Déjà couvert par un outil',rien:'Rien à construire'};
+const METHODES:Record<string,string>={agent_h:'Agent H',les_deux:'Agent H et n8n',n8n:'n8n',outil_existant:'Déjà couvert par un outil',rien:'Rien à construire'};
 const LABELS:Record<string,string>={ready:'Prêt à démarrer',starting:'Démarrage demandé',recording:'Enregistrement en cours',analysing:'Analyse en cours',completed:'Analyse terminée',error:'Une intervention est nécessaire',interrupted:'Enregistrement interrompu',offline:'PC déconnecté'};
 export default function MonAudit(){
  const [token,setToken]=useState(''),[code,setCode]=useState(''),[email,setEmail]=useState(''),[sent,setSent]=useState(false),[state,setState]=useState<State|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
@@ -12,7 +12,7 @@ export default function MonAudit(){
   const r=await fetch('/api/mon-audit',{method,cache:'no-store',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
   const data=await r.json(); if(r.status===401&&token) throw new Error('SESSION_EXPIREE'); if(!r.ok) throw new Error(data.error||'Connexion indisponible'); return data;
  }
- useEffect(()=>{if(!token)return;let cancelled=false;let timer:ReturnType<typeof setTimeout>;async function poll(){try{const data=await request();if(!cancelled){setState(data);setError('');}}catch(e){if(!cancelled){if((e as Error).message==='SESSION_EXPIREE'){setExpired(true);setToken('');setSent(false);setCode('');setError('');}else{setError((e as Error).message);setState(s=>s?{...s,online:false}:s);}}}finally{if(!cancelled)timer=setTimeout(poll,2500);}}poll();return()=>{cancelled=true;clearTimeout(timer);};},[token]);
+ useEffect(()=>{if(!token)return;let cancelled=false;let timer:ReturnType<typeof setTimeout>;async function poll(){try{const data=await request();if(!cancelled){setState(data);setError('');}}catch(e){if(!cancelled){if((e as Error).message==='SESSION_EXPIREE'){setExpired(true);setView('Projet');setToken('');setSent(false);setCode('');setError('');}else{setError((e as Error).message);setState(s=>s?{...s,online:false}:s);}}}finally{if(!cancelled)timer=setTimeout(poll,2500);}}poll();return()=>{cancelled=true;clearTimeout(timer);};},[token]);
  useEffect(()=>{fetch('/api/client-session').then(r=>r.json()).then(d=>{if(d.authenticated)setToken('session');}).catch(()=>{});},[]);
  async function connect(){setBusy(true);try{const r=await fetch('/api/client-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,code,action:sent?'verify':'send'})});const d=await r.json();if(!r.ok)throw new Error(d.error);if(sent){setToken('session');setCode('');setExpired(false);}else setSent(true);setError('');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  useEffect(()=>{if(!stopAt)return;const i=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(i);},[stopAt]);
