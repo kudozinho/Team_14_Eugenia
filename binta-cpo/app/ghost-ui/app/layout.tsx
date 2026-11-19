@@ -4,6 +4,7 @@ import { Bricolage_Grotesque, Inter } from "next/font/google";
 import Link from "next/link";
 import Nav from "./nav";
 import Logo from "./logo";
+import { chargerTaches } from "@/lib/data";
 
 const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["500", "600", "700", "800"], variable: "--font-jakarta", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -13,7 +14,13 @@ export const metadata: Metadata = {
   description: "Tableau de bord et rapport Ghost (Team 14)",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+// Le badge suit une lecture réelle de la base (la même que le tableau de bord), pas la seule présence des variables :
+// base injoignable, refus ou aucune tâche notée → « Mode démo », comme la page qui retombe alors sur l'exemple.
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { source } = await chargerTaches();
+  const base = source === "base";
   return (
     <html lang="fr" className={`${display.variable} ${inter.variable}`}>
       <body>
@@ -23,8 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p className="side-tag">See the work. Ghost the task.</p>
             <Nav />
             <div className="side-foot">
-              <span className="badge">Mode démo</span>
-              <p>Données fictives de l'Agence Belvédère. Aucune donnée par personne.</p>
+              <span className="badge">{base ? "Données de la base" : "Mode démo"}</span>
+              <p>{base
+                ? "Tâches lues dans la base de l'audit. Agence Belvédère (fictive). Aucune donnée par personne."
+                : "Données fictives de l'Agence Belvédère. Aucune donnée par personne."}</p>
             </div>
           </aside>
           <main>{children}</main>
