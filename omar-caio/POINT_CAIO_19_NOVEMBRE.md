@@ -4,7 +4,7 @@ Mesures d’exécution vérifiées à 1 h 18, heure de Paris. Connexion du porta
 
 ## Texte court utilisable dans le Loom
 
-« Ghost nettoie les observations sur le poste avant leur transmission. Sur la première session jouée, nous retrouvons trois passages sur les formulaires. La tâche qualifiée par Holo a été écrite puis relue dans Supabase. Le test du bouton rapporté par Henriquet a exécuté l’agent sur trois portails en 98 secondes, contre une moyenne de 244 secondes sur trois chronos manuels. Le gain sur cet essai est d’environ 60 %. La conformité de la photo exacte et la fiabilité sur plusieurs passages restent à vérifier. »
+« Ghost nettoie les observations sur le poste avant leur transmission. Sur la première session jouée, nous retrouvons trois passages sur les formulaires. La tâche qualifiée par Holo a été écrite puis relue dans Supabase. Le rapport présente une médiane agent de 113 secondes sur trois exécutions, face à une moyenne humaine de 244 secondes sur trois essais. Le clic du 18 novembre a donné 98 secondes sur un passage identifié. La conformité de la photo exacte et la fiabilité sur plusieurs passages restent à vérifier. »
 
 Le passage de 98 secondes est un essai identifié. L’essai ultérieur a duré 325 secondes. Sa conformité attend une confirmation. Les trois réussites consécutives ne sont pas établies par les seules lignes de la base.
 
@@ -54,6 +54,12 @@ L’essai de 325 secondes dépasse la référence humaine de 244 secondes. Sa du
 
 ## Prochaine validation CAIO
 
-Restent à obtenir la confirmation d’accès au modèle holo3-1-35b-a3b avec la clé d’équipe et la disponibilité du portail #61 sur Windows. La recette devra relever un nouvel audit, confirmer le rattachement des événements et tâches, vérifier l’affichage et le cas zéro tâche. Les tests locaux de la PR #62 utilisent des services remplacés en mémoire.
+Le 19 novembre à 14 h 54, Assel relaie la vérification du modèle holo3-1-35b-a3b par Henriquet. Sa confirmation directe dans le fil reste attendue. La recette devra relever un nouvel audit, confirmer le rattachement des événements et tâches, vérifier l’affichage et le cas zéro tâche. Les tests locaux de la PR #62 utilisent des services remplacés en mémoire.
 
 Le correctif de la PR #62 est intégré à la branche du portail. La connexion personnelle utilise Supabase Auth avec saisie du code par Assel. La procédure RECETTE_PORTAIL.md décrit les preuves à relever pour les succès, les sessions sans candidate, les échecs et le dépassement de trois minutes. Au contrôle de 14 h 06, la #61 est fusionnée dans main et la #62 reste ouverte. Le poste Windows signale son état prêt. La capture du nouvel audit et sa qualification restent à vérifier. Voir le [rapprochement de la session 2](preuves/2026-11-18-session2/README.md) pour la différence entre 515 s écoulées et les champs de durée de l’ancien Recorder.
+
+## Contrôle du 19 novembre à 15 h, heure de Paris
+
+Le compagnon indiquait ready à 14 h 59 min 57 avec un signal reçu une seconde plus tôt, sans audit actif. Aucun audit du jour dans la requête de contrôle. La détection livrée est suivie dans l’issue #20, fermée après fusion des PR #48 et #56. Le nouvel audit Windows du portail reste à jouer.
+
+La synthèse du rapport public affiche 1 min 53 (113 s, médiane de trois exécutions) et 4 min 04 (244 s, moyenne de trois chronos humains). Le bloc historique affiche 3 min 39 (219 s, médiane de quatre exécutions, dont celle de 325 s). Ces deux affichages portent sur des ensembles de tailles différentes. Les 17 h/an restent une estimation provisoire. [Rapport public](https://ghost-ui-five.vercel.app/rapport) · [Clôture de la détection](https://github.com/kudozinho/Team_14_Eugenia/issues/20#issuecomment-7010941878)
