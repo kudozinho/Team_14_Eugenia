@@ -57,23 +57,25 @@ export function getPistes() {
   };
 }
 
-// Dernière exécution TERMINÉE de l'agent pour la tâche de démo, lue dans Supabase (côté serveur uniquement).
-// Sans clés, ou si la base ne répond pas : null, et la page garde les valeurs d'exemple.
+// Dernière exécution VALIDE de l'agent pour la tâche (même contrôle que l'historique : terminée ET annonces vérifiées),
+// lue dans Supabase côté serveur uniquement. Sans clés, sans exécution valide, ou sans référence « à la main » : null.
+// Aucune durée humaine n'est inventée : sans référence mesurée, la page n'affiche pas de gain chronométré.
 export async function getExecutionMesuree(tacheId: string): Promise<Execution | null> {
   const url = process.env.SUPABASE_URL;
   const cle = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !cle) return null;
   try {
     const r = await fetch(
-      `${url}/rest/v1/executions_agent?tache_id=eq.${encodeURIComponent(tacheId)}&statut=eq.completed&order=cree_le.desc&limit=1`,
+      `${url}/rest/v1/executions_agent?tache_id=eq.${encodeURIComponent(tacheId)}&statut=eq.completed&order=cree_le.desc&limit=10`,
       { headers: { apikey: cle, Authorization: `Bearer ${cle}` }, cache: "no-store" },
     );
     if (!r.ok) return null;
-    const [l] = await r.json();
-    if (!l || !l.duree_s) return null;
+    const lignes = (await r.json()) as { tache_id: string; session_id: string | null; statut: string; duree_s: number | null; duree_humaine_s: number | null; portails_publies: string[] | null; resume: string | null }[];
+    const l = lignes.find((x) => executionValide({ statut: x.statut, duree_s: x.duree_s, resume: x.resume ?? "" }) && !!x.duree_humaine_s);
+    if (!l || !l.duree_s || !l.duree_humaine_s) return null;
     return {
       tache_id: l.tache_id, session_id: l.session_id ?? "", statut: l.statut, duree_s: l.duree_s,
-      duree_humaine_s: l.duree_humaine_s ?? 720, portails_publies: l.portails_publies ?? [], resume: l.resume ?? "",
+      duree_humaine_s: l.duree_humaine_s, portails_publies: l.portails_publies ?? [], resume: l.resume ?? "",
     };
   } catch {
     return null;
@@ -217,7 +219,7 @@ export async function chargerFiche(tacheId?: string, opts: { strict?: boolean; a
   f.score = s.total ?? 0; f.quadrant = s.quadrant ?? ""; f.confiance = s.confiance ?? 3;
   f.metier.heures_an = Math.round(s.heures_an ?? 0);
   f.metier.duree_aujourdhui = `${formatDuree(duree)} par opération`;
-  f.metier.gain_attendu = `${Math.round(s.heures_an ?? 0)} h par an récupérables, selon les hypothèses ci-dessous.`;
+  f.metier.gain_attendu = s.heures_an ? `${Math.round(s.heures_an)} h par an récupérables, selon les hypothèses ci-dessous.` : "Gain annuel à estimer : pas encore chiffré.";
   f.metier.hypotheses = (s.hypotheses ?? []).join(" ; ") || "À vérifier pendant l'audit.";
   f.technique.outil = METHODES[l.methode ?? "rien"] ?? "rien";
   f.technique.preuve.duree_humaine_s = duree;
@@ -240,5 +242,5 @@ export async function chargerFiche(tacheId?: string, opts: { strict?: boolean; a
     f.technique.effort = "À estimer"; f.technique.competence = "À définir : ";
     f.technique.recette = "À définir"; f.technique.cout_execution = "À estimer"; f.technique.maintenance = "À estimer";
   }
-  return { source: "base" as SourceDonnees, fiche: f, tacheId: l.id, provisoire: (s.hypotheses ?? []).some((h) => /vérifier|provisoire/i.test(h)), generique: !demo, provenanceDuree };
+  return { source: "base" as SourceDonnees, fiche: f, tacheId: l.id, provisoire: (s.hypotheses ?? []).some((h) => /vérifier|provisoire/i.test(h)), generique: !demo, provenanceDuree, lesDeux: l.methode === "les_deux" };
 }

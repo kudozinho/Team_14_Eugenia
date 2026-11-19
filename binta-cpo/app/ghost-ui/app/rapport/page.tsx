@@ -64,11 +64,17 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
   const dureeAgent: number | null = mediane(terminees.map((l) => l.duree_s as number)) ?? mesure?.duree_s ?? ((t.preuve as { duree_agent_s: number | null }).duree_agent_s);
   const agentTxt = dureeAgent === null ? "pas encore mesuré" : formatDuree(dureeAgent);
   const generique = "generique" in choix && choix.generique;
-  const outil = LABEL_METHODE[t.outil as string] ?? "Agent H";
+  const lesDeux = "lesDeux" in choix && choix.lesDeux;
+  const outil = lesDeux ? "Agent H et n8n" : (LABEL_METHODE[t.outil as string] ?? "Agent H");
   const trois = "provenanceDuree" in choix && choix.provenanceDuree === "trois_essais";
-  const dureeHumaine = mesure?.duree_humaine_s ?? t.preuve.duree_humaine_s;
+  // Référence « à la main » : exécution valide, sinon durée de la tâche en base ; jamais une valeur par défaut inventée.
+  const dureeHumaine: number | null = mesure?.duree_humaine_s ?? (t.preuve.duree_humaine_s || null);
+  const humaineTxt = dureeHumaine === null ? "pas encore mesuré" : formatDuree(dureeHumaine);
+  const gainAbsent = !(m.heures_an > 0);
+  const gainTxt = gainAbsent ? "À estimer" : `${m.heures_an} h`;
+  const acteur = lesDeux ? "L'agent H et n8n" : t.outil === "n8n" ? "Le workflow n8n" : t.outil === "rien" ? "Aucun outil à construire : la tâche" : "L'agent H";
   // Avec une exécution mesurée : la référence « à la main » est celle de la tâche en base, pas les 12 min de l'exemple.
-  const duree = mesure ? `${formatDuree(dureeHumaine)} par opération` : dureeFiche;
+  const duree = mesure ? `${humaineTxt} par opération` : dureeFiche;
   const dureeDetail = mesure ? (trois ? "moyenne chronométrée à la main sur 3 essais" : "durée de référence enregistrée pour cette tâche (provenance non précisée)") : dureeDetailFiche;
 
   return (
@@ -83,9 +89,9 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
           <Anneau valeur={f.score} />
           <div>
             <p className="lead">
-              {generique ? "L'agent H fait cette tâche en " : "L'agent H recopie l'annonce sur les 3 sites en "}<strong>{agentTxt}</strong>
+              {generique ? `${acteur} fait cette tâche en ` : "L'agent H recopie l'annonce sur les 3 sites en "}<strong>{agentTxt}</strong>
               {terminees.length > 1 && <> (médiane de {terminees.length} exécutions)</>}, contre{" "}
-              <strong>{formatDuree(dureeHumaine)}</strong> à la main : <strong>{m.heures_an} h</strong> récupérables par an{choix.provisoire ? <> (<strong>gain annuel provisoire</strong>)</> : " selon les hypothèses"}.
+              <strong>{humaineTxt}</strong> à la main : {gainAbsent ? <>gain annuel <strong>à estimer</strong></> : <><strong>{gainTxt}</strong> récupérables par an{choix.provisoire ? <> (<strong>gain annuel provisoire</strong>)</> : " selon les hypothèses"}</>}.
             </p>
             <div className="row">
               <span className={`pill ${f.quadrant === "gain_rapide" ? "ok" : "rien"}`}>{({ gain_rapide: "Gain rapide", projet: "Projet", a_regrouper: "À regrouper", a_ecarter: "À écarter" } as Record<string, string>)[f.quadrant] ?? "À classer"}</span>
@@ -96,7 +102,7 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
           </div>
         </div>
         <div className="stats">
-          <div className="stat"><b className="num">{m.heures_an} h</b><span>récupérables par an{choix.provisoire ? " (gain annuel provisoire)" : ""}</span></div>
+          <div className="stat"><b className="num">{gainTxt}</b><span>{gainAbsent ? "de gain annuel, pas encore chiffré" : `récupérables par an${choix.provisoire ? " (gain annuel provisoire)" : ""}`}</span></div>
           <div className="stat"><b className="num">{m.temps_par_an_h} h</b><span>passées aujourd'hui par an</span></div>
           <div className="stat"><b>{generique ? "À estimer" : "1 jour"}</b><span>de mise en place</span></div>
           <div className="stat"><b>{generique ? "À estimer" : "≈ 90 $"}</b><span>de coût d'exécution par an</span></div>
@@ -116,7 +122,7 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
       <div className="duel">
         <section className="card dcard avant">
           <h4 className="dcard-tag">Aujourd'hui, à la main</h4>
-          <div className="dcard-time num">{formatDuree(dureeHumaine)}<span>par opération</span></div>
+          <div className="dcard-time num">{humaineTxt}<span>{dureeHumaine === null ? "" : "par opération"}</span></div>
           <p className="lead-text"><Rich>{m.process}</Rich></p>
           <dl className="dcard-facts">
             <div><dt>Déclencheur</dt><dd>{m.declencheur}</dd></div>
@@ -128,7 +134,7 @@ export default async function Rapport({ searchParams }: { searchParams?: { tache
         <div className="duel-arrow" aria-hidden="true">→</div>
 
         <section className="card dcard apres">
-          <h4 className="dcard-tag">Demain, avec l'agent H</h4>
+          <h4 className="dcard-tag">{generique ? `Demain, avec ${outil}` : "Demain, avec l'agent H"}</h4>
           <div className="dcard-time num">{agentTxt}<span>{dureeAgent === null ? "" : `par opération${terminees.length > 1 ? `, médiane de ${terminees.length}` : ", mesuré"}`}</span></div>
           <p className="lead-text">{t.raison}{generique ? "" : " L'agent fait le travail, l'assistante valide."}</p>
           <ol className="steps">{t.etapes.map((e: string) => <li key={e}>{e}</li>)}</ol>
