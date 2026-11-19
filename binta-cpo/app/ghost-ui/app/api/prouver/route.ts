@@ -1,4 +1,4 @@
-// Pont entre le bouton « Prouver » et le script d'Alejandro (attendre_prouver.py).
+// Pont entre le site et le worker H hébergé.
 // La clé « service » de Supabase reste ICI, côté serveur : jamais dans le navigateur.
 // Le navigateur ne choisit pas la tâche : on utilise celle configurée (TACHE_ID), pour qu'un visiteur
 // ne puisse pas lancer l'agent sur n'importe quoi.
@@ -39,31 +39,24 @@ function config() {
 // Crée la demande : une ligne « en_cours ». Le script d'Alejandro la voit et lance l'agent.
 export async function POST(req: Request) {
   const c = config();
-  if (!c) return Response.json({ mode: "exemple" }); // pas de clés : l'interface joue la simulation
+  if (!c) return Response.json({ erreur: "Service agent H non configuré.", desactive: true }, { status: 503 });
   const non = refus(req); if (non) return non;
-  // La tâche demandée doit EXISTER dans taches_detectees (sinon on prend celle configurée).
-  let tacheId = tacheIdConfiguree();
+  // Démo publique bornée à la tâche configurée ; file sérialisée côté base.
   try {
-    const { tache_id } = await req.json();
-    if (typeof tache_id === "string" && /^[\w-]{1,80}$/.test(tache_id)) {
-      const t = await fetch(`${c.base.replace("executions_agent", "taches_detectees")}?select=id&id=eq.${encodeURIComponent(tache_id)}`, { headers: c.entetes, cache: "no-store" });
-      if (t.ok && ((await t.json()) as unknown[]).length) tacheId = tache_id;
-    }
-  } catch { /* corps absent : tâche configurée */ }
-  const r = await fetch(c.base, {
-    method: "POST",
-    headers: { ...c.entetes, Prefer: "return=representation" },
-    body: JSON.stringify({ tache_id: tacheId, statut: "en_cours" }),
+  const r = await fetch(`${c.base.replace("executions_agent", "rpc/demander_agent")}`, {
+    method: "POST", headers: c.entetes,
+    body: JSON.stringify({ p_tache: tacheIdConfiguree() }), signal: AbortSignal.timeout(10000),
   });
-  if (!r.ok) return Response.json({ erreur: `Supabase a refusé la demande (${r.status})`, detail: await r.text() }, { status: 502 });
+  if (!r.ok) return Response.json({ erreur: `Supabase a refusé la demande (${r.status})`, detail: "Vérifier que le service hébergé est connecté et qu’aucune exécution n’est en cours." }, { status: 502 });
   const [ligne] = await r.json();
   return Response.json({ mode: "reel", id: ligne.id });
+  } catch { return Response.json({ erreur: "Le service H est momentanément inaccessible." }, { status: 503 }); }
 }
 
 // Relit CETTE ligne par son identifiant.
 export async function GET(req: Request) {
   const c = config();
-  if (!c) return Response.json({ mode: "exemple" });
+  if (!c) return Response.json({ erreur: "Service agent H non configuré.", desactive: true }, { status: 503 });
   const non = refus(req); if (non) return non;
   const id = new URL(req.url).searchParams.get("id") ?? "";
   if (!/^[\w-]{1,64}$/.test(id)) return Response.json({ erreur: "identifiant invalide" }, { status: 400 });

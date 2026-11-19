@@ -7,7 +7,7 @@ import { formatDuree } from "@/lib/data";
 type Etat = "attente" | "en_cours" | "termine" | "echec";
 
 // Bouton « Prouver » : crée une demande via /api/prouver, puis relit la ligne toutes les 5 s
-// (le script d'Alejandro lance l'agent). Sans clés Supabase : simulation avec l'exemple, clairement étiquetée.
+// Le worker hébergé lance l’agent ; aucun lancement simulé.
 export default function Prouver({ exemple, tacheId }: { exemple: Execution; tacheId?: string }) {
   const [etat, setEtat] = useState<Etat>("attente");
   const [secondes, setSecondes] = useState(0);
@@ -29,12 +29,6 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
     if (chrono.current) clearInterval(chrono.current);
   }
 
-  function simuler() {
-    setReel(false);
-    [900, 1700, 2500].forEach((d, i) => setTimeout(() => setFaits(i + 1), d));
-    setTimeout(() => { arreter(); setResultat(exemple); setEtat("termine"); }, 2600);
-  }
-
   async function lancer() {
     const entetes: Record<string, string> = { "Content-Type": "application/json", ...(code ? { Authorization: `Bearer ${code}` } : {}) };
     setEtat("en_cours"); setSecondes(0); setFaits(0); setMessage("Envoi de la demande…");
@@ -49,10 +43,10 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
         return;
       }
       setErreurAcces(""); setCodeRequis(false);
-      if (d.mode === "exemple") return simuler();
+      if (d.mode === "exemple") throw new Error("Le service ne peut pas lancer une exécution réelle.");
       if (!r.ok || !d.id) throw new Error(d.erreur || "La demande n'a pas pu être créée");
       setReel(true);
-      setMessage("Demande envoyée, en attente de l'agent…");
+      setMessage(`Demande ${d.id} envoyée, en attente du service H…`);
       minuteur.current = setInterval(async () => {
         if (Date.now() - debut > 11 * 60 * 1000) { arreter(); setMessage("Délai dépassé (plus de 10 minutes)."); setEtat("echec"); return; }
         try {
@@ -60,12 +54,12 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
           const j = await g.json();
           const l = j.ligne;
           if (!l) return;
-          if (l.resume) setMessage(l.resume);
+          if (l.resume) setMessage(l.resume === "CLOUD_PENDING" ? "Demande reçue, en attente du service H…" : l.resume);
           if (l.statut !== "en_cours") {
             arreter();
             if (l.statut === "completed") {
               setResultat({ ...exemple, ...l, portails_publies: l.portails_publies ?? [] });
-              setFaits(3); setEtat("termine");
+              setFaits((l.portails_publies ?? []).length); setEtat("termine");
               router.refresh(); // recharge le rapport lu dans la base
             } else {
               setMessage(l.resume || `L'agent s'est arrêté (${l.statut}).`); setEtat("echec");
@@ -90,7 +84,7 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
         </div>
         <div className="row">
           <button className="btn" onClick={lancer} disabled={etat === "en_cours"}>
-            {etat === "en_cours" ? `Agent en cours… ${secondes} s` : "Prouver avec l'agent"}
+            {etat === "en_cours" ? `Agent en cours… ${secondes} s` : "Lancer l’agent H"}
           </button>
           {(etat === "termine" || etat === "echec") && <button className="btn sec" onClick={() => { setEtat("attente"); setResultat(exemple); setMessage(""); setFaits(0); }}>Recommencer</button>}
         </div>
@@ -112,8 +106,8 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
 
       <div className="sites" aria-live="polite">
         {sites.map((s, i) => (
-          <span key={s} className={`site ${etat === "termine" || (etat === "en_cours" && faits > i) ? "done" : ""}`}>
-            {etat === "termine" || (etat === "en_cours" && faits > i) ? "✓" : "○"} {s}
+          <span key={s} className={`site ${etat === "termine" && resultat.portails_publies.includes(s) ? "done" : ""}`}>
+            {etat === "termine" && resultat.portails_publies.includes(s) ? "✓" : "○"} {s}
           </span>
         ))}
       </div>
@@ -141,7 +135,7 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
           </div>
           <p className="note">
             {reel
-              ? <>Exécution réelle de l'agent H · statut « {resultat.statut} » · durée mesurée par notre code.</>
+              ? <>Exécution réelle de l'agent H · statut « {resultat.statut} » · session {resultat.session_id} · durée mesurée par notre code.</>
               : <>Valeurs d'exemple (simulation, aucune clé Supabase). Avec les clés, le bouton lance vraiment l'agent.</>}
           </p>
         </>

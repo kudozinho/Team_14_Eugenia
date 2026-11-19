@@ -20,6 +20,7 @@ const ICONES: Record<string, JSX.Element> = {
 export default function Nav() {
   const path = usePathname();
   const items = [
+    { href: "/agent-h", label: "Agent H en action" },
     { href: "/mon-audit", label: "Mon audit" },
     { href: "/", label: "Tableau de bord" },
     { href: "/rapport", label: "Rapport" },
