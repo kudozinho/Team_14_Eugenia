@@ -1,4 +1,4 @@
-import { formatDuree, mediane, type Historique } from "@/lib/data";
+import { executionValide, formatDuree, mediane, type Historique } from "@/lib/data";
 
 const SITES = ["Portail A", "Portail B", "Portail C"];
 const STATUTS: Record<string, string> = {
@@ -12,7 +12,9 @@ function quand(iso: string) {
 // « Rapport de l'agent » : la dernière exécution lue dans Supabase, avec l'historique.
 // Si rien n'est lisible, la carte dit pourquoi (clés absentes, base vide, mauvaise tâche).
 export default function RapportExecution({ h, tacheId }: { h: Historique; tacheId: string }) {
-  const reussies = h.lignes.filter((l) => l.statut === "completed" && l.duree_s);
+  // Même critère que la durée du rapport : terminée ET annonces vérifiées. Une exécution terminée mais non vérifiée est écartée de la médiane, jamais cachée.
+  const reussies = h.lignes.filter(executionValide);
+  const ecartees = h.lignes.filter((l) => l.statut === "completed" && !executionValide(l));
   const derniere = h.lignes[0];
 
   return (
@@ -40,16 +42,17 @@ export default function RapportExecution({ h, tacheId }: { h: Historique; tacheI
           <div className="row" style={{ marginTop: 12 }}>
             <span className={`pill ${derniere.statut === "completed" ? "ok" : "warn"}`}>{STATUTS[derniere.statut] ?? derniere.statut}</span>
             <span className="muted">Dernière exécution le {quand(derniere.cree_le)}</span>
+            {derniere.statut === "completed" && !executionValide(derniere) && <span className="pill warn">Annonces non vérifiées</span>}
           </div>
 
           <div className="stats">
             <div className="stat"><b className="num">{derniere.duree_s ? formatDuree(derniere.duree_s) : "…"}</b><span>durée de l'agent</span></div>
             <div className="stat"><b className="num">{derniere.duree_humaine_s ? formatDuree(derniere.duree_humaine_s) : "…"}</b><span>à la main (mesuré)</span></div>
-            {derniere.duree_s && derniere.duree_humaine_s ? (
+            {derniere.duree_s && derniere.duree_humaine_s && executionValide(derniere) ? (
               <div className="stat"><b className="num">−{Math.round((1 - derniere.duree_s / derniere.duree_humaine_s) * 100)} %</b><span>de temps</span></div>
             ) : null}
             {reussies.length > 1 && (
-              <div className="stat"><b className="num">{formatDuree(mediane(reussies.map((l) => l.duree_s as number))!)}</b><span>médiane sur {reussies.length} exécutions</span></div>
+              <div className="stat"><b className="num">{formatDuree(mediane(reussies.map((l) => l.duree_s as number))!)}</b><span>médiane sur {reussies.length} exécutions vérifiées (sur {h.lignes.length} essais)</span></div>
             )}
           </div>
 
@@ -68,12 +71,13 @@ export default function RapportExecution({ h, tacheId }: { h: Historique; tacheI
             {h.lignes.map((l) => (
               <div className="list-row" key={l.id}>
                 <span className="muted">{quand(l.cree_le)}</span>
-                <span>{STATUTS[l.statut] ?? l.statut}</span>
+                <span>{STATUTS[l.statut] ?? l.statut}{l.statut === "completed" ? (executionValide(l) ? " · vérifiée" : " · non vérifiée") : ""}</span>
                 <span className="num">{l.duree_s ? formatDuree(l.duree_s) : "…"}</span>
                 <span className="num">{l.portails_publies.length} / 3 sites</span>
               </div>
             ))}
           </div>
+          {ecartees.length > 0 && <p className="note">{ecartees.length} exécution{ecartees.length > 1 ? "s" : ""} terminée{ecartees.length > 1 ? "s" : ""} mais aux annonces non vérifiées ({ecartees.map((l) => formatDuree(l.duree_s as number)).join(", ")}) : écartée{ecartees.length > 1 ? "s" : ""} de la médiane, mais visible{ecartees.length > 1 ? "s" : ""} ci-dessus.</p>}
         </>
       )}
     </section>

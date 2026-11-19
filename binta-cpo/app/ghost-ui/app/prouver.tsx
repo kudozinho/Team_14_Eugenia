@@ -4,23 +4,56 @@ import { useRouter } from "next/navigation";
 import type { Execution } from "@/lib/data";
 import { formatDuree } from "@/lib/data";
 
-type Etat = "attente" | "en_cours" | "termine" | "echec";
+// Parcours « Agent H en action » : une demande, un identifiant, des états réels lus dans Supabase.
+// Aucune simulation : sans service H configuré, le bouton est désactivé et le dit.
+// Le résultat affiché est TOUJOURS celui de la demande lancée ici (même identifiant), jamais une exécution précédente.
 
-// Bouton « Prouver » : crée une demande via /api/prouver, puis relit la ligne toutes les 5 s
-// Le worker hébergé lance l’agent ; aucun lancement simulé.
-export default function Prouver({ exemple, tacheId }: { exemple: Execution; tacheId?: string }) {
+type Etat = "attente" | "demande" | "suivi" | "termine" | "non_verifie" | "echec" | "indisponible";
+type Etape = "reveil" | "recue" | "agent" | "verification" | "fin";
+
+type Ligne = {
+  id: string; statut: string; resume: string | null; duree_s: number | null; duree_humaine_s: number | null;
+  session_id: string | null; portails_publies: string[] | null; cree_le?: string;
+};
+
+const SITES = ["Portail A", "Portail B", "Portail C"];
+const ETAPES: { id: Etape; titre: string }[] = [
+  { id: "recue", titre: "Demande reçue" },
+  { id: "reveil", titre: "Préparation du service" },
+  { id: "agent", titre: "Agent en cours" },
+  { id: "verification", titre: "Vérification" },
+  { id: "fin", titre: "Terminé" },
+];
+
+// Une exécution compte seulement si l'agent a fini ET que les annonces sont vérifiées sur les 3 portails.
+function verifiee(l: Ligne): boolean {
+  return l.statut === "completed" && !!l.duree_s && SITES.every((s) => (l.portails_publies ?? []).includes(s))
+    && !/absente ou fausse|vérifiée sur : aucun/i.test(l.resume ?? "");
+}
+
+// Étape affichée, déduite de la ligne lue dans la base (aucune étape inventée).
+function etapeDe(l: Ligne | null): Etape {
+  if (!l) return "recue";
+  if (l.statut !== "en_cours") return "fin";
+  if (l.resume === "CLOUD_PENDING") return "reveil"; // posée en file, pas encore prise par le service (réveil possible)
+  if (/vérif/i.test(l.resume ?? "")) return "verification";
+  return "agent";
+}
+
+export default function Prouver({ exemple, tacheId }: { exemple?: Execution; tacheId?: string }) {
   const [etat, setEtat] = useState<Etat>("attente");
+  const [etape, setEtape] = useState<Etape>("recue");
   const [secondes, setSecondes] = useState(0);
-  const [faits, setFaits] = useState(0);
+  const [demandeId, setDemandeId] = useState<string | null>(null);
+  const [ligne, setLigne] = useState<Ligne | null>(null);   // résultat de CETTE demande, jamais d'une précédente
   const [message, setMessage] = useState("");
-  const [resultat, setResultat] = useState<Execution>(exemple);
-  const [reel, setReel] = useState(false);
-  const [code, setCode] = useState("");          // gardé seulement en mémoire, jamais stocké
+  const [code, setCode] = useState("");                      // gardé seulement en mémoire, jamais stocké
   const [codeRequis, setCodeRequis] = useState(false);
   const [erreurAcces, setErreurAcces] = useState("");
   const router = useRouter();
   const minuteur = useRef<ReturnType<typeof setInterval> | null>(null);
   const chrono = useRef<ReturnType<typeof setInterval> | null>(null);
+  const verrou = useRef(false); // bloque un deuxième clic avant même le re-rendu
 
   useEffect(() => () => { if (minuteur.current) clearInterval(minuteur.current); if (chrono.current) clearInterval(chrono.current); }, []);
 
@@ -28,65 +61,67 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
     if (minuteur.current) clearInterval(minuteur.current);
     if (chrono.current) clearInterval(chrono.current);
   }
+  function terminer(e: Etat, m = "") { arreter(); verrou.current = false; setMessage(m); setEtat(e); }
 
   async function lancer() {
+    if (verrou.current) return;
+    verrou.current = true;
     const entetes: Record<string, string> = { "Content-Type": "application/json", ...(code ? { Authorization: `Bearer ${code}` } : {}) };
-    setEtat("en_cours"); setSecondes(0); setFaits(0); setMessage("Envoi de la demande…");
+    setEtat("demande"); setEtape("recue"); setSecondes(0); setLigne(null); setDemandeId(null); setMessage("Envoi de la demande…");
     const debut = Date.now();
     chrono.current = setInterval(() => setSecondes(Math.round((Date.now() - debut) / 1000)), 500);
     try {
       const r = await fetch("/api/prouver", { method: "POST", headers: entetes, body: JSON.stringify({ tache_id: tacheId }) });
-      const d = await r.json();
-      if (r.status === 401 || r.status === 503) {
-        arreter(); setEtat("attente"); setMessage("");
-        setCodeRequis(!!d.code_requis); setErreurAcces(d.erreur || "Accès refusé.");
-        return;
-      }
+      const d = await r.json().catch(() => ({}));
+      if (r.status === 401) { terminer("attente"); setCodeRequis(!!d.code_requis); setErreurAcces(d.erreur || "Accès refusé."); return; }
+      if (r.status === 402 || d.credits_indisponibles) { terminer("indisponible", "Les crédits de l'agent H sont épuisés : aucun lancement n'est possible pour le moment. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
+      if (r.status === 409) { terminer("indisponible", "Une exécution est déjà en cours. Une seule exécution à la fois : attendez qu'elle se termine avant de relancer."); return; }
+      if (r.status === 503 || d.desactive) { terminer("indisponible", d.erreur || "Le service agent H n'est pas disponible pour le moment. Aucune exécution n'a été démarrée et rien n'est simulé."); return; }
+      if (!r.ok || !d.id) { terminer("echec", d.erreur || "La demande n'a pas pu être créée."); return; }
       setErreurAcces(""); setCodeRequis(false);
-      if (d.mode === "exemple") throw new Error("Le service ne peut pas lancer une exécution réelle.");
-      if (!r.ok || !d.id) throw new Error(d.erreur || "La demande n'a pas pu être créée");
-      setReel(true);
-      setMessage(`Demande ${d.id} envoyée, en attente du service H…`);
+      setDemandeId(d.id); setEtat("suivi");
+      setMessage("Demande enregistrée. Le service H la prend en charge.");
       minuteur.current = setInterval(async () => {
-        if (Date.now() - debut > 11 * 60 * 1000) { arreter(); setMessage("Délai dépassé (plus de 10 minutes)."); setEtat("echec"); return; }
+        if (Date.now() - debut > 11 * 60 * 1000) {
+          terminer("echec", "Délai dépassé (plus de 10 minutes). Aucune relance automatique : vérifiez les portails avant de relancer.");
+          return;
+        }
         try {
           const g = await fetch(`/api/prouver?id=${encodeURIComponent(d.id)}`, { cache: "no-store", headers: entetes });
           const j = await g.json();
-          const l = j.ligne;
-          if (!l) return;
-          if (l.resume) setMessage(l.resume === "CLOUD_PENDING" ? "Demande reçue, en attente du service H…" : l.resume);
-          if (l.statut !== "en_cours") {
-            arreter();
-            if (l.statut === "completed") {
-              setResultat({ ...exemple, ...l, portails_publies: l.portails_publies ?? [] });
-              setFaits((l.portails_publies ?? []).length); setEtat("termine");
-              router.refresh(); // recharge le rapport lu dans la base
-            } else {
-              setMessage(l.resume || `L'agent s'est arrêté (${l.statut}).`); setEtat("echec");
-            }
-          }
+          const l: Ligne | undefined = j.ligne;
+          if (!l || l.id !== d.id) return; // on ne montre que la ligne de CETTE demande
+          setEtape(etapeDe(l));
+          setMessage(l.resume === "CLOUD_PENDING" ? "Le service gratuit se prépare : le premier réveil peut prendre environ une minute." : (l.resume ?? ""));
+          if (l.statut === "en_cours") return;
+          setLigne({ ...l, portails_publies: l.portails_publies ?? [] });
+          if (verifiee(l)) { terminer("termine"); router.refresh(); }
+          else if (l.statut === "completed") terminer("non_verifie", "L'agent a terminé, mais les annonces n'ont pas été vérifiées sur les 3 portails : ce n'est pas un succès.");
+          else terminer("echec", l.resume || `L'agent s'est arrêté (${l.statut}).`);
         } catch { /* on réessaie au prochain tour */ }
       }, 5000);
     } catch (e) {
-      arreter(); setMessage(e instanceof Error ? e.message : "Erreur inconnue"); setEtat("echec");
+      terminer("echec", e instanceof Error ? e.message : "Erreur inconnue");
     }
   }
 
-  const gain = Math.round((1 - resultat.duree_s / resultat.duree_humaine_s) * 100);
-  const hauteurAgent = Math.max(12, Math.round((resultat.duree_s / resultat.duree_humaine_s) * 100));
-  const sites = ["Portail A", "Portail B", "Portail C"];
+  const occupe = etat === "demande" || etat === "suivi";
+  const publies = ligne?.portails_publies ?? [];
+  const ref = ligne?.duree_humaine_s ?? null;   // référence « à la main » enregistrée avec cette exécution, si elle existe
+  const gain = ref && ligne?.duree_s ? Math.round((1 - ligne.duree_s / ref) * 100) : null;
+  const idx = ETAPES.findIndex((e) => e.id === etape);
 
   return (
     <section className="card proof">
       <div className="row" style={{ justifyContent: "space-between" }}>
-        <div>
-          <h3 style={{ margin: 0 }}>L'agent H refait la tâche, chronomètre en main</h3>
-        </div>
+        <h3 style={{ margin: 0 }}>L'agent H refait la tâche, chronomètre en main</h3>
         <div className="row">
-          <button className="btn" onClick={lancer} disabled={etat === "en_cours"}>
-            {etat === "en_cours" ? `Agent en cours… ${secondes} s` : "Lancer l’agent H"}
+          <button className="btn" onClick={lancer} disabled={occupe || etat === "indisponible"} aria-busy={occupe}>
+            {occupe ? `En cours… ${secondes} s` : "Lancer l'agent H"}
           </button>
-          {(etat === "termine" || etat === "echec") && <button className="btn sec" onClick={() => { setEtat("attente"); setResultat(exemple); setMessage(""); setFaits(0); }}>Recommencer</button>}
+          {(etat === "termine" || etat === "non_verifie" || etat === "echec" || etat === "indisponible") && (
+            <button className="btn sec" onClick={() => { setEtat("attente"); setLigne(null); setDemandeId(null); setMessage(""); setEtape("recue"); }}>Effacer</button>
+          )}
         </div>
       </div>
 
@@ -98,60 +133,86 @@ export default function Prouver({ exemple, tacheId }: { exemple: Execution; tach
               <label>Code d'accès pour lancer l'agent<br />
                 <input type="password" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" style={{ padding: 10, width: "min(100%, 360px)" }} />
               </label>{" "}
-              <button className="btn" type="submit" disabled={!code.trim() || etat === "en_cours"}>Valider et lancer</button>
+              <button className="btn" type="submit" disabled={!code.trim() || occupe}>Valider et lancer</button>
             </form>
           )}
         </div>
       )}
 
-      <div className="sites" aria-live="polite">
-        {sites.map((s, i) => (
-          <span key={s} className={`site ${etat === "termine" && resultat.portails_publies.includes(s) ? "done" : ""}`}>
-            {etat === "termine" && resultat.portails_publies.includes(s) ? "✓" : "○"} {s}
-          </span>
-        ))}
-      </div>
-      {etat === "en_cours" && <div className="progress"><i style={{ width: `${(faits / 3) * 100}%` }} /></div>}
+      {(occupe || ligne) && (
+        <ol className="etapes" aria-label="Étapes de l'exécution">
+          {ETAPES.map((e, i) => {
+            const fini = etat === "termine" || i < idx;
+            const actif = occupe && i === idx;
+            const rate = (etat === "echec" || etat === "non_verifie") && i === idx;
+            return <li key={e.id} className={`etape ${fini ? "fait" : ""} ${actif ? "actif" : ""} ${rate ? "rate" : ""}`} aria-current={actif ? "step" : undefined}>
+              <span aria-hidden="true">{fini ? "✓" : rate ? "!" : i + 1}</span>{e.titre}
+            </li>;
+          })}
+        </ol>
+      )}
 
-      {etat === "termine" ? (
+      <div className="sites" aria-live="polite">
+        {SITES.map((s) => {
+          const ok = etat === "termine" && publies.includes(s);
+          return <span key={s} className={`site ${ok ? "done" : ""}`}>{ok ? "✓" : "○"} {s}{ok ? " · vérifié" : ""}</span>;
+        })}
+      </div>
+
+      {occupe && (
+        <>
+          <div className="progress" role="progressbar" aria-label="Exécution en cours"><i className="indef" /></div>
+          <p className="muted" style={{ marginTop: 14 }} aria-live="polite">
+            {message}{demandeId && <> · demande <code>{demandeId}</code></>}
+            {" "}Compter environ 2 minutes une fois le service prêt, jusqu'à 10 en cas de correction automatique.
+          </p>
+        </>
+      )}
+
+      {etat === "termine" && ligne && (
         <>
           <div className="row" style={{ gap: 28, marginTop: 18, alignItems: "flex-end" }}>
             <div>
-              <div className="big-gain num">−{gain} %</div>
-              <div className="muted">de temps sur cette tâche · {resultat.portails_publies.length} sites sur 3</div>
-            </div>
-          </div>
-          <div className="compare" aria-label="Durée avant et après">
-            <div className="col">
-              <div className="bar" style={{ background: "var(--o-600)", height: 150 }}><span className="num">{formatDuree(resultat.duree_humaine_s)}</span></div>
-              <div className="lbl">À la main</div>
-            </div>
-            <div className="col">
-              <div className="bar" style={{ background: "var(--g-700)", height: Math.round((150 * hauteurAgent) / 100) }}>
-                {hauteurAgent > 22 && <span className="num">{formatDuree(resultat.duree_s)}</span>}
-              </div>
-              <div className="lbl"><b className="num">{formatDuree(resultat.duree_s)}</b> avec l'agent H</div>
+              <div className="big-gain num">{formatDuree(ligne.duree_s as number)}</div>
+              <div className="muted">pour {publies.length} portails sur 3, annonces vérifiées{gain !== null && <> · {gain >= 0 ? `−${gain}` : `+${-gain}`} % par rapport à {formatDuree(ref as number)} à la main</>}</div>
             </div>
           </div>
           <p className="note">
-            {reel
-              ? <>Exécution réelle de l'agent H · statut « {resultat.statut} » · session {resultat.session_id} · durée mesurée par notre code.</>
-              : <>Valeurs d'exemple (simulation, aucune clé Supabase). Avec les clés, le bouton lance vraiment l'agent.</>}
+            Exécution réelle de cette demande ({demandeId}) · session H {ligne.session_id || "non indiquée"}
+            {ligne.cree_le ? ` · ${new Date(ligne.cree_le).toLocaleString("fr-FR")}` : ""} · durée mesurée par notre code.
+            {gain === null && " Aucune référence « à la main » n'est enregistrée avec cette exécution : pas de comparaison affichée."}
+            {" "}Une seule exécution ne remplace pas la médiane du rapport.
           </p>
         </>
-      ) : etat === "en_cours" ? (
-        <p className="muted" style={{ marginTop: 14 }} aria-live="polite">
-          {message || "En attente de l'agent…"} {reel && "(environ 2 minutes, jusqu'à 10 en cas de correction automatique)"}
-        </p>
-      ) : etat === "echec" ? (
-        <div className="alert" style={{ marginTop: 14 }}>
+      )}
+
+      {etat === "non_verifie" && (
+        <div className="alert" style={{ marginTop: 14 }} role="alert">
+          <h3>Terminé, mais non vérifié</h3>
+          <p style={{ margin: 0 }}>{message}</p>
+          {ligne?.resume && <p className="muted" style={{ margin: "8px 0 0" }}>{ligne.resume}</p>}
+        </div>
+      )}
+
+      {etat === "echec" && (
+        <div className="alert" style={{ marginTop: 14 }} role="alert">
           <h3>L'agent n'a pas terminé</h3>
           <p style={{ margin: 0 }}>{message}</p>
+          {demandeId && <p className="muted" style={{ margin: "8px 0 0" }}>Demande <code>{demandeId}</code>. Pas de relance automatique : les annonces ont pu être publiées en partie.</p>}
         </div>
-      ) : (
+      )}
+
+      {etat === "indisponible" && (
+        <div className="alert" style={{ marginTop: 14 }} role="alert">
+          <h3>Lancement impossible</h3>
+          <p style={{ margin: 0 }}>{message}</p>
+        </div>
+      )}
+
+      {etat === "attente" && (
         <p className="muted" style={{ marginTop: 14 }}>
-          L'agent H ouvre les 3 sites, remplit le formulaire et publie. La durée est mesurée par notre code.
-          Compter environ 2 minutes.
+          L'agent H ouvre les 3 sites, remplit le formulaire et publie ; le résultat n'est affiché qu'après vérification des annonces.
+          Le service est gratuit et s'endort sans trafic : <strong>le premier lancement peut prendre environ une minute de plus</strong>.
         </p>
       )}
     </section>
