@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   description: "Tableau de bord et rapport Ghost (Team 14)",
 };
 
+// « Mode démo » seulement quand la base n'est pas branchée (même variables que lib/ : SUPABASE_URL et la clé serveur).
+const enDirect = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${display.variable} ${inter.variable}`}>
@@ -23,8 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p className="side-tag">See the work. Ghost the task.</p>
             <Nav />
             <div className="side-foot">
-              <span className="badge">Mode démo</span>
-              <p>Données fictives de l'Agence Belvédère. Aucune donnée par personne.</p>
+              <span className="badge">{enDirect ? "Audit en direct" : "Mode démo"}</span>
+              <p>{enDirect
+                ? "Agence Belvédère (fictive) : tâches et durées mesurées sur les sites de test. Aucune donnée par personne."
+                : "Données fictives de l'Agence Belvédère. Aucune donnée par personne."}</p>
             </div>
           </aside>
           <main>{children}</main>
