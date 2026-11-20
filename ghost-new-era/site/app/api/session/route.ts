@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdmin } from "@/lib/supabase-admin";
 
-const OUTILS = ["rh", "messagerie", "wiki"];
+const OUTILS = ["rh", "messagerie", "wiki", "navigateur", "notion", "slack", "gmail"];
 
 // Crée une session d'observation et enregistre l'accord outil par outil.
 // L'identité vient du jeton de connexion de la personne, vérifié côté serveur.

@@ -14,6 +14,8 @@ from email.message import EmailMessage
 
 import certifi
 
+from contexte import autorise  # noqa: F401
+
 CTX = ssl.create_default_context(cafile=certifi.where())
 
 
@@ -21,6 +23,12 @@ def _http(url, corps, entetes):
     req = urllib.request.Request(url, data=json.dumps(corps).encode(), headers={"Content-Type": "application/json; charset=utf-8", **entetes}, method="POST")
     with urllib.request.urlopen(req, timeout=30, context=CTX) as r:
         return json.load(r)
+
+
+def notion_id():
+    """Accepte un identifiant ou le LIEN d'une page Notion (les 32 derniers caractères hexadécimaux du lien)."""
+    v = os.environ.get("NOTION_PARENT_PAGE_ID", "").split("?")[0].rstrip("/").replace("-", "")
+    return v[-32:] if len(v) >= 32 else v
 
 
 def configure(nom):
@@ -73,8 +81,29 @@ def notion_page(p, titres_pages=None):
         for x in ["Jour 1 : récupérer son badge et son ordinateur", "Semaine 1 : rencontrer son parrain", "Mois 1 : point d'étape avec son manager"]:
             blocs.append({"object": "block", "type": "to_do", "to_do": {"rich_text": t(x), "checked": False}})
         r = _http("https://api.notion.com/v1/pages",
-                  {"parent": {"page_id": os.environ["NOTION_PARENT_PAGE_ID"]}, "properties": {"title": {"title": t(f"Onboarding de {p['prenom']} {p['nom']}")}}, "children": blocs},
+                  {"parent": {"page_id": notion_id()}, "properties": {"title": {"title": t(f"Onboarding de {p['prenom']} {p['nom']}")}}, "children": blocs},
                   {"Authorization": f"Bearer {os.environ['NOTION_TOKEN']}", "Notion-Version": "2022-06-28"})
         return (True, "page créée") if r.get("id") else (False, "Notion : réponse inattendue")
+    except Exception as e:  # noqa: BLE001
+        return False, f"Notion : {type(e).__name__}"
+
+
+def notion_lire(max_car=700):
+    """Lit le texte de la page Notion partagée avec l'intégration (titres, paragraphes, listes). Renvoie (ok, texte ou détail)."""
+    if not configure("notion"):
+        return None, "Notion non configuré"
+    try:
+        req = urllib.request.Request(f"https://api.notion.com/v1/blocks/{notion_id()}/children?page_size=50",
+                                     headers={"Authorization": f"Bearer {os.environ['NOTION_TOKEN']}", "Notion-Version": "2022-06-28"})
+        with urllib.request.urlopen(req, timeout=30, context=CTX) as r:
+            d = json.load(r)
+        textes = []
+        for b in d.get("results", []):
+            rt = (b.get(b.get("type")) or {}).get("rich_text") or []
+            x = "".join(t.get("plain_text", "") for t in rt).strip()
+            if x:
+                textes.append(x)
+        txt = " | ".join(textes)[:max_car]
+        return (True, txt) if txt else (False, "page Notion vide ou non partagée avec l'intégration")
     except Exception as e:  # noqa: BLE001
         return False, f"Notion : {type(e).__name__}"

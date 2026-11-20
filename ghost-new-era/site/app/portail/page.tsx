@@ -22,6 +22,15 @@ const TOUS = [
   { id: "wiki", nom: "Wiki", chemin: `${INTRANET}/intranet/wiki` },
 ];
 
+const ORCH = process.env.NEXT_PUBLIC_ORCH_URL ?? "";
+// Outils connectés : pas d'écran à afficher, mais les agents ne s'en servent que s'ils sont cochés.
+const EXTERNES = [
+  { id: "navigateur", nom: "Navigateur et comptes connectés", aide: "Google et autres sites : les agents se connectent seuls aux comptes enregistrés" },
+  { id: "notion", nom: "Notion", aide: "Lire ta page Notion et y créer la page d'onboarding" },
+  { id: "slack", nom: "Slack", aide: "Publier le message de bienvenue" },
+  { id: "gmail", nom: "Gmail", aide: "Envoyer l'e-mail de bienvenue" },
+];
+
 type Suivi = {
   runs: { id: string; agent: string; statut: string; session_h_id: string | null; vue_directe_url: string | null; actions_verifiees: number; actions_total: number; debut: string; fin: string | null; cout_credits: number | null }[];
   evenements: { id: string; run_id: string; action: string; statut: string; detail: string | null; outil: string | null }[];
@@ -38,7 +47,8 @@ export default function Portail() {
   const [etape, setEtape] = useState<Etape>("chargement");
   const [prenom, setPrenom] = useState("");
   const [interdits, setInterdits] = useState<string[]>([]);
-  const [coches, setCoches] = useState<string[]>([]);
+  const [coches, setCoches] = useState<string[]>(["rh", "messagerie", "wiki"]);
+  const [statuts, setStatuts] = useState<Record<string, boolean> | null>(null);
   const [actifs, setActifs] = useState<string[]>([]);
   const [ongletActif, setOngletActif] = useState("rh");
   const [enPause, setEnPause] = useState(false);
@@ -80,6 +90,15 @@ export default function Portail() {
 
   const refuse = (o: { id: string; nom: string }) =>
     interdits.some((i) => i.includes(o.id) || (o.id === "rh" && i.includes("rh")));
+
+  // Les accès configurés sur le service des agents sont cochés d'office : la personne peut les décocher.
+  useEffect(() => {
+    if (!ORCH) return;
+    fetch(`${ORCH}/connecteurs`).then((r) => r.json()).then((j: Record<string, boolean>) => {
+      setStatuts(j);
+      setCoches((c) => [...new Set([...c, ...EXTERNES.filter((e) => j[e.id]).map((e) => e.id)])]);
+    }).catch(() => setStatuts({}));
+  }, []);
 
   async function commencer() {
     setErreur("");
@@ -326,10 +345,23 @@ export default function Portail() {
               );
             })}
           </fieldset>
+          <fieldset className="choix-outils">
+            <legend>Outils connectés</legend>
+            {EXTERNES.map((o) => {
+              const dispo = !!statuts?.[o.id];
+              return (
+                <label key={o.id} style={{ opacity: dispo ? 1 : 0.6 }}>
+                  <input type="checkbox" disabled={!dispo} checked={coches.includes(o.id)}
+                    onChange={(e) => setCoches((c) => (e.target.checked ? [...c, o.id] : c.filter((x) => x !== o.id)))} />
+                  <span><b>{o.nom}</b> <small className="petit">{dispo ? `· connecté · ${o.aide}` : statuts === null ? "· vérification…" : "· non configuré"}</small></span>
+                </label>
+              );
+            })}
+          </fieldset>
           <p className="petit">Les agents peuvent aussi se connecter seuls à tes comptes : <a href="/connexions" style={{ color: "var(--g-300)" }}>gérer les comptes connectés</a>.</p>
           {erreur && <p role="alert" className="erreur">{erreur}</p>}
           <div className="rang">
-            <button className="btn btn-primary" disabled={coches.length === 0} onClick={commencer}>Commencer l&apos;observation</button>
+            <button className="btn btn-primary" disabled={!coches.some((c) => TOUS.some((t) => t.id === c))} onClick={commencer}>Commencer l&apos;observation</button>
             <button className="btn btn-secondary" onClick={deconnecter}>Se déconnecter</button>
           </div>
         </div>
@@ -385,6 +417,7 @@ export default function Portail() {
           </ul>
           <p className="petit">Navigue dans les espaces pendant que Ghost regarde : il note ceux qu&apos;il a vus.</p>
           <p className="petit">Outils autorisés : <b>{outilsAutorises.map((o) => o.nom).join(", ") || "aucun"}</b></p>
+          {EXTERNES.some((e) => actifs.includes(e.id)) && <p className="petit">Outils connectés autorisés : <b>{EXTERNES.filter((e) => actifs.includes(e.id)).map((e) => e.nom).join(", ")}</b></p>}
           {partage
             ? <button className="btn btn-secondary" onClick={arreterPartage}>Arrêter le partage d'écran</button>
             : <button className="btn btn-primary" onClick={partager}>Partager mon onglet</button>}
