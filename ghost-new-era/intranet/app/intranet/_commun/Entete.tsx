@@ -1,4 +1,5 @@
 // En-tête commun de l'intranet de test : bandeau visible et navigation entre les 3 espaces.
+import Image from "next/image";
 import Link from "next/link";
 import s from "./intranet.module.css";
 
@@ -14,7 +15,7 @@ export default function Entete({ actif }: { actif: Espace }) {
     <>
       <div className="bandeau-test">Environnement de test fictif : Atelier Nova n&apos;existe pas</div>
       <nav className={s.nav} aria-label="Espaces de l'intranet">
-        <strong>Intranet Atelier Nova</strong>
+        <span className={s.marque}><Image src="/logo-atelier-nova.svg" alt="" width={30} height={30} /><strong>Intranet Atelier Nova</strong></span>
         {lien("rh", "/intranet/rh", "Espace RH")}
         {lien("messagerie", "/intranet/messagerie", "Messagerie")}
         {lien("wiki", "/intranet/wiki", "Wiki")}
