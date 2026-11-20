@@ -14,6 +14,9 @@ from classement import meilleures_pages  # noqa: E402
 from commun import evenement  # noqa: E402
 
 
+AGENT_H = os.environ.get("AGENT_DOCS", "ghost-docs")
+
+
 def executer(client, personne_id, proposition_id=None, manager=None):
     p = c.personne(personne_id)
     debut = time.monotonic()
@@ -36,7 +39,7 @@ Puis clique « Créer la page ».
  - Mois 1 : « Point d'étape avec son manager »
  - Mois 1 : « Première mise en pratique en autonomie »
 Ne modifie aucune autre page ni aucune ligne existante. Réponds statut=termine avec un résumé court, ou statut=echec si tu es bloqué."""
-        c.passage(client, run, p, consigne, "/intranet/wiki", {"page_wiki": f"Page « Bienvenue {p['prenom']} » créée", "checklist": "Checklist jour 1, semaine 1, mois 1 créée"}, 90, 420)
+        c.passage(client, run, p, consigne, "/intranet/wiki", {"page_wiki": f"Page « Bienvenue {p['prenom']} » créée", "checklist": "Checklist jour 1, semaine 1, mois 1 créée"}, 90, 420, AGENT_H)
     except Exception as e:  # noqa: BLE001
         evenement(run, "Erreur de l'agent", "echec", f"{type(e).__name__}: {str(e)[:200]}", outil="Wiki")
     pr = c.preuve(p["id"])

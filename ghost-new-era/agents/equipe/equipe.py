@@ -16,6 +16,7 @@ import commun as c  # noqa: E402
 from commun import evenement, lire  # noqa: E402
 
 ATTENTE_MANAGER_S = 600
+AGENT_H = os.environ.get("AGENT_EQUIPE", "ghost-equipe")
 
 
 def _manager(p, manager_nom):
@@ -48,7 +49,7 @@ def executer(client, personne_id, proposition_id=None, manager=None):
 1. Ouvre le canal « # {canal} ». Dans « Écrire un message », laisse l'auteur tel quel, écris : « Bienvenue {p['prenom']} dans l'équipe {p['equipe']} ! Nous sommes ravis de t'accueillir. » puis clique « Publier le message ».
 2. Ouvre le canal « # accueil ». Écris : « {p['prenom']} {p['nom']} arrive le {arrivee.strftime('%d/%m/%Y')} comme {p['poste']} dans l'équipe {p['equipe']}. Faites-lui bon accueil ! » puis clique « Publier le message ».
 Ne sors pas de la messagerie. Ne modifie rien d'autre. Réponds statut=termine avec un résumé court, ou statut=echec si tu es bloqué."""
-        fin, _ = c.passage(client, run, p, c1, "/intranet/messagerie", {"canal": "Message de bienvenue dans le canal de l'équipe", "message": "Annonce dans # accueil"}, 30, 180)
+        fin, _ = c.passage(client, run, p, c1, "/intranet/messagerie", {"canal": "Message de bienvenue dans le canal de l'équipe", "message": "Annonce dans # accueil"}, 30, 180, AGENT_H)
         ok1 = bool(c.preuve(p["id"]).get("canal")) and bool(c.preuve(p["id"]).get("message"))
 
         evenement(run, "Attente du manager", "en_cours", "la demande de parrain part au manager : réponse humaine attendue dans l'espace RH", outil="Messagerie")
@@ -61,7 +62,7 @@ Ne sors pas de la messagerie. Ne modifie rien d'autre. Réponds statut=termine a
 1. Section « Demander un parrain » : « Personne qui arrive » = {p['prenom']} {p['nom']} ; « Envoyer la demande à » = {m['nom']} ; clique « Envoyer la demande de parrain ».
 2. Section « Proposer un café d'accueil » : « Personne qui arrive » = {p['prenom']} {p['nom']} ; « Inviter » = Toute l'équipe ; « Créneau » = le {cafe.strftime('%d/%m/%Y')} à 10:00 (saisis la date puis l'heure dans le champ) ; clique « Proposer le café ».
 Ne sors pas de la messagerie. Réponds statut=termine avec un résumé court, ou statut=echec si tu es bloqué."""
-            fin, _ = c.passage(client, run, p, c2, "/intranet/messagerie/demandes", {"parrain": f"Demande de parrain envoyée à {m['nom']}", "cafe": "Café d'accueil proposé"}, 30, 180)
+            fin, _ = c.passage(client, run, p, c2, "/intranet/messagerie/demandes", {"parrain": f"Demande de parrain envoyée à {m['nom']}", "cafe": "Café d'accueil proposé"}, 30, 180, AGENT_H)
             ok2 = bool(c.preuve(p["id"]).get("parrain")) and bool(c.preuve(p["id"]).get("cafe"))
     except Exception as e:  # noqa: BLE001
         evenement(run, "Erreur de l'agent", "echec", f"{type(e).__name__}: {str(e)[:200]}", outil="Messagerie")

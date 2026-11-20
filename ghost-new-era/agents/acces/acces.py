@@ -28,7 +28,7 @@ load_dotenv()
 CONTEXTE_SSL = ssl.create_default_context(cafile=certifi.where())  # certificats fiables (Python macOS)
 
 INTRANET = os.environ.get("INTRANET_URL", "https://atelier-nova-intranet.vercel.app")
-AGENT = "h/web-surfer-pro"
+AGENT = os.environ.get("AGENT_ACCES", "ghost-acces")  # agent créé dans le compte H ; repli possible : h/web-surfer-pro
 MAX_STEPS, MAX_TIME_S = 40, 240
 ATTENTE_HUMAINE_S = 600
 ELEMENTS = {"fiche": "Fiche RH créée", "acces": "Accès demandés", "badge": "Badge demandé"}
