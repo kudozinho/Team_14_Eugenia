@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import commun as c  # noqa: E402
 from classement import meilleures_pages  # noqa: E402
 from commun import evenement  # noqa: E402
+import connecteurs  # noqa: E402
 
 
 AGENT_H = os.environ.get("AGENT_DOCS", "ghost-docs")
@@ -42,6 +43,9 @@ Ne modifie aucune autre page ni aucune ligne existante. Réponds statut=termine 
         c.passage(client, run, p, consigne, "/intranet/wiki", {"page_wiki": f"Page « Bienvenue {p['prenom']} » créée", "checklist": "Checklist jour 1, semaine 1, mois 1 créée"}, 90, 420, AGENT_H)
     except Exception as e:  # noqa: BLE001
         evenement(run, "Erreur de l'agent", "echec", f"{type(e).__name__}: {str(e)[:200]}", outil="Wiki")
+    ok, detail = connecteurs.notion_page(p, cl["titres"] if "cl" in dir() else None)
+    if ok is not None:
+        evenement(run, "Page d'onboarding créée dans Notion", "ok" if ok else "echec", detail, outil="Notion")
     pr = c.preuve(p["id"])
     verifiees = sum(1 for k in ("page_wiki", "checklist") if pr.get(k))
     return c.cloturer(run, verifiees == 2, verifiees, 2, debut, "Docs")

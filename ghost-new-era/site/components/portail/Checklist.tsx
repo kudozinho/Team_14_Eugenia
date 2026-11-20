@@ -8,7 +8,10 @@ const GROUPES: { agent: string; items: [string, string][] }[] = [
   { agent: "docs", items: [["page_wiki", "Page de bienvenue créée"], ["checklist", "Checklist jour 1, semaine 1, mois 1"]] },
 ];
 
-export default function Checklist({ preuve, runs }: { preuve: Record<string, boolean>; runs: { agent: string; statut: string }[] }) {
+const CONNECTES: [string, string][] = [["Slack", "Message de bienvenue dans Slack"], ["Gmail", "E-mail de bienvenue envoyé"], ["Notion", "Page d'onboarding dans Notion"]];
+
+export default function Checklist({ preuve, runs, evenements = [] }: { preuve: Record<string, boolean>; runs: { agent: string; statut: string }[]; evenements?: { outil: string | null; statut: string }[] }) {
+  const etat = (o: string) => evenements.find((e) => e.outil === o);
   const total = GROUPES.reduce((n, g) => n + g.items.length, 0);
   const faits = GROUPES.reduce((n, g) => n + g.items.filter(([k]) => preuve[k]).length, 0);
   return (
@@ -33,6 +36,15 @@ export default function Checklist({ preuve, runs }: { preuve: Record<string, boo
           </div>
         );
       })}
+      <div className="groupe" style={{ ["--c" as string]: "#8fd1a8" }}>
+        <h3>Outils connectés</h3>
+        <ul>
+          {CONNECTES.map(([o, l]) => {
+            const e = etat(o);
+            return <li key={o} className={e?.statut === "ok" ? "ok" : ""}><span className="coche" />{l}{!e && <small className="petit"> · non connecté</small>}{e?.statut === "echec" && <small className="petit"> · échec</small>}</li>;
+          })}
+        </ul>
+      </div>
       <p className="petit">Une ligne n&apos;est cochée que lorsque l&apos;outil lui-même l&apos;a confirmée.</p>
     </section>
   );

@@ -462,7 +462,7 @@ export default function Portail() {
             <h2>Les agents H travaillent</h2>
             {!propositionId && <p className="petit">Aucune proposition enregistrée : aucun agent n'est lancé.</p>}
             {propositionId && !suivi?.runs.length && <p className="petit">Démarrage des agents… (le service peut mettre une minute à se réveiller)</p>}
-            {suivi && <Checklist preuve={suivi.rapport?.preuve ?? {}} runs={suivi.runs} />}
+            {suivi && <Checklist preuve={suivi.rapport?.preuve ?? {}} runs={suivi.runs} evenements={suivi.evenements} />}
             {suivi?.decisions.filter((d) => d.statut === "en_attente").map((d) => (
               <div key={d.id} className="agent question">
                 <h3>{d.libelle.startsWith("Valider la commande") ? "Validation nécessaire" : "L'agent a une question"}</h3>
