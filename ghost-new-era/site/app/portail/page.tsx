@@ -37,6 +37,7 @@ export default function Portail() {
   const [sessionId, setSessionId] = useState("");
   const [propositionId, setPropositionId] = useState("");
   const [lecture, setLecture] = useState<{ resume: string; latence_ms: number } | null>(null);
+  const [etatCapture, setEtatCapture] = useState("Partage d'écran inactif.");
   const [suivi, setSuivi] = useState<Suivi | null>(null);
   const [saisies, setSaisies] = useState<Record<string, string>>({});
   const flux = useRef<MediaStream | null>(null);
@@ -96,12 +97,20 @@ export default function Portail() {
   // Toutes les 4 secondes (sauf en pause) : une image de l'onglet partagé part au serveur, qui la fait lire par Holo.
   // L'image n'est jamais stockée : seul le résumé texte est gardé.
   useEffect(() => {
-    if (!partage || enPause || !sessionId || proposition !== "aucune") return;
+    if (!partage) { setEtatCapture("Partage d'écran inactif."); return; }
+    if (enPause) { setEtatCapture("En pause : aucune image n'est envoyée."); return; }
+    if (!sessionId) { setEtatCapture("Session absente : recommence l'observation."); return; }
+    if (proposition !== "aucune") return;
     const video = document.createElement("video");
     video.muted = true;
-    if (flux.current) { video.srcObject = flux.current; video.play().catch(() => {}); }
-    const minuteur = setInterval(async () => {
-      if (enCours.current || video.videoWidth === 0) return;
+    video.playsInline = true;
+    video.style.cssText = "position:fixed;left:-9999px;width:2px;height:2px;opacity:0";
+    document.body.appendChild(video); // une vidéo hors du document peut ne pas décoder d'images
+    if (flux.current) { video.srcObject = flux.current; video.play().catch(() => setEtatCapture("La vidéo du partage ne démarre pas.")); }
+    setEtatCapture("En attente de la première image du partage…");
+    const envoyer = async () => {
+      if (enCours.current) return;
+      if (!video.videoWidth) { setEtatCapture("En attente de la première image du partage…"); return; }
       enCours.current = true;
       try {
         const echelle = Math.min(1, 1254 / video.videoWidth);
@@ -110,6 +119,7 @@ export default function Portail() {
         canvas.height = Math.round(video.videoHeight * echelle);
         canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
         const image = canvas.toDataURL("image/jpeg", 0.7);
+        setEtatCapture("Image envoyée à Holo, lecture en cours…");
         const { data } = await getSupabase().auth.getSession();
         const r = await fetch("/api/capture", {
           method: "POST",
@@ -117,15 +127,20 @@ export default function Portail() {
           body: JSON.stringify({ session_id: sessionId, image }),
         });
         const j = await r.json();
-        if (!r.ok) { setErreur(j.erreur ?? "Lecture impossible."); return; }
+        if (!r.ok) { setErreur(j.erreur ?? "Lecture impossible."); setEtatCapture(`Erreur du serveur (${r.status}) : ${j.erreur ?? "lecture impossible"}`); return; }
         setErreur("");
+        setEtatCapture("Dernière image lue par Holo.");
         setLecture({ resume: j.resume, latence_ms: j.latence_ms });
         if (j.proposition) { setPropositionId(j.proposition.id); setProposition("affichee"); }
+      } catch (e) {
+        setEtatCapture(`Envoi impossible : ${e instanceof Error ? e.message : "erreur réseau"}`);
       } finally {
         enCours.current = false;
       }
-    }, 4000);
-    return () => { clearInterval(minuteur); video.srcObject = null; };
+    };
+    const premier = setTimeout(envoyer, 1500);
+    const minuteur = setInterval(envoyer, 4000);
+    return () => { clearTimeout(premier); clearInterval(minuteur); video.srcObject = null; video.remove(); };
   }, [partage, enPause, sessionId, proposition]);
 
   // Une fois la proposition acceptée, le portail interroge le suivi toutes les 3 secondes.
@@ -237,6 +252,7 @@ export default function Portail() {
             ? <button className="btn btn-secondary" onClick={arreterPartage}>Arrêter le partage</button>
             : <button className="btn btn-secondary" onClick={partager}>Partager mon onglet</button>}
           <p style={{ marginTop: 8, fontSize: "0.9rem", color: "var(--mute)" }}>Une image de l'onglet part toutes les 4 secondes (sauf en pause) pour être lue par Holo. Les images ne sont jamais conservées : seul un résumé en texte est gardé.</p>
+          <p role="status" style={{ marginTop: 8, fontWeight: 600 }}>Capture : {etatCapture}</p>
           {lecture && <p style={{ marginTop: 8 }}>Ghost voit : {lecture.resume} <span style={{ color: "var(--mute)" }}>({(lecture.latence_ms / 1000).toFixed(1)} s)</span></p>}
         </div>
 
