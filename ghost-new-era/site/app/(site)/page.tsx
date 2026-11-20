@@ -11,7 +11,7 @@ const faq = [
   { q: "Ghost agit-il sans me demander ?", r: "Non. Il propose, et il n'agit qu'après ton accord. Avant toute action irréversible, comme une commande de matériel, il attend ta validation." },
   { q: "Que se passe-t-il s'il manque une information ?", r: "Il te pose la question au lieu d'inventer. Par exemple, si le manager d'un nouvel arrivant n'est pas renseigné." },
   { q: "Quels outils Ghost peut-il utiliser ?", r: "Seulement ceux que tu autorises, un par un : logiciel RH et badges, messagerie, wiki interne. Les autres lui restent fermés." },
-  { q: "Est-ce que Ghost suit mes collègues ?", r: "Non. Il suit des tâches, jamais des personnes." },
+  { q: "Est-ce que Ghost suit mes collègues ?", r: "Il ne lit que l'onglet que tu partages, et ne conserve aucune image : seulement un court résumé de ce qu'il a lu." },
 ];
 
 export default function Accueil() {
@@ -19,7 +19,7 @@ export default function Accueil() {
     <>
       <section className="wrap" style={{ padding: "56px 40px 40px", display: "grid", gap: 24, maxWidth: 980, margin: 0 }}>
         <span className="eyebrow">Pour les RH et les office managers</span>
-        <h1>L'arrivée d'un nouveau salarié ne devrait plus te prendre 2 heures.</h1>
+        <h1>L'arrivée d'un nouveau salarié ne devrait plus te prendre des heures.</h1>
         <p style={{ fontSize: "1.15rem", maxWidth: 680 }}>
           Ghost regarde ton travail, repère ce que tu répètes et s'en occupe quand tu l'autorises. Accès, badge, message
           d'accueil, page de bienvenue : rien n'est oublié.
@@ -68,7 +68,7 @@ export default function Accueil() {
           <ul style={{ margin: "16px 0 0", paddingLeft: 20, display: "grid", gap: 8, color: "#fff" }}>
             <li>Il ne regarde que les outils que tu as autorisés, un par un.</li>
             <li>Une pastille est toujours visible, avec un bouton pause.</li>
-            <li>Il suit des tâches, jamais des personnes.</li>
+            <li>Il ne lit que l&apos;onglet que tu partages. Les images ne sont jamais conservées : seul un résumé en texte l&apos;est.</li>
             <li>Il s'arrête avant toute action irréversible et te demande.</li>
           </ul>
         </div>

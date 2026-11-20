@@ -44,6 +44,10 @@ def traiter(client, proposition_id, manager=None):
     if A_FAIRE:
         print(f"  Agents non écrits (pas de faux succès) : {', '.join(A_FAIRE)}")
     acces._req("PATCH", f"arrivees?id=eq.{arrivee_id}", {"statut": "en_cours"})
+    try:
+        q0 = client.quota.get_token_quota().used  # jetons H déjà consommés : sert à mesurer le coût de ce run
+    except Exception:  # noqa: BLE001
+        q0 = None
     resultats, fils = {}, []
     for nom, fn in AGENTS.items():
         def lancer(nom=nom, fn=fn):
@@ -56,6 +60,14 @@ def traiter(client, proposition_id, manager=None):
         fils.append(f)
     t0 = time.monotonic()
     [f.join() for f in fils]
+    try:
+        if q0 is not None and resultats.get("acces", {}).get("run_id"):
+            delta = client.quota.get_token_quota().used - q0
+            # Coût du run entier (3 agents), noté sur le run Accès : jetons H consommés pendant le run (approximatif si le compte sert à autre chose).
+            acces._req("PATCH", f"agents_runs?id=eq.{resultats['acces']['run_id']}", {"cout_credits": delta})
+            print(f"  Coût mesuré : environ {delta} jetons H pour ce run", flush=True)
+    except Exception as e:  # noqa: BLE001
+        print("  Coût non mesuré :", type(e).__name__, flush=True)
     tout_ok = all(r.get("reussi") for r in resultats.values()) and not A_FAIRE
     if tout_ok:
         acces._req("PATCH", f"arrivees?id=eq.{arrivee_id}", {"statut": "terminee"})

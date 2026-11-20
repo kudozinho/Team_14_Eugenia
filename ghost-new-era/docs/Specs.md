@@ -120,3 +120,15 @@ Risques :
 5. Brancher la capture, Holo, la proposition, les 3 agents et le tableau de suivi.
 6. Filmer un run complet comme plan B et vidéo démo.
 7. Geler le code, déposer le repo et la fiche avant 11h, finir le deck avant 15h.
+
+## Écarts avec le cadrage initial (mis à jour le 20/11/2026)
+Ce qui est livré, et ce qui diffère de ce qui était prévu plus haut. Rien n'est annoncé qui n'ait été testé.
+
+- **Équipe** : Binta et Henriquet. Alejandro n'est plus sur le projet ; Binta a repris les agents H et l'orchestration.
+- **Détection** : Ghost lit la **notification d'arrivée** dans l'espace RH (Holo, en 1 à 2 s) et la confirme dans la base avant de proposer. Il **n'apprend pas** les gestes de Sophie : l'onboarding de Léa est le modèle fixe. Il note les espaces que Sophie parcourt pendant l'observation et ne le dit dans la proposition que si c'est vrai.
+- **Vocal** : voix de Ghost et transcription par le navigateur (Chrome), commandes « oui » et « valide ». Pas de modèle vocal dédié.
+- **Vue en direct** : la page de H interdit l'intégration en cadre ; le portail affiche donc **sa propre vue** (écran de chaque agent et ses clics, lus dans les événements de session).
+- **Confidentialité** : images jamais conservées, pastille toujours visible, pause qui coupe l'envoi. **Les captures ne sont pas limitées aux outils cochés** : c'est l'onglet partagé en entier.
+- **Orchestration** : service Python hébergé sur Render (offre gratuite, réveil jusqu'à une minute), pas sur Vercel.
+- **Sessions mémoire, comparaison avec « 2 h »** : non réalisées ; la durée humaine reste une hypothèse.
+- **Hugging Face** : classement des pages du wiki par embeddings (Agent Docs). Jeu de données public non publié.
