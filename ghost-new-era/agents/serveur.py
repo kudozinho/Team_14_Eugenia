@@ -14,7 +14,9 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(__file__))
+import coffre  # noqa: E402
 import orchestrateur as o  # noqa: E402
+import urllib.request  # noqa: E402
 
 UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 _client = None
@@ -74,19 +76,77 @@ def image_agent(sid, n):
     return _images[cle]
 
 
+def utilisateur(entetes):
+    """Vérifie le jeton de connexion Supabase de la personne ; renvoie son identifiant ou None."""
+    jeton = (entetes.get("Authorization") or "").replace("Bearer ", "")
+    if not jeton:
+        return None
+    try:
+        r = urllib.request.Request(os.environ["NEXT_PUBLIC_SUPABASE_URL"] + "/auth/v1/user",
+                                   headers={"apikey": os.environ["SUPABASE_SERVICE_ROLE_KEY"], "Authorization": f"Bearer {jeton}"})
+        with urllib.request.urlopen(r, timeout=15, context=o.acces.CONTEXTE_SSL) as f:
+            return json.load(f).get("id")
+    except Exception:  # noqa: BLE001
+        return None
+
+
 class Service(BaseHTTPRequestHandler):
     def _envoyer(self, code, corps, type_="application/json"):
         self.send_response(code)
         self.send_header("Content-Type", type_)
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Cache-Control", "no-store" if type_ == "application/json" else "public, max-age=3600")
         self.send_header("Content-Length", str(len(corps)))
         self.end_headers()
         self.wfile.write(corps)
 
+    def do_OPTIONS(self):  # noqa: N802
+        self._envoyer(204, b"", "text/plain")
+
+    def _comptes(self, methode):
+        """Comptes connectés de la personne : mots de passe jamais relus, jamais journalisés."""
+        uid = utilisateur(self.headers)
+        if not uid:
+            return self._envoyer(401, b'{"erreur":"Non connecte."}')
+        tag = uid[:8]
+        if methode == "GET":
+            return self._envoyer(200, json.dumps({"comptes": coffre.lister(client(), tag)}, ensure_ascii=False).encode())
+        if methode == "POST":
+            n = int(self.headers.get("Content-Length") or 0)
+            if n > 4000:
+                return self._envoyer(413, b'{"erreur":"Trop gros."}')
+            d = json.loads(self.rfile.read(n) or b"{}")
+            if not all(d.get(k) for k in ("plateforme", "url", "identifiant", "mot_de_passe")):
+                return self._envoyer(400, b'{"erreur":"Champs manquants."}')
+            if not str(d["url"]).startswith("https://"):
+                return self._envoyer(400, b'{"erreur":"Adresse https requise."}')
+            r = coffre.ajouter(client(), str(d["plateforme"])[:40], str(d["url"])[:300], str(d["identifiant"])[:200], str(d["mot_de_passe"])[:200], (str(d["totp"])[:100] or None) if d.get("totp") else None, tag)
+            return self._envoyer(200, json.dumps({"ok": True, "nom": r["nom"].rsplit(" [", 1)[0]}, ensure_ascii=False).encode())
+        m = re.fullmatch(rf"/connexions/({UUID})", self.path.split("?")[0])
+        if methode == "DELETE" and m:
+            coffre.supprimer(client(), m.group(1), tag)
+            return self._envoyer(200, b'{"ok":true}')
+        return self._envoyer(404, b'{"erreur":"inconnu"}')
+
+    def do_POST(self):  # noqa: N802
+        try:
+            return self._comptes("POST") if self.path.split("?")[0] == "/connexions" else self._envoyer(404, b"{}")
+        except Exception as e:  # noqa: BLE001
+            return self._envoyer(502, json.dumps({"erreur": type(e).__name__}).encode())
+
+    def do_DELETE(self):  # noqa: N802
+        try:
+            return self._comptes("DELETE")
+        except Exception as e:  # noqa: BLE001
+            return self._envoyer(502, json.dumps({"erreur": type(e).__name__}).encode())
+
     def do_GET(self):  # noqa: N802
         chemin = self.path.split("?")[0]
         try:
+            if chemin == "/connexions":
+                return self._comptes("GET")
             if chemin in ("/", "/sante"):
                 return self._envoyer(200, b"ok", "text/plain")
             m = re.fullmatch(rf"/agent/({UUID})", chemin)

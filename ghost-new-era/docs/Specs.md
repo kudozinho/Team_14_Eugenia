@@ -126,9 +126,11 @@ Ce qui est livré, et ce qui diffère de ce qui était prévu plus haut. Rien n'
 
 - **Équipe** : Binta et Henriquet. Alejandro n'est plus sur le projet ; Binta a repris les agents H et l'orchestration.
 - **Détection** : Ghost lit la **notification d'arrivée** dans l'espace RH (Holo, en 1 à 2 s) et la confirme dans la base avant de proposer. Il **n'apprend pas** les gestes de Sophie : l'onboarding de Léa est le modèle fixe. Il note les espaces que Sophie parcourt pendant l'observation et ne le dit dans la proposition que si c'est vrai.
-- **Vocal** : voix de Ghost et transcription par le navigateur (Chrome), commandes « oui » et « valide ». Pas de modèle vocal dédié.
+- **Vocal** : dictée et commandes (« oui », « valide ») par la reconnaissance vocale du navigateur (Chrome). La voix de synthèse a été retirée. Pas de modèle vocal dédié.
 - **Vue en direct** : la page de H interdit l'intégration en cadre ; le portail affiche donc **sa propre vue** (écran de chaque agent et ses clics, lus dans les événements de session).
 - **Confidentialité** : images jamais conservées, pastille toujours visible, pause qui coupe l'envoi. **Les captures ne sont pas limitées aux outils cochés** : c'est l'onglet partagé en entier.
 - **Orchestration** : service Python hébergé sur Render (offre gratuite, réveil jusqu'à une minute), pas sur Vercel.
 - **Sessions mémoire, comparaison avec « 2 h »** : non réalisées ; la durée humaine reste une hypothèse.
 - **Hugging Face** : classement des pages du wiki par embeddings (Agent Docs). Jeu de données public non publié.
+
+- **Comptes connectés** : page « Comptes connectés » ; identifiants et clé de double authentification gardés dans le coffre-fort hébergé par H (jamais relus ni conservés par Ghost) et liés au navigateur des agents. Testé : création, lecture des métadonnées et suppression d'un élément. **Non testé** : une vraie connexion automatique sur un site.

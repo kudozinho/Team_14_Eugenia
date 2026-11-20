@@ -218,7 +218,8 @@ a:hover { background-size: 100% 2px; }
 .accueil-carte h1 { font-size: clamp(1.8rem, 3vw + 1rem, 2.5rem); color: var(--ink); }
 .halo { width: 64px; filter: drop-shadow(0 0 26px rgba(143, 209, 168, 0.6)); }
 .consignes { margin: 4px 0; padding: 0; list-style: none; counter-reset: c; display: grid; gap: 10px; }
-.consignes li { counter-increment: c; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; color: var(--ink-2); }
+.consignes li { counter-increment: c; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; align-items: start; color: var(--ink-2); line-height: 1.5; }
+.consignes li > span { display: block; padding-top: 3px; }
 .consignes li::before { content: counter(c); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--g-500); color: #fff; font-weight: 800; }
 .consignes b { color: var(--ink); }
 .choix-outils { border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; display: grid; gap: 10px; margin: 0; }
@@ -386,3 +387,62 @@ a:hover { background-size: 100% 2px; }
 .espaces li.vu .pt { background: var(--g-500); }
 .checklist header h2 { font-size: 1.1rem; }
 .checklist header b { white-space: nowrap; }
+
+/* ===== Rapport final ===== */
+.rapport2 { display: grid; gap: 22px; }
+.rp-hero { display: flex; align-items: center; gap: 28px; padding: 28px 32px; border-radius: 24px; background: linear-gradient(135deg, rgba(46, 154, 99, 0.22), rgba(255, 255, 255, 0.04)); border: 1px solid var(--line); }
+.rp-anneau { position: relative; flex: none; width: 132px; height: 132px; display: grid; place-items: center; }
+.rp-anneau svg { position: absolute; inset: 0; }
+.rp-anneau b { font-family: var(--font-titres); font-size: 2.2rem; color: var(--ink); letter-spacing: -0.03em; }
+.rp-anneau small { font-size: 1rem; color: var(--mute); font-weight: 600; }
+.rp-eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; font-weight: 700; color: var(--o-400); }
+.rp-hero h2 { font-size: clamp(1.6rem, 2.4vw + 0.8rem, 2.4rem); letter-spacing: -0.03em; color: var(--ink); margin: 6px 0 8px; }
+.rp-hero p { max-width: 58ch; }
+.rp-chiffres { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.rp-chiffres > div { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; display: grid; gap: 2px; }
+.rp-chiffres b { font-family: var(--font-titres); font-size: 1.9rem; letter-spacing: -0.03em; color: var(--ink); line-height: 1.1; }
+.rp-chiffres span { color: var(--ink-2); }
+.rp-chiffres small { color: var(--mute); font-size: 0.8rem; }
+.rp-bloc { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px 24px; display: grid; gap: 14px; }
+.rp-bloc h3 { font-size: 1.1rem; }
+.rp-frise { display: grid; gap: 12px; }
+.rp-ligne { display: grid; grid-template-columns: 150px 1fr 80px; gap: 14px; align-items: center; }
+.rp-qui { display: inline-flex; align-items: center; gap: 8px; }
+.rp-qui small { color: var(--mute); }
+.rp-piste { position: relative; height: 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
+.rp-piste i { position: absolute; top: 0; bottom: 0; border-radius: 999px; background: var(--c); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 55%, transparent); }
+.rp-temps { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
+.rp-note { font-size: 0.85rem; color: var(--mute); }
+.rp-preuves { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.rp-preuves h4 { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; margin: 0 0 10px; }
+.rp-preuves ul { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.rp-preuves li { display: flex; align-items: center; gap: 10px; color: var(--mute); font-size: 0.92rem; }
+.rp-preuves li.ok { color: var(--ink); }
+.rp-preuves .coche { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line-2); position: relative; }
+.rp-preuves li.ok .coche { background: var(--g-500); border-color: var(--g-500); }
+.rp-preuves li.ok .coche::after { content: ""; position: absolute; left: 5px; top: 2px; width: 5px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.rp-limites { border-style: dashed; }
+.rp-limites ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; color: var(--ink-2); }
+@media (max-width: 700px) { .rp-hero { flex-direction: column; text-align: center; } .rp-ligne { grid-template-columns: 1fr 70px; } .rp-ligne .rp-piste { grid-column: 1 / -1; order: 3; } }
+
+/* ===== Comptes connectés ===== */
+.page-comptes { padding: 24px 28px 64px; }
+.comptes-haut { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto 36px; }
+.comptes-grille { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 36px; max-width: 1100px; margin: 0 auto; align-items: start; }
+.comptes-grille h1 { font-size: clamp(1.9rem, 3vw + 0.6rem, 2.8rem); letter-spacing: -0.03em; color: var(--ink); margin: 10px 0 12px; }
+.garanties { margin: 18px 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.garanties li { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; color: var(--ink-2); }
+.garanties b { color: var(--ink); }
+.liste-comptes { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.liste-comptes li { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
+.liste-comptes span { display: grid; }
+.liste-comptes small { color: var(--mute); }
+.carte-compte { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 26px; display: grid; gap: 14px; backdrop-filter: blur(10px); position: sticky; top: 16px; }
+.carte-compte label { display: grid; gap: 6px; font-weight: 600; color: var(--ink); }
+.carte-compte input, .carte-compte select { font: inherit; padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, 0.08); color: var(--ink); }
+.carte-compte option { color: #18201b; }
+@media (max-width: 900px) { .comptes-grille { grid-template-columns: 1fr; } .carte-compte { position: static; } }
+.lien-haut { color: #cfe5d8; font-weight: 600; font-size: 0.9rem; margin-left: 4px; }
+
+.accueil-carte { max-width: 640px; }
+.halo { width: auto; }

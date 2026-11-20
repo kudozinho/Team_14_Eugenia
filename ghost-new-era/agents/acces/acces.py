@@ -38,7 +38,21 @@ ELEMENTS = {"fiche": "Fiche RH créée", "acces": "Accès demandés", "badge": "
 AGENT_PAR_DEFAUT = "h/web-surfer-pro"
 
 
+def _avec_coffre(client, params):
+    """Lie le navigateur de l'agent au coffre-fort de Ghost (s'il existe) : l'agent se connecte seul aux comptes enregistrés."""
+    try:
+        import coffre  # noqa: PLC0415
+        vid = coffre.coffre_existant(client)
+        if vid:
+            params = dict(params)
+            params["overrides"] = {**params.get("overrides", {}), "agent.environments[kind=web].vault_id": vid}
+    except Exception as e:  # noqa: BLE001
+        print("  (coffre-fort ignoré)", type(e).__name__, flush=True)
+    return params
+
+
 def demarrer(client, agent, **params):
+    params = _avec_coffre(client, params)
     """Démarre une session avec l'agent nommé ; s'il n'existe pas dans le compte H de la clé utilisée (404),
     bascule sur l'agent prêt à l'emploi de H. Les agents personnalisés sont propres à chaque compte."""
     try:
