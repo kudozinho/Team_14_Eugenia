@@ -25,7 +25,11 @@ export default function Portail() {
   const [partage, setPartage] = useState(false);
   const [proposition, setProposition] = useState<"aucune" | "affichee" | "acceptee" | "refusee">("aucune");
   const [erreur, setErreur] = useState("");
+  const [sessionId, setSessionId] = useState("");
+  const [propositionId, setPropositionId] = useState("");
+  const [lecture, setLecture] = useState<{ resume: string; latence_ms: number } | null>(null);
   const flux = useRef<MediaStream | null>(null);
+  const enCours = useRef(false);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -53,6 +57,7 @@ export default function Portail() {
     });
     const j = await r.json();
     if (!r.ok) { setErreur(j.erreur ?? "Impossible de démarrer la session."); return; }
+    setSessionId(j.session_id);
     setActifs(j.outils);
     setOngletActif(j.outils[0] ?? "rh");
     setEtape("observation");
@@ -75,6 +80,52 @@ export default function Portail() {
     flux.current?.getTracks().forEach((t) => t.stop());
     flux.current = null;
     setPartage(false);
+  }
+
+  // Toutes les 4 secondes (sauf en pause) : une image de l'onglet partagé part au serveur, qui la fait lire par Holo.
+  // L'image n'est jamais stockée : seul le résumé texte est gardé.
+  useEffect(() => {
+    if (!partage || enPause || !sessionId || proposition !== "aucune") return;
+    const video = document.createElement("video");
+    video.muted = true;
+    if (flux.current) { video.srcObject = flux.current; video.play().catch(() => {}); }
+    const minuteur = setInterval(async () => {
+      if (enCours.current || video.videoWidth === 0) return;
+      enCours.current = true;
+      try {
+        const echelle = Math.min(1, 1254 / video.videoWidth);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(video.videoWidth * echelle);
+        canvas.height = Math.round(video.videoHeight * echelle);
+        canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const image = canvas.toDataURL("image/jpeg", 0.7);
+        const { data } = await getSupabase().auth.getSession();
+        const r = await fetch("/api/capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token}` },
+          body: JSON.stringify({ session_id: sessionId, image }),
+        });
+        const j = await r.json();
+        if (!r.ok) { setErreur(j.erreur ?? "Lecture impossible."); return; }
+        setErreur("");
+        setLecture({ resume: j.resume, latence_ms: j.latence_ms });
+        if (j.proposition) { setPropositionId(j.proposition.id); setProposition("affichee"); }
+      } finally {
+        enCours.current = false;
+      }
+    }, 4000);
+    return () => { clearInterval(minuteur); video.srcObject = null; };
+  }, [partage, enPause, sessionId, proposition]);
+
+  async function repondre(statut: "acceptee" | "refusee") {
+    setProposition(statut);
+    if (!propositionId) return; // proposition simulée : rien à enregistrer
+    const { data } = await getSupabase().auth.getSession();
+    await fetch("/api/proposition", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token}` },
+      body: JSON.stringify({ id: propositionId, statut }),
+    });
   }
 
   async function deconnecter() {
@@ -141,11 +192,12 @@ export default function Portail() {
           {partage
             ? <button className="btn btn-secondary" onClick={arreterPartage}>Arrêter le partage</button>
             : <button className="btn btn-secondary" onClick={partager}>Partager mon onglet</button>}
-          <p style={{ marginTop: 8, fontSize: "0.9rem", color: "var(--mute)" }}>Rien n'est encore envoyé ni enregistré : la lecture par Holo sera branchée plus tard.</p>
+          <p style={{ marginTop: 8, fontSize: "0.9rem", color: "var(--mute)" }}>Une image de l'onglet part toutes les 4 secondes (sauf en pause) pour être lue par Holo. Les images ne sont jamais conservées : seul un résumé en texte est gardé.</p>
+          {lecture && <p style={{ marginTop: 8 }}>Ghost voit : {lecture.resume} <span style={{ color: "var(--mute)" }}>({(lecture.latence_ms / 1000).toFixed(1)} s)</span></p>}
         </div>
 
         <div role="note" style={{ background: "var(--ochre-50)", color: "var(--ochre-700)", borderRadius: 12, padding: "10px 12px", fontWeight: 600 }}>
-          Mode démo : la détection est simulée, Holo n'est pas encore branché.
+          Mode démo : le bouton ci-dessous simule la détection si le partage d'écran n'est pas utilisé.
         </div>
         {proposition === "aucune" && (
           <button className="btn btn-secondary" disabled={enPause} onClick={() => setProposition("affichee")}>Simuler : arrivée de Karim détectée</button>
@@ -155,8 +207,8 @@ export default function Portail() {
             <h3>Je prépare l'onboarding de Karim comme pour Léa ?</h3>
             <p style={{ margin: "6px 0 12px" }}>J'ai vu la notification d'arrivée de Karim. Je m'en occupe ?</p>
             <div style={{ display: "flex", gap: 10 }}>
-              <button className="btn btn-secondary" onClick={() => setProposition("acceptee")}>Oui, vas-y</button>
-              <button className="btn btn-secondary" onClick={() => setProposition("refusee")}>Non, merci</button>
+              <button className="btn btn-secondary" onClick={() => repondre("acceptee")}>Oui, vas-y</button>
+              <button className="btn btn-secondary" onClick={() => repondre("refusee")}>Non, merci</button>
             </div>
           </div>
         )}
