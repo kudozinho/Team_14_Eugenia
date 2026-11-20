@@ -1,0 +1,163 @@
+[
+ {
+  "id": "wiki-c1",
+  "titre": "Playbook de vente",
+  "role_cible": "Commercial",
+  "contenu": "Les 5 étapes d'un cycle de vente chez Atelier Nova : découverte, démo, proposition, négociation, signature. Durée moyenne fictive : 6 semaines.",
+  "espace": "Ventes",
+  "tags": [
+   "vente",
+   "méthode"
+  ]
+ },
+ {
+  "id": "wiki-c2",
+  "titre": "Grille de prix (fictive)",
+  "role_cible": "Commercial",
+  "contenu": "Offre Essentiel : 490 € par mois. Offre Pro : 990 € par mois. Remise maximale sans validation : 10 %.",
+  "espace": "Ventes",
+  "tags": [
+   "prix",
+   "offres"
+  ]
+ },
+ {
+  "id": "wiki-c3",
+  "titre": "Charte client",
+  "role_cible": "Commercial",
+  "contenu": "Réponse à un client sous 24 h ouvrées. Toujours confirmer un rendez-vous par écrit.",
+  "espace": "Ventes",
+  "tags": [
+   "client",
+   "qualité"
+  ]
+ },
+ {
+  "id": "wiki-c4",
+  "titre": "Process devis",
+  "role_cible": "Commercial",
+  "contenu": "Créer le devis dans l'outil Devis, le faire valider par Claire au-delà de 10 000 €, l'envoyer depuis le CRM.",
+  "espace": "Ventes",
+  "tags": [
+   "devis",
+   "process"
+  ]
+ },
+ {
+  "id": "wiki-c5",
+  "titre": "Guide du CRM",
+  "role_cible": "Commercial",
+  "contenu": "Chaque contact a un propriétaire, une étape et une prochaine action datée. Pas de contact sans prochaine action.",
+  "espace": "Ventes",
+  "tags": [
+   "crm",
+   "outil"
+  ]
+ },
+ {
+  "id": "wiki-d1",
+  "titre": "Installer son poste développeur",
+  "role_cible": "Développeuse",
+  "contenu": "Cloner le dépôt, installer les dépendances, lancer les tests. Demander l'accès VPN avant le jour 1.",
+  "espace": "Tech",
+  "tags": [
+   "poste",
+   "installation"
+  ]
+ },
+ {
+  "id": "wiki-d2",
+  "titre": "Règles de revue de code",
+  "role_cible": "Développeuse",
+  "contenu": "Toute modification passe par une demande de fusion relue par un pair. Pas de fusion le vendredi après 16 h.",
+  "espace": "Tech",
+  "tags": [
+   "code",
+   "revue"
+  ]
+ },
+ {
+  "id": "wiki-d3",
+  "titre": "Architecture du produit",
+  "role_cible": "Développeuse",
+  "contenu": "Un site web, une API et une base de données. Schéma détaillé dans le dépôt.",
+  "espace": "Tech",
+  "tags": [
+   "architecture"
+  ]
+ },
+ {
+  "id": "wiki-d4",
+  "titre": "Process de mise en production",
+  "role_cible": "Développeuse",
+  "contenu": "Mise en production le mardi et le jeudi, après validation des tests automatiques.",
+  "espace": "Tech",
+  "tags": [
+   "production",
+   "process"
+  ]
+ },
+ {
+  "id": "wiki-d5",
+  "titre": "Astreinte et support",
+  "role_cible": "Développeuse",
+  "contenu": "Une semaine d'astreinte par trimestre, à partir du 3e mois. Antoine forme les nouveaux.",
+  "espace": "Tech",
+  "tags": [
+   "support",
+   "astreinte"
+  ]
+ },
+ {
+  "id": "wiki-t1",
+  "titre": "Livret d'accueil Atelier Nova",
+  "role_cible": "Tous",
+  "contenu": "Nos valeurs, nos horaires (9 h 30 à 18 h), nos locaux et qui fait quoi.",
+  "espace": "Général",
+  "tags": [
+   "accueil"
+  ]
+ },
+ {
+  "id": "wiki-t2",
+  "titre": "Congés et absences",
+  "role_cible": "Tous",
+  "contenu": "Poser ses congés dans l'espace RH au moins 2 semaines avant.",
+  "espace": "RH",
+  "tags": [
+   "rh",
+   "congés"
+  ]
+ },
+ {
+  "id": "wiki-t3",
+  "titre": "Notes de frais",
+  "role_cible": "Tous",
+  "contenu": "Déclarer ses frais avant le 5 du mois suivant, avec le justificatif.",
+  "espace": "RH",
+  "tags": [
+   "rh",
+   "frais"
+  ]
+ },
+ {
+  "id": "wiki-t4",
+  "titre": "Sécurité informatique",
+  "role_cible": "Tous",
+  "contenu": "Mot de passe unique, double authentification obligatoire, verrouiller son poste.",
+  "espace": "Général",
+  "tags": [
+   "sécurité"
+  ]
+ },
+ {
+  "id": "wiki-t5",
+  "titre": "Vie de bureau",
+  "role_cible": "Tous",
+  "contenu": "Café le mardi à 10 h, salle Atelier. Déjeuner d'équipe le premier jeudi du mois.",
+  "espace": "Général",
+  "tags": [
+   "bureau"
+  ]
+ }
+]
