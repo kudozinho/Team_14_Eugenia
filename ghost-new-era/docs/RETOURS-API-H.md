@@ -20,6 +20,13 @@ Livrable du hackathon : ce qui a marché, ce qui a cassé, ce qui a surpris. À 
 | **Crédits** | Quota de 60 000 000 de jetons sur le mois (16/11 au 16/12) ; 149 000 utilisés après ces tests. Environ 20 000 jetons d'entrée par session de 2 étapes |
 | **3. Message envoyé à une session en cours** | Le message est accepté et la session repasse en « running », mais l'agent n'a produit **aucune nouvelle réponse** dans les 90 à 120 s, sur deux essais (demande hors du format de réponse, puis demande dans le format). **Non démontré** : le relais d'une question ou d'une réponse en cours de tâche reste à tester avec le vrai flux de l'Agent Accès |
 
+## Agent Accès, premier run réel sur Karim (20/11/2026, `agents/acces`)
+
+- **Question du manager** : manager vide, l'agent s'arrête en 22 s et pose la question au lieu d'inventer.
+- **Reprise** : réponse humaine (Claire Fontaine) enregistrée, deuxième session H lancée avec la réponse : fiche créée en 27 s, accès demandés 16 s plus tard, badge 18 s plus tard, demande de matériel 24 s plus tard. Environ 85 s d'agent après la réponse.
+- **Vérification** : 4 actions sur 4 confirmées dans la base (`v_onboarding` : fiche, accès, badge à vrai ; matériel en attente de validation humaine, jamais validé par l'agent). Aucun faux succès.
+- Un seul run : à répéter pour avoir un taux de réussite.
+
 ## À explorer (non vérifié)
 
 - L'état d'une session expose `pending_approvals` et `pending_tool_calls` : piste pour la **validation humaine** avant une action irréversible (commande de matériel).

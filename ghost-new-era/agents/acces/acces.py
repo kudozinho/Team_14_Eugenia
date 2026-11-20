@@ -11,6 +11,7 @@ pas l'agent. Les événements sont écrits dans agents_runs, agents_evenements e
 import argparse
 import json
 import os
+import ssl
 import threading
 import time
 import urllib.parse
@@ -18,11 +19,13 @@ import urllib.request
 from datetime import datetime, timezone
 from typing import Literal, Optional
 
+import certifi
 from dotenv import load_dotenv
 from hai_agents import Client
 from pydantic import BaseModel
 
 load_dotenv()
+CONTEXTE_SSL = ssl.create_default_context(cafile=certifi.where())  # certificats fiables (Python macOS)
 
 INTRANET = os.environ.get("INTRANET_URL", "https://atelier-nova-intranet.vercel.app")
 AGENT = "h/web-surfer-pro"
@@ -45,7 +48,7 @@ def _req(methode, chemin, corps=None, retour=False):
     if retour:
         h["Prefer"] = "return=representation"
     r = urllib.request.Request(url, data=json.dumps(corps).encode() if corps is not None else None, headers=h, method=methode)
-    with urllib.request.urlopen(r, timeout=20) as f:
+    with urllib.request.urlopen(r, timeout=20, context=CONTEXTE_SSL) as f:
         t = f.read().decode()
         return json.loads(t) if t else None
 
