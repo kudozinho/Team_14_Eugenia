@@ -34,6 +34,7 @@ export default function Rapport({ d, onFermer }: { d: DonneesRapport; onFermer: 
   const outils = new Set(d.evenements.map((e) => e.outil).filter(Boolean)).size;
   const validees = d.decisions.filter((x) => x.statut === "validee").length;
   const commande = r?.materiel?.[0];
+  const jetons = d.runs.reduce((t, x) => t + (x.cout_credits ?? 0), 0);
   const heuresAn = r?.onboardings_par_an ? Math.round(r.onboardings_par_an * HEURES_REFERENCE * 10) / 10 : null;
 
   const carte = (valeur: string, texte: string) => (
@@ -60,6 +61,7 @@ export default function Rapport({ d, onFermer }: { d: DonneesRapport; onFermer: 
         {carte(fmt(parallele), `pour les ${d.runs.length} agents en parallèle, contre ${fmt(cumule)} l'un après l'autre`)}
         {carte(`${reussis}/${d.runs.length}`, "agents terminés avec succès sur ce run")}
         {carte(`${validees}/${d.decisions.length}`, "décisions humaines prises (question de l'agent, commande)")}
+        {jetons > 0 && carte(`≈ ${Math.round(jetons / 1000)} k`, "jetons H consommés pour ce run (3 agents), mesurés sur le quota du compte")}
       </div>
       <p style={{ fontSize: "0.9rem", color: "var(--mute)" }}>Les durées incluent le temps où les agents ont attendu tes réponses.</p>
 
@@ -76,7 +78,7 @@ export default function Rapport({ d, onFermer }: { d: DonneesRapport; onFermer: 
       <section className="card" style={{ borderColor: "var(--ochre-700)" }}>
         <h3>Ce qui n&apos;est pas mesuré, ou pas prouvé</h3>
         <ul style={{ margin: "8px 0 0", paddingLeft: 20, display: "grid", gap: 6, color: "var(--ink-2)" }}>
-          <li><b>Coût en crédits H</b> : non mesuré pour ce run.</li>
+          <li><b>Coût en crédits H</b> : {jetons > 0 ? "mesuré en jetons (voir ci-dessus), non converti en euros." : "non mesuré pour ce run."}</li>
           <li><b>Gain de temps</b> : l&apos;hypothèse de l&apos;équipe est d&apos;environ {HEURES_REFERENCE} h par arrivée à la main, <b>non chronométrée</b>. {heuresAn ? `Avec tes ${r?.onboardings_par_an} onboardings par an, cela ferait environ ${heuresAn} h par an : une estimation, pas une mesure.` : ""}</li>
           {r?.secours && <li><b>Détection</b> : cette proposition a été déclenchée par le bouton de secours, pas par la lecture de l&apos;écran par Holo. Les agents et les vérifications, eux, sont réels.</li>}
           <li><b>Taux de réussite</b> : ce rapport décrit un seul run, il ne permet pas d&apos;en tirer un taux.</li>
