@@ -91,14 +91,19 @@ export default function Portail() {
   const refuse = (o: { id: string; nom: string }) =>
     interdits.some((i) => i.includes(o.id) || (o.id === "rh" && i.includes("rh")));
 
-  // Les accès configurés sur le service des agents sont cochés d'office : la personne peut les décocher.
+  // Les accès que la personne a connectés sont cochés d'office : elle peut les décocher.
   useEffect(() => {
-    if (!ORCH) return;
-    fetch(`${ORCH}/connecteurs`).then((r) => r.json()).then((j: Record<string, boolean>) => {
-      setStatuts(j);
-      setCoches((c) => [...new Set([...c, ...EXTERNES.filter((e) => j[e.id]).map((e) => e.id)])]);
-    }).catch(() => setStatuts({}));
-  }, []);
+    if (!ORCH || etape !== "accord") return;
+    (async () => {
+      try {
+        const { data } = await getSupabase().auth.getSession();
+        const r = await fetch(`${ORCH}/connecteurs`, { headers: { Authorization: `Bearer ${data.session?.access_token}` } });
+        const j: Record<string, boolean> = await r.json();
+        setStatuts(j);
+        setCoches((c) => [...new Set([...c, ...EXTERNES.filter((e) => j[e.id]).map((e) => e.id)])]);
+      } catch { setStatuts({}); }
+    })();
+  }, [etape]);
 
   async function commencer() {
     setErreur("");
@@ -353,12 +358,12 @@ export default function Portail() {
                 <label key={o.id} style={{ opacity: dispo ? 1 : 0.6 }}>
                   <input type="checkbox" disabled={!dispo} checked={coches.includes(o.id)}
                     onChange={(e) => setCoches((c) => (e.target.checked ? [...c, o.id] : c.filter((x) => x !== o.id)))} />
-                  <span><b>{o.nom}</b> <small className="petit">{dispo ? `· connecté · ${o.aide}` : statuts === null ? "· vérification…" : "· non configuré"}</small></span>
+                  <span><b>{o.nom}</b> <small className="petit">{dispo ? `· connecté · ${o.aide}` : statuts === null ? "· vérification…" : "· non connecté"}</small></span>
                 </label>
               );
             })}
           </fieldset>
-          <p className="petit">Les agents peuvent aussi se connecter seuls à tes comptes : <a href="/connexions" style={{ color: "var(--g-300)" }}>gérer les comptes connectés</a>.</p>
+          <p className="petit">Tu connectes tes propres outils (Notion, Slack, Gmail, comptes de sites) : <a href="/connexions" style={{ color: "var(--g-300)" }}>gérer mes connexions</a>.</p>
           {erreur && <p role="alert" className="erreur">{erreur}</p>}
           <div className="rang">
             <button className="btn btn-primary" disabled={!coches.some((c) => TOUS.some((t) => t.id === c))} onClick={commencer}>Commencer l&apos;observation</button>

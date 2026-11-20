@@ -20,6 +20,7 @@ from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "acces", ".env"))
 import acces  # noqa: E402
+import coffre  # noqa: E402
 import contexte  # noqa: E402
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "equipe"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "docs"))
@@ -49,19 +50,23 @@ def traiter(client, proposition_id, manager=None):
         q0 = client.quota.get_token_quota().used  # jetons H déjà consommés : sert à mesurer le coût de ce run
     except Exception:  # noqa: BLE001
         q0 = None
-    autorises = None
+    autorises, apps = None, {}
     try:  # ce que la personne a coché dans le portail
         pr = acces.lire(f"propositions?id=eq.{proposition_id}&select=tache_id")[0]
         tc = acces.lire(f"taches_detectees?id=eq.{pr['tache_id']}&select=session_id")[0]
-        autorises = acces.lire(f"sessions_audit?id=eq.{tc['session_id']}&select=outils_autorises")[0]["outils_autorises"]
+        sa = acces.lire(f"sessions_audit?id=eq.{tc['session_id']}&select=outils_autorises,user_id")[0]
+        autorises = sa["outils_autorises"]
         print(f"  Outils autorisés : {autorises}", flush=True)
+        if sa.get("user_id"):
+            apps = coffre.reveler_apps(client, str(sa["user_id"])[:8])
+            print(f"  Accès connectés de la personne : {sorted(apps)}", flush=True)
     except Exception:  # noqa: BLE001
         pass
     resultats, fils = {}, []
     for nom, fn in AGENTS.items():
         def lancer(nom=nom, fn=fn):
             try:
-                contexte.definir(autorises)
+                contexte.definir(autorises, apps if autorises is not None else None)
                 resultats[nom] = fn(client, personne_id, proposition_id=proposition_id, manager=manager)
             except Exception as e:  # noqa: BLE001
                 resultats[nom] = {"agent": nom, "reussi": False, "erreur": f"{type(e).__name__}: {str(e)[:200]}"}
