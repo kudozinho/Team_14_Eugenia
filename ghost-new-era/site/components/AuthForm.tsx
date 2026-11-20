@@ -29,7 +29,7 @@ export default function AuthForm({ mode }: { mode: "connexion" | "inscription" }
           options: { data: { prenom: String(f.get("prenom")), nom: String(f.get("nom")) } },
         });
         if (error) throw error;
-        if (data.session) router.push("/portail");
+        if (data.session) router.push("/paiement");
         else setInfo("Compte créé. Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });

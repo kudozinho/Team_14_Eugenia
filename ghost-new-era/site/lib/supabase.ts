@@ -1,7 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // Client navigateur : n'utilise que l'URL et la clé publique (jamais la clé de service).
-let client: ReturnType<typeof createClient> | null = null;
+let client: SupabaseClient | null = null;
 
 export function getSupabase() {
   if (!client) {
