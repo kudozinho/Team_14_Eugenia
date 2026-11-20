@@ -27,6 +27,16 @@ def executer(client, personne_id, proposition_id=None, manager=None):
         cl = meilleures_pages(p["poste"], p["equipe"])
         evenement(run, "Pages recommandées choisies", "ok", f"{cl['source']} : " + " · ".join(cl["titres"]), outil="Wiki")
         liste = "\n".join(f"- {t}" for t in cl["titres"])
+        notion_txt = ""
+        if connecteurs.autorise("notion"):
+            ok_n, txt_n = connecteurs.notion_lire()
+            if ok_n:
+                notion_txt = txt_n
+                evenement(run, "Informations lues dans Notion", "ok", f"{len(txt_n)} caractères", outil="Notion")
+            elif ok_n is False:
+                evenement(run, "Lecture de Notion", "echec", txt_n, outil="Notion")
+        if notion_txt:
+            liste += f"\nÀ savoir (depuis Notion) : {notion_txt}"
         consigne = f"""Tu es l'assistant documentation d'Atelier Nova. Tu es dans le wiki. Prépare l'accueil de {p['prenom']} {p['nom']} ({p['poste']}, équipe {p['equipe']}).
 1. Clique « Créer une page ». Titre : « Bienvenue {p['prenom']} ». Espace : « Accueil ». Rôle cible : « {p['poste']} ». Mots-clés : « accueil, onboarding ». Laisse « créé par » tel quel. Contenu (recopie exactement) :
 Bienvenue {p['prenom']} ! À lire en premier :
@@ -43,7 +53,7 @@ Ne modifie aucune autre page ni aucune ligne existante. Réponds statut=termine 
         c.passage(client, run, p, consigne, "/intranet/wiki", {"page_wiki": f"Page « Bienvenue {p['prenom']} » créée", "checklist": "Checklist jour 1, semaine 1, mois 1 créée"}, 90, 420, AGENT_H)
     except Exception as e:  # noqa: BLE001
         evenement(run, "Erreur de l'agent", "echec", f"{type(e).__name__}: {str(e)[:200]}", outil="Wiki")
-    ok, detail = connecteurs.notion_page(p, cl["titres"] if "cl" in dir() else None)
+    ok, detail = connecteurs.notion_page(p, cl["titres"] if "cl" in dir() else None) if connecteurs.autorise("notion") else (None, "")
     if ok is not None:
         evenement(run, "Page d'onboarding créée dans Notion", "ok" if ok else "echec", detail, outil="Notion")
     pr = c.preuve(p["id"])

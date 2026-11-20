@@ -15,6 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(__file__))
 import coffre  # noqa: E402
+import connecteurs  # noqa: E402
 import orchestrateur as o  # noqa: E402
 import urllib.request  # noqa: E402
 
@@ -147,6 +148,13 @@ class Service(BaseHTTPRequestHandler):
         try:
             if chemin == "/connexions":
                 return self._comptes("GET")
+            if chemin == "/connecteurs":  # état des accès : oui ou non, jamais une valeur
+                try:
+                    navigateur = bool(coffre.coffre_existant(client()))
+                except Exception:  # noqa: BLE001
+                    navigateur = False
+                return self._envoyer(200, json.dumps({"slack": connecteurs.configure("slack"), "gmail": connecteurs.configure("gmail"),
+                                                      "notion": connecteurs.configure("notion"), "navigateur": navigateur}).encode())
             if chemin in ("/", "/sante"):
                 return self._envoyer(200, b"ok", "text/plain")
             m = re.fullmatch(rf"/agent/({UUID})", chemin)

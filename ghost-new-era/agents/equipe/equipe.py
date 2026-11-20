@@ -76,6 +76,8 @@ Ne sors pas de la messagerie. Réponds statut=termine avec un résumé court, ou
     except Exception:  # noqa: BLE001
         pass
     for nom, fn, outil, lib in (("slack", connecteurs.slack_bienvenue, "Slack", "Message de bienvenue dans Slack"), ("gmail", connecteurs.gmail_bienvenue, "Gmail", "E-mail de bienvenue envoyé")):
+        if not connecteurs.autorise(nom):
+            continue
         ok, detail = fn(p, mgr_nom)
         if ok is not None:
             evenement(run, lib, "ok" if ok else "echec", detail, outil=outil)

@@ -42,7 +42,8 @@ def _avec_coffre(client, params):
     """Lie le navigateur de l'agent au coffre-fort de Ghost (s'il existe) : l'agent se connecte seul aux comptes enregistrés."""
     try:
         import coffre  # noqa: PLC0415
-        vid = coffre.coffre_existant(client)
+        from contexte import autorise  # noqa: PLC0415
+        vid = coffre.coffre_existant(client) if autorise("navigateur") else None
         if vid:
             params = dict(params)
             params["overrides"] = {**params.get("overrides", {}), "agent.environments[kind=web].vault_id": vid}
