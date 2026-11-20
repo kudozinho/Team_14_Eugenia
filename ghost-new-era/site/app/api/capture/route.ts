@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   if (!admin) return NextResponse.json({ erreur: "Base non configurée sur le serveur." }, { status: 500 });
   if (!user) return NextResponse.json({ erreur: "Non connecté." }, { status: 401 });
 
-  const { session_id, image } = (await req.json().catch(() => ({}))) as { session_id?: string; image?: string };
+  const { session_id, image, outil } = (await req.json().catch(() => ({}))) as { session_id?: string; image?: string; outil?: string };
   if (!session_id || !image) return NextResponse.json({ erreur: "session_id et image requis." }, { status: 400 });
 
   const { data: session } = await admin.from("sessions_audit").select("id,user_id,outils_autorises,statut").eq("id", session_id).maybeSingle();
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ erreur: e instanceof Error ? e.message : "Lecture impossible." }, { status: 502 });
   }
 
-  await admin.from("captures_lues").insert({ session_id, resume_holo: lecture.resume, latence_ms: lecture.latence_ms, memoire: false });
+  await admin.from("captures_lues").insert({ session_id, resume_holo: (outil && ["rh", "messagerie", "wiki"].includes(outil) ? `[${outil}] ` : "") + lecture.resume, latence_ms: lecture.latence_ms, memoire: false });
 
   let proposition: { id: string; texte: string } | null = null;
   if (lecture.declencheur === "arrivee_karim" && (session.outils_autorises as string[]).includes("rh")) {

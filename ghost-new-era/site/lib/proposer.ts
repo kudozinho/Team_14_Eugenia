@@ -13,11 +13,15 @@ export async function creerProposition(
   const { data: deja } = await admin.from("taches_detectees").select("id").eq("session_id", sessionId).eq("declencheur_arrivee_id", arrivee.id).maybeSingle();
   if (deja) return null;
 
-  const { count } = await admin.from("captures_lues").select("id", { count: "exact", head: true }).eq("session_id", sessionId).eq("memoire", false);
-  const vus = count ?? 0;
-  const texte = vus >= 3
-    ? `Je t'ai vue travailler (${vus} écrans lus). L'arrivée de Karim est là : je prépare son onboarding comme celui de Léa ?`
-    : "L'arrivée de Karim est là. Je prépare son onboarding comme celui de Léa, déjà complet dans l'intranet ?";
+  const { data: lues } = await admin.from("captures_lues").select("resume_holo").eq("session_id", sessionId).eq("memoire", false);
+  const vus = lues?.length ?? 0;
+  const NOMS: Record<string, string> = { rh: "l'espace RH", messagerie: "la messagerie", wiki: "le wiki" };
+  const espaces = [...new Set((lues ?? []).map((l) => /^\[(rh|messagerie|wiki)\]/.exec(l.resume_holo ?? "")?.[1]).filter(Boolean) as string[])];
+  const texte = espaces.length >= 2
+    ? `Je t'ai vue travailler dans ${espaces.map((e) => NOMS[e]).join(", ")} (${vus} écrans lus). L'arrivée de Karim est là : je prépare son onboarding comme celui de Léa ?`
+    : vus >= 3
+      ? `Je t'ai vue travailler (${vus} écrans lus). L'arrivée de Karim est là : je prépare son onboarding comme celui de Léa ?`
+      : "L'arrivée de Karim est là. Je prépare son onboarding comme celui de Léa, déjà complet dans l'intranet ?";
 
   const libelle = (opts.secours ? "[secours] " : "") + (opts.libelle || "Préparer l'onboarding");
   const { data: tache } = await admin.from("taches_detectees")

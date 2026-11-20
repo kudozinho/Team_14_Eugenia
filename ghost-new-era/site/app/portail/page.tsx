@@ -27,6 +27,8 @@ type Suivi = {
   decisions: { id: string; libelle: string; statut: string; reponse: string | null }[];
 };
 
+const outilsAutorises0 = (actifs: string[]) => TOUS.filter((o) => actifs.includes(o.id));
+
 type Etape = "chargement" | "accord" | "observation";
 
 export default function Portail() {
@@ -51,6 +53,8 @@ export default function Portail() {
   const [vus, setVus] = useState<{ t: string; resume: string }[]>([]);
   const [rafraichir, setRafraichir] = useState(0);
   const vueAgentsAuto = useRef(false);
+  const outilRef = useRef<string>("");
+  const [espacesVus, setEspacesVus] = useState<string[]>([]);
   const [voix, setVoix] = useState(true);
   const [ecoute, setEcoute] = useState(false);
   const [interim, setInterim] = useState("");
@@ -144,13 +148,14 @@ export default function Portail() {
         const r = await fetch("/api/capture", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token}` },
-          body: JSON.stringify({ session_id: sessionId, image }),
+          body: JSON.stringify({ session_id: sessionId, image, outil: outilRef.current }),
         });
         const j = await r.json();
         if (!r.ok) { setErreur(j.erreur ?? "Lecture impossible."); setEtatCapture(`Erreur du serveur (${r.status}) : ${j.erreur ?? "lecture impossible"}`); return; }
         setErreur("");
         setEtatCapture("Dernière image lue par Holo.");
         setLecture({ resume: j.resume, latence_ms: j.latence_ms });
+        if (outilRef.current) setEspacesVus((v) => (v.includes(outilRef.current) ? v : [...v, outilRef.current]));
         setVus((v) => (v[0]?.resume === j.resume ? v : [{ t: new Date().toLocaleTimeString("fr-FR"), resume: j.resume }, ...v].slice(0, 6)));
         if (j.proposition) { setPropositionId(j.proposition.id); setProposition("affichee"); }
       } catch (e) {
@@ -209,6 +214,7 @@ export default function Portail() {
   }, [suivi]);
 
   etatRef.current = { proposition, suivi, sessionId };
+  outilRef.current = ongletActif === "__agents" ? "" : (outilsAutorises0(actifs).find((o) => o.id === ongletActif)?.id ?? "");
 
   // Ghost parle : chaque phrase n'est dite qu'une fois, et seulement si la voix est activée.
   function dire(cle: string, texte: string) {
@@ -395,6 +401,10 @@ export default function Portail() {
       <aside aria-label="Panneau Ghost" className="panneau">
         <div className="bloc">
           <h2>Ce que Ghost voit</h2>
+          <ul className="espaces" aria-label="Espaces observés">
+            {outilsAutorises.map((o) => <li key={o.id} className={espacesVus.includes(o.id) ? "vu" : ""}>{espacesVus.includes(o.id) ? "👁" : "○"} {o.nom.split(" ")[0] === "Espace" ? "RH" : o.nom}</li>)}
+          </ul>
+          <p className="petit">Navigue dans les espaces pendant que Ghost regarde : il note ceux qu&apos;il a vus.</p>
           <p className="petit">Outils autorisés : <b>{outilsAutorises.map((o) => o.nom).join(", ") || "aucun"}</b></p>
           {partage
             ? <button className="btn btn-secondary" onClick={arreterPartage}>Arrêter le partage d'écran</button>
