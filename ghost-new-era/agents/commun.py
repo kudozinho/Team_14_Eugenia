@@ -45,7 +45,7 @@ def passage(client, run_id, p, consigne, chemin_depart, elements, max_steps=40, 
 
     t = threading.Thread(target=surveiller, daemon=True)
     t.start()
-    s = client.start_session(agent=agent_h or acces.AGENT, messages=consigne, answer_schema=Reponse, max_steps=max_steps,
+    s = acces.demarrer(client, agent_h or acces.AGENT, messages=consigne, answer_schema=Reponse, max_steps=max_steps,
                              max_time_s=max_time_s, timezone="Europe/Paris",
                              overrides={"agent.environments[kind=web].start_url": f"{acces.INTRANET}{chemin_depart}"})
     vue = client.sessions.get_session(s.id).agent_view_url
