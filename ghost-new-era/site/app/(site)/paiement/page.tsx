@@ -22,7 +22,8 @@ export default function Paiement() {
       .from("abonnements")
       .insert({ user_id: user.id, plan, statut: "demo" });
     setEnvoi(false);
-    if (error) { setErreur("Impossible d'enregistrer l'abonnement de démonstration : " + error.message); return; }
+    // Une ligne par personne : si l'abonnement de démonstration existe déjà (code 23505), on continue.
+    if (error && error.code !== "23505") { setErreur("Impossible d'enregistrer l'abonnement de démonstration : " + error.message); return; }
     router.push("/questionnaire");
   }
 

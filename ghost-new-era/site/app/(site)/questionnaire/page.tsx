@@ -25,7 +25,7 @@ export default function Questionnaire() {
       nom: String(user.user_metadata?.nom ?? ""),
       role: String(f.get("role")),
       secteur: String(f.get("secteur")),
-      taille_entreprise: Number(f.get("taille")),
+      taille_entreprise: String(f.get("taille")),
       onboardings_par_an: Number(f.get("onboardings")),
       recrutements_par_an: Number(f.get("recrutements")),
       departs_par_an: Number(f.get("departs")),
