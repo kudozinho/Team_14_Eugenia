@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { lireCapture } from "@/lib/holo";
 import { utilisateurDepuisRequete } from "@/lib/auth-serveur";
+import { creerProposition } from "@/lib/proposer";
 
 export const maxDuration = 30;
 
@@ -30,21 +31,8 @@ export async function POST(req: Request) {
 
   let proposition: { id: string; texte: string } | null = null;
   if (lecture.declencheur === "arrivee_karim" && (session.outils_autorises as string[]).includes("rh")) {
-    const { data: arrivee } = await admin.from("arrivees").select("id").eq("statut", "nouvelle").limit(1).maybeSingle();
-    if (arrivee) {
-      const { data: deja } = await admin.from("taches_detectees").select("id").eq("session_id", session_id).eq("declencheur_arrivee_id", arrivee.id).maybeSingle();
-      if (!deja) {
-        const { data: tache } = await admin.from("taches_detectees")
-          .insert({ session_id, libelle: lecture.tache || "Préparer l'onboarding", outils: ["Espace RH"], confiance: lecture.confiance, declencheur_arrivee_id: arrivee.id })
-          .select("id").single();
-        if (tache) {
-          const texte = "Je prépare l'onboarding de Karim comme pour Léa ?";
-          const { data: p } = await admin.from("propositions").insert({ tache_id: tache.id, texte }).select("id").single();
-          if (p) proposition = { id: p.id, texte };
-        }
-      }
-    }
+    proposition = await creerProposition(admin, session_id, { libelle: lecture.tache, confiance: lecture.confiance });
   }
 
-  return NextResponse.json({ resume: lecture.resume, tache: lecture.tache, latence_ms: lecture.latence_ms, proposition });
+  return NextResponse.json({ resume: lecture.resume, tache: lecture.tache, latence_ms: lecture.latence_ms, proposition, outils: lecture.outils });
 }

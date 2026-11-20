@@ -7,6 +7,7 @@ pas l'agent. Les événements sont écrits dans agents_runs, agents_evenements e
     .venv/bin/python acces.py --personne karim-benali                # question du manager : attend une réponse humaine
     .venv/bin/python acces.py --personne karim-benali --manager "Claire Fontaine"   # manager fourni d'avance
     .venv/bin/python acces.py --personne karim-benali --reset        # remet Karim à zéro (données de test) puis lance
+    .venv/bin/python acces.py --personne karim-benali --seulement-reset   # remet à zéro et s'arrête : prépare la démo
 """
 import argparse
 import json
@@ -89,6 +90,8 @@ def reinitialiser(personne_id):
     _req("DELETE", f"rh_acces?personne_id=eq.{q}")
     _req("DELETE", f"rh_materiel?personne_id=eq.{q}")
     _req("PATCH", f"rh_badges?personne_id=eq.{q}", {"zones": [], "statut": "a_demander"})
+    # Sans ceci, la notification d'arrivée reste « en cours » ou « terminée » et Ghost ne propose plus rien.
+    _req("PATCH", f"arrivees?personne_id=eq.{q}", {"statut": "nouvelle"})
     # Messagerie et wiki : uniquement ce que les agents ont écrit pour cette personne de test.
     if personne_id == "karim-benali":
         _req("DELETE", "msg_demandes?personne_id=eq.karim-benali")
@@ -200,11 +203,16 @@ def main():
     ap.add_argument("--personne", default="karim-benali")
     ap.add_argument("--manager", default=None, help="nom du manager, si déjà connu")
     ap.add_argument("--reset", action="store_true", help="remet la personne de test à zéro avant de lancer")
+    ap.add_argument("--seulement-reset", action="store_true", help="remet à zéro puis s'arrête (prépare la démo, ne lance aucun agent)")
     a = ap.parse_args()
+    if a.seulement_reset:
+        a.reset = True
     if a.reset:
         if a.personne != "karim-benali":
             raise SystemExit("Reset réservé à karim-benali.")
         reinitialiser(a.personne)
+    if a.seulement_reset:
+        return
     executer(Client(), a.personne, manager=a.manager)
 
 

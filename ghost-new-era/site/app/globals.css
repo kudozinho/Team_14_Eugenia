@@ -113,3 +113,50 @@ a:hover { background-size: 100% 2px; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ===== Portail : poste de travail ===== */
+.portail { display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto 1fr; gap: 16px; padding: 16px 16px 90px; min-height: 100vh; }
+.portail-haut { grid-column: 1 / -1; display: flex; align-items: center; gap: 24px; background: var(--g-950); color: #fff; border-radius: 18px; padding: 12px 20px; flex-wrap: wrap; }
+.portail-marque { font-family: var(--font-titres); font-weight: 800; font-size: 1.3rem; }
+.etapes { display: flex; gap: 6px; list-style: none; margin: 0 auto 0 0; padding: 0; flex-wrap: wrap; }
+.etapes li { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 999px; font-size: .85rem; font-weight: 600; opacity: .55; }
+.etapes li span { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.15); font-size: .8rem; }
+.etapes li.courant { opacity: 1; background: rgba(255,255,255,.12); }
+.etapes li.courant span { background: var(--o-600); }
+.etapes li.fait { opacity: 1; }
+.etapes li.fait span { background: var(--g-500); }
+.etat { font-weight: 700; font-size: .85rem; border-radius: 999px; padding: 6px 14px; }
+.etat.vit { background: var(--g-500); }
+.etat.pause { background: var(--ochre-700); }
+.poste { display: grid; grid-template-rows: auto 1fr; gap: 10px; min-width: 0; }
+.onglets { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.onglets button { border: 1px solid var(--line-2); background: var(--card); border-radius: 999px; padding: 8px 18px; font: inherit; font-weight: 600; cursor: pointer; }
+.onglets button.actif { background: var(--g-900); border-color: var(--g-900); color: #fff; }
+.direct { margin-left: auto; color: var(--o-700); font-weight: 700; font-size: .85rem; }
+.cadre { width: 100%; height: 100%; min-height: 560px; border: 1px solid var(--line-2); border-radius: 16px; background: #fff; }
+.rapport-zone { overflow-y: auto; }
+.panneau { display: grid; gap: 12px; align-content: start; }
+.bloc { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 10px; }
+.bloc h2 { font-size: 1.15rem; }
+.petit { font-size: .85rem; color: var(--mute); margin: 0; }
+.fil { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 170px; overflow: auto; }
+.fil li { font-size: .85rem; background: var(--g-50); border-radius: 10px; padding: 6px 10px; }
+.fil time { color: var(--mute); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.proposition { border: 2px solid var(--g-700); background: #fff; box-shadow: 0 8px 28px rgba(29,107,71,.18); }
+.etiquette { font-size: .75rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--o-600); }
+.rang { display: flex; gap: 10px; flex-wrap: wrap; }
+.agent { border: 1px solid var(--line-2); border-radius: 14px; padding: 12px; display: grid; gap: 8px; background: #fff; }
+.agent.en_cours { border-color: var(--o-400); }
+.agent.termine { border-color: var(--g-500); background: var(--g-50); }
+.agent.echec { border-color: var(--o-700); background: var(--o-50); }
+.agent.question { border-color: var(--o-600); background: var(--o-50); }
+.agent-tete { display: flex; justify-content: space-between; align-items: center; }
+.agent-tete span { font-size: .8rem; font-weight: 700; }
+.agent ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: .88rem; }
+.agent li { display: flex; gap: 8px; }
+.agent li i { font-style: normal; }
+.agent li small { color: var(--mute); }
+.agent input { padding: 10px; border-radius: 10px; border: 1px solid var(--line-2); font: inherit; }
+.lien { background: none; border: 0; color: var(--g-700); font: inherit; font-weight: 700; cursor: pointer; text-align: left; padding: 0; text-decoration: underline; }
+.erreur { color: var(--o-700); font-weight: 600; margin: 0; }
+@media (max-width: 1000px) { .portail { grid-template-columns: 1fr; } }
