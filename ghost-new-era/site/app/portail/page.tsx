@@ -11,7 +11,7 @@ import Pastille from "@/components/portail/Pastille";
 import VueAgent from "@/components/portail/VueAgent";
 import Rapport, { type DonneesRapport } from "@/components/portail/Rapport";
 import { getSupabase } from "@/lib/supabase";
-import { ecouter, microDispo, parler, taire, voixDispo } from "@/lib/voix";
+import { ecouter, microDispo } from "@/lib/voix";
 
 // L'intranet d'Atelier Nova est un autre site, déployé à part.
 const INTRANET = process.env.NEXT_PUBLIC_INTRANET_URL ?? "https://atelier-nova-intranet.vercel.app";
@@ -57,14 +57,11 @@ export default function Portail() {
   const vueAgentsAuto = useRef(false);
   const outilRef = useRef<string>("");
   const [espacesVus, setEspacesVus] = useState<string[]>([]);
-  const [voix, setVoix] = useState(true);
   const [ecoute, setEcoute] = useState(false);
   const [interim, setInterim] = useState("");
   const [transcript, setTranscript] = useState<{ t: string; texte: string }[]>([]);
   const [erreurVoix, setErreurVoix] = useState("");
-  const parle = useRef(false);
   const stopEcoute = useRef<null | (() => void)>(null);
-  const dits = useRef<Set<string>>(new Set());
   const etatRef = useRef<{ proposition: string; suivi: Suivi | null; sessionId: string }>({ proposition: "aucune", suivi: null, sessionId: "" });
   const flux = useRef<MediaStream | null>(null);
   const enCours = useRef(false);
@@ -218,26 +215,6 @@ export default function Portail() {
   etatRef.current = { proposition, suivi, sessionId };
   outilRef.current = ongletActif === "__agents" ? "" : (outilsAutorises0(actifs).find((o) => o.id === ongletActif)?.id ?? "");
 
-  // Ghost parle : chaque phrase n'est dite qu'une fois, et seulement si la voix est activée.
-  function dire(cle: string, texte: string) {
-    if (!voix || dits.current.has(cle)) return;
-    dits.current.add(cle);
-    parler(texte, { debut: () => { parle.current = true; }, fin: () => { parle.current = false; } });
-  }
-
-  useEffect(() => {
-    if (etape === "observation") dire("accueil", `Hello ${prenom || ""}, je suis là et je te regarde travailler. Partage ton onglet, et laisse l'espace RH visible.`);
-    if (proposition === "affichee") dire("proposition", "J'ai vu l'arrivée de Karim. Je prépare son onboarding comme celui de Léa ? Dis oui, ou clique sur le bouton.");
-    if (suivi?.runs.length) dire("agents", "Les trois agents sont au travail. Regarde leurs écrans : tu vois où ils cliquent.");
-    suivi?.decisions.filter((d) => d.statut === "en_attente").forEach((d) =>
-      d.libelle.startsWith("Valider la commande")
-        ? dire("valid", "Il faut ta validation pour la commande de l'ordinateur. Dis valide, ou clique sur le bouton.")
-        : dire(`q-${d.id}`, `L'agent a une question. ${d.libelle}`));
-    if (suivi && suivi.runs.length >= 3 && suivi.runs.every((r) => r.statut !== "en_cours") && suivi.rapport?.preuve && Object.values(suivi.rapport.preuve).every(Boolean))
-      dire("rapport", "Karim est prêt pour son jour 1. Chaque élément a été vérifié dans les outils.");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [etape, proposition, suivi, voix]);
-
   // Ce que dit la personne : transcrit, enregistré, et compris comme commande (oui, non, valide).
   async function enregistrerDit(texte: string) {
     const heure = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -261,10 +238,9 @@ export default function Portail() {
   function basculerMicro() {
     setErreurVoix("");
     if (ecoute) { stopEcoute.current?.(); stopEcoute.current = null; setEcoute(false); setInterim(""); return; }
-    taire();
     stopEcoute.current = ecouter({
-      interim: (t) => { if (!parle.current) setInterim(t); },
-      final: (t) => { if (!parle.current && t) { setInterim(""); enregistrerDit(t); } },
+      interim: (t) => { setInterim(t); },
+      final: (t) => { if (t) { setInterim(""); enregistrerDit(t); } },
       fin: () => { setEcoute(false); setInterim(""); },
       erreur: (m) => { setErreurVoix(m); setEcoute(false); },
     });
@@ -328,10 +304,10 @@ export default function Portail() {
           <h1>Hello {prenom || "toi"}, prête à démarrer ?</h1>
           <p>Ghost observe ton écran dans les outils que tu autorises, repère l&apos;arrivée d&apos;un nouveau salarié et te propose de s&apos;en occuper. Tu décides à chaque étape.</p>
           <ol className="consignes" aria-label="Comment ça va se passer">
-            <li><b>Tu autorises</b> les outils que Ghost peut regarder, un par un.</li>
-            <li><b>Tu partages ton onglet</b> : Ghost lit ton écran, une pastille reste visible et tu peux le mettre en pause.</li>
-            <li><b>Il te propose</b> de préparer l&apos;arrivée de Karim. Tu dis oui (au clic ou à voix haute).</li>
-            <li><b>Trois agents H agissent</b> sous tes yeux : tu vois leurs écrans et où ils cliquent. Chaque action est vérifiée.</li>
+            <li><span><b>Tu autorises</b> les outils que Ghost peut regarder, un par un.</span></li>
+            <li><span><b>Tu partages ton onglet</b> : Ghost lit ton écran, une pastille reste visible et tu peux le mettre en pause.</span></li>
+            <li><span><b>Il te propose</b> de préparer l&apos;arrivée de Karim. Tu dis oui (au clic ou à voix haute).</span></li>
+            <li><span><b>Trois agents H agissent</b> sous tes yeux : tu vois leurs écrans et où ils cliquent. Chaque action est vérifiée.</span></li>
           </ol>
           <fieldset className="choix-outils">
             <legend>Tu m&apos;autorises à utiliser…</legend>
@@ -350,12 +326,12 @@ export default function Portail() {
               );
             })}
           </fieldset>
+          <p className="petit">Les agents peuvent aussi se connecter seuls à tes comptes : <a href="/connexions" style={{ color: "var(--g-300)" }}>gérer les comptes connectés</a>.</p>
           {erreur && <p role="alert" className="erreur">{erreur}</p>}
           <div className="rang">
             <button className="btn btn-primary" disabled={coches.length === 0} onClick={commencer}>Commencer l&apos;observation</button>
             <button className="btn btn-secondary" onClick={deconnecter}>Se déconnecter</button>
           </div>
-          <p className="petit">Ghost a une voix (Chrome) : elle est activée au démarrage, et tu peux la couper à tout moment.</p>
         </div>
       </main>
     );
@@ -376,6 +352,7 @@ export default function Portail() {
     <main className="portail cockpit">
       <header className="portail-haut">
         <span className="portail-marque"><Logo taille={22} /> Ghost</span>
+        <a href="/connexions" className="lien-haut">Comptes connectés</a>
         <ol className="etapes" aria-label="Avancement">
           {ETAPES.map((e, i) => (
             <li key={e} className={i + 1 < phase ? "fait" : i + 1 === phase ? "courant" : ""}><span>{i + 1 < phase ? "✓" : i + 1}</span>{e}</li>
@@ -422,10 +399,10 @@ export default function Portail() {
         </div>
 
         <div className="bloc voix">
-          <h2>Voix de Ghost</h2>
-          {!voixDispo() && !microDispo() && <p className="petit">La voix n'est pas disponible dans ce navigateur : utilise Chrome.</p>}
+          <h2>Parler à Ghost</h2>
+          {!microDispo() && <p className="petit">La reconnaissance vocale n'est pas disponible dans ce navigateur : utilise Chrome.</p>}
           <div className="rang">
-            <button className="btn btn-secondary" onClick={() => { if (voix) taire(); setVoix(!voix); }}>{voix ? "Ghost parle : activé" : "Ghost parle : coupé"}</button>
+            
             {microDispo() && <button className={`btn ${ecoute ? "btn-primary" : "btn-secondary"}`} onClick={basculerMicro}>{ecoute ? "● J'écoute… (cliquer pour arrêter)" : "Parler à Ghost"}</button>}
           </div>
           {interim && <p className="petit"><i>{interim}…</i></p>}

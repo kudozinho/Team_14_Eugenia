@@ -1,86 +1,116 @@
+import Fantome from "@/components/portail/Fantome";
+import { agentInfo } from "@/lib/agents";
+
 // Rapport final : uniquement des chiffres lus dans la base. Ce qui n'est pas mesuré est écrit comme tel.
 export type DonneesRapport = {
   runs: { agent: string; statut: string; debut: string; fin: string | null; actions_verifiees: number; actions_total: number; cout_credits: number | null }[];
   evenements: { outil: string | null; statut: string }[];
   decisions: { libelle: string; statut: string }[];
-  rapport: { personne: { prenom: string; nom: string; poste: string } | null; preuve: Record<string, boolean>; onboardings_par_an: number | null; materiel: { article: string; statut: string }[]; secours?: boolean } | null;
+  rapport: { personne: { prenom: string; nom: string; poste: string } | null; preuve: Record<string, boolean>; onboardings_par_an: number | null; materiel: { article: string; statut: string }[] } | null;
 };
 
-const ELEMENTS: [string, string, string][] = [
-  ["fiche", "Fiche RH créée", "Espace RH"], ["acces", "Accès du poste demandés", "Espace RH"], ["badge", "Badge demandé", "Espace RH"],
-  ["canal", "Bienvenue dans le canal de l'équipe", "Messagerie"], ["message", "Annonce dans # accueil", "Messagerie"],
-  ["parrain", "Parrain demandé au manager", "Messagerie"], ["cafe", "Café d'accueil proposé", "Messagerie"],
-  ["page_wiki", "Page de bienvenue créée", "Wiki"], ["checklist", "Checklist jour 1, semaine 1, mois 1", "Wiki"],
+const GROUPES: { agent: string; items: [string, string][] }[] = [
+  { agent: "acces", items: [["fiche", "Fiche RH créée"], ["acces", "Accès du poste demandés"], ["badge", "Badge demandé"]] },
+  { agent: "equipe", items: [["canal", "Bienvenue dans le canal de l'équipe"], ["message", "Annonce dans l'accueil"], ["parrain", "Parrain demandé au manager"], ["cafe", "Café d'accueil proposé"]] },
+  { agent: "docs", items: [["page_wiki", "Page de bienvenue créée"], ["checklist", "Checklist jour 1, semaine 1, mois 1"]] },
 ];
-const NOMS: Record<string, string> = { acces: "Accès", equipe: "Équipe", docs: "Docs" };
-const HEURES_REFERENCE = 2; // HYPOTHÈSE de l'équipe : environ 2 h par arrivée, non encore chronométrée.
+const HEURES_REFERENCE = 2; // HYPOTHÈSE de l'équipe : environ 2 h par arrivée, non chronométrée.
 
 const fmt = (s: number) => (s >= 60 ? `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, "0")} s` : `${Math.round(s)} s`);
-const sec = (a: string, b: string | null) => (b ? (new Date(b).getTime() - new Date(a).getTime()) / 1000 : 0);
+const ms = (x: string | null) => (x ? new Date(x).getTime() : 0);
 
 export default function Rapport({ d, onFermer }: { d: DonneesRapport; onFermer: () => void }) {
   const r = d.rapport;
   const prenom = r?.personne?.prenom ?? "La personne";
   const preuve = r?.preuve ?? {};
-  const presents = ELEMENTS.filter(([k]) => preuve[k]).length;
-  const pret = presents === ELEMENTS.length;
-  const debut = Math.min(...d.runs.map((x) => new Date(x.debut).getTime()));
-  const fin = Math.max(...d.runs.map((x) => (x.fin ? new Date(x.fin).getTime() : 0)));
-  const parallele = (fin - debut) / 1000;
-  const cumule = d.runs.reduce((t, x) => t + sec(x.debut, x.fin), 0);
-  const verifiees = d.runs.reduce((t, x) => t + x.actions_verifiees, 0);
-  const total = d.runs.reduce((t, x) => t + x.actions_total, 0);
-  const reussis = d.runs.filter((x) => x.statut === "termine").length;
-  const outils = new Set(d.evenements.map((e) => e.outil).filter(Boolean)).size;
+  const total = GROUPES.reduce((n, g) => n + g.items.length, 0);
+  const presents = GROUPES.reduce((n, g) => n + g.items.filter(([k]) => preuve[k]).length, 0);
+  const pret = presents === total;
+  const t0 = Math.min(...d.runs.map((x) => ms(x.debut)));
+  const t1 = Math.max(...d.runs.map((x) => ms(x.fin)));
+  const duree = Math.max(1, (t1 - t0) / 1000);
+  const cumule = d.runs.reduce((n, x) => n + Math.max(0, (ms(x.fin) - ms(x.debut)) / 1000), 0);
+  const verifiees = d.runs.reduce((n, x) => n + x.actions_verifiees, 0);
+  const totalActions = d.runs.reduce((n, x) => n + x.actions_total, 0);
   const validees = d.decisions.filter((x) => x.statut === "validee").length;
+  const jetons = d.runs.reduce((n, x) => n + (x.cout_credits ?? 0), 0);
   const commande = r?.materiel?.[0];
-  const jetons = d.runs.reduce((t, x) => t + (x.cout_credits ?? 0), 0);
   const heuresAn = r?.onboardings_par_an ? Math.round(r.onboardings_par_an * HEURES_REFERENCE * 10) / 10 : null;
-
-  const carte = (valeur: string, texte: string) => (
-    <div className="card" style={{ padding: 16 }}>
-      <div style={{ fontFamily: "var(--font-titres)", fontWeight: 800, fontSize: "1.9rem", color: "var(--g-900)", lineHeight: 1.1 }}>{valeur}</div>
-      <p style={{ marginTop: 6 }}>{texte}</p>
-    </div>
-  );
+  const rayon = 52, circ = 2 * Math.PI * rayon;
+  const connectes = ["Slack", "Gmail", "Notion"].filter((o) => d.evenements.some((e) => e.outil === o && e.statut === "ok"));
 
   return (
-    <article aria-label="Rapport final" style={{ display: "grid", gap: 16 }}>
-      <header style={{ background: "var(--g-900)", color: "#fff", borderRadius: 22, padding: 28 }}>
-        <span style={{ color: "var(--o-400)", fontFamily: "var(--font-titres)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", fontSize: "0.8rem" }}>Rapport final</span>
-        <h2 style={{ color: "#fff", fontSize: "2rem", margin: "8px 0" }}>{pret ? `${prenom} est prêt pour son jour 1` : `${prenom} : préparation incomplète`}</h2>
-        <p style={{ color: "#fff", opacity: 0.9 }}>
-          {pret ? "Accès, badge, parrain, page de bienvenue : chaque élément a été confirmé dans l'outil, pas seulement annoncé par l'agent."
-                : `${presents} éléments sur ${ELEMENTS.length} confirmés dans les outils. Voir le détail ci-dessous : rien n'est compté sans preuve.`}
-        </p>
+    <article className="rapport2" aria-label="Rapport final">
+      <header className="rp-hero">
+        <div className="rp-anneau" role="img" aria-label={`${presents} éléments sur ${total} confirmés`}>
+          <svg viewBox="0 0 120 120" width="132" height="132">
+            <circle cx="60" cy="60" r={rayon} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="9" />
+            <circle cx="60" cy="60" r={rayon} fill="none" stroke={pret ? "#2e9a63" : "#f4a261"} strokeWidth="9" strokeLinecap="round"
+              strokeDasharray={`${(presents / total) * circ} ${circ}`} transform="rotate(-90 60 60)" />
+          </svg>
+          <b>{presents}<small>/{total}</small></b>
+        </div>
+        <div>
+          <span className="rp-eyebrow">Rapport final</span>
+          <h2>{pret ? `${prenom} est prêt pour son jour 1` : `${prenom} : préparation incomplète`}</h2>
+          <p>{pret ? "Accès, badge, parrain, page de bienvenue : chaque élément a été confirmé dans l'outil lui-même, pas seulement annoncé par un agent."
+                    : `${presents} éléments sur ${total} sont confirmés dans les outils. Rien n'est compté sans preuve.`}</p>
+        </div>
       </header>
 
-      <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))" }}>
-        {carte(`${presents}/${ELEMENTS.length}`, "éléments confirmés dans la base")}
-        {carte(`${verifiees}/${total}`, `actions des agents vérifiées dans ${outils} outils`)}
-        {carte(fmt(parallele), `pour les ${d.runs.length} agents en parallèle, contre ${fmt(cumule)} l'un après l'autre`)}
-        {carte(`${reussis}/${d.runs.length}`, "agents terminés avec succès sur ce run")}
-        {carte(`${validees}/${d.decisions.length}`, "décisions humaines prises (question de l'agent, commande)")}
-        {jetons > 0 && carte(`≈ ${Math.round(jetons / 1000)} k`, "jetons H consommés pour ce run (3 agents), mesurés sur le quota du compte")}
+      <div className="rp-chiffres">
+        <div><b>{fmt(duree)}</b><span>pour les 3 agents en parallèle</span><small>{fmt(cumule)} s&apos;ils étaient passés l&apos;un après l&apos;autre</small></div>
+        <div><b>{verifiees}/{totalActions}</b><span>actions vérifiées dans les outils</span></div>
+        <div><b>{validees}/{d.decisions.length}</b><span>décisions humaines prises</span><small>question de l&apos;agent, commande</small></div>
+        {jetons > 0 && <div><b>≈ {Math.round(jetons / 1000)} k</b><span>jetons H consommés</span><small>pour ce run, quota du compte</small></div>}
       </div>
-      <p style={{ fontSize: "0.9rem", color: "var(--mute)" }}>Les durées incluent le temps où les agents ont attendu tes réponses.</p>
 
-      <section className="card">
-        <h3>Ce qui a été fait, et prouvé dans l&apos;outil</h3>
-        <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0", display: "grid", gap: 6 }}>
-          {ELEMENTS.map(([k, libelle, outil]) => (
-            <li key={k}>{preuve[k] ? "✓" : "○"} {libelle} <span style={{ color: "var(--mute)" }}>· {outil}</span></li>
-          ))}
-          {commande && <li>{commande.statut === "valide" ? "✓" : "…"} {commande.article} : {commande.statut === "valide" ? "commande validée par toi" : "en attente de ta validation"} <span style={{ color: "var(--mute)" }}>· décision humaine</span></li>}
-        </ul>
+      <section className="rp-bloc">
+        <h3>Les trois agents, en parallèle</h3>
+        <div className="rp-frise">
+          {d.runs.map((x) => {
+            const a = agentInfo(x.agent);
+            const gauche = ((ms(x.debut) - t0) / 1000 / duree) * 100;
+            const largeur = Math.max(2, ((ms(x.fin) - ms(x.debut)) / 1000 / duree) * 100);
+            return (
+              <div key={x.agent} className="rp-ligne" style={{ ["--c" as string]: a.couleur }}>
+                <span className="rp-qui"><Fantome couleur={a.couleur} taille={24} /><b>{a.prenom}</b><small>{a.role}</small></span>
+                <span className="rp-piste"><i style={{ left: `${gauche}%`, width: `${largeur}%` }} /></span>
+                <span className="rp-temps">{fmt((ms(x.fin) - ms(x.debut)) / 1000)}</span>
+              </div>
+            );
+          })}
+        </div>
+        <p className="rp-note">Les durées incluent le temps où les agents ont attendu tes réponses.</p>
       </section>
 
-      <section className="card" style={{ borderColor: "var(--ochre-700)" }}>
+      <section className="rp-bloc">
+        <h3>Ce qui a été fait, et prouvé dans l&apos;outil</h3>
+        <div className="rp-preuves">
+          {GROUPES.map((g) => {
+            const a = agentInfo(g.agent);
+            return (
+              <div key={g.agent} style={{ ["--c" as string]: a.couleur }}>
+                <h4><Fantome couleur={a.couleur} taille={18} />{a.prenom}</h4>
+                <ul>{g.items.map(([k, l]) => <li key={k} className={preuve[k] ? "ok" : ""}><span className="coche" />{l}</li>)}</ul>
+              </div>
+            );
+          })}
+          <div style={{ ["--c" as string]: "#8fd1a8" }}>
+            <h4>Décision humaine</h4>
+            <ul>{commande
+              ? <li className={commande.statut === "valide" ? "ok" : ""}><span className="coche" />{commande.article} : {commande.statut === "valide" ? "validée par toi" : "en attente de ta validation"}</li>
+              : <li><span className="coche" />Aucune commande</li>}</ul>
+            {connectes.length > 0 && <><h4>Outils connectés</h4><ul>{connectes.map((o) => <li key={o} className="ok"><span className="coche" />{o}</li>)}</ul></>}
+          </div>
+        </div>
+      </section>
+
+      <section className="rp-bloc rp-limites">
         <h3>Ce qui n&apos;est pas mesuré, ou pas prouvé</h3>
-        <ul style={{ margin: "8px 0 0", paddingLeft: 20, display: "grid", gap: 6, color: "var(--ink-2)" }}>
-          <li><b>Coût en crédits H</b> : {jetons > 0 ? "mesuré en jetons (voir ci-dessus), non converti en euros." : "non mesuré pour ce run."}</li>
-          <li><b>Gain de temps</b> : l&apos;hypothèse de l&apos;équipe est d&apos;environ {HEURES_REFERENCE} h par arrivée à la main, <b>non chronométrée</b>. {heuresAn ? `Avec tes ${r?.onboardings_par_an} onboardings par an, cela ferait environ ${heuresAn} h par an : une estimation, pas une mesure.` : ""}</li>
-          {r?.secours && <li><b>Détection</b> : cette proposition a été déclenchée par le bouton de secours, pas par la lecture de l&apos;écran par Holo. Les agents et les vérifications, eux, sont réels.</li>}
+        <ul>
+          <li><b>Gain de temps</b> : l&apos;hypothèse de l&apos;équipe est d&apos;environ {HEURES_REFERENCE} h par arrivée à la main, <b>non chronométrée</b>.{heuresAn ? ` Avec tes ${r?.onboardings_par_an} onboardings par an, cela ferait environ ${heuresAn} h : une estimation, pas une mesure.` : ""}</li>
+          <li><b>Coût</b> : {jetons > 0 ? "mesuré en jetons H, non converti en euros." : "non mesuré pour ce run."}</li>
           <li><b>Taux de réussite</b> : ce rapport décrit un seul run, il ne permet pas d&apos;en tirer un taux.</li>
         </ul>
       </section>
