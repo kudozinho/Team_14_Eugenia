@@ -36,3 +36,12 @@ Livrable du hackathon : ce qui a marché, ce qui a cassé, ce qui a surpris. À 
 
 - Le test 3 : voir ci-dessus.
 - L'état de session (`status()`) ne contient pas l'adresse de la vue en direct : il faut relire la session avec `client.sessions.get_session(id)`.
+
+## Constats du 20/11 (matin)
+
+- **Vue en direct** : la page de vue de H interdit l'intégration en cadre (`X-Frame-Options: DENY`). Les événements de session contiennent en revanche chaque capture d'écran de l'agent (`observation_event`) et chaque action avec coordonnées et élément visé (`policy_event`, `tool_reqs`) : on peut reconstruire une vue en direct avec un point sur chaque clic. Les captures se lisent avec `sessions.get_session_resource`.
+- **Agents personnalisés** : propres à chaque compte H. Un agent créé avec une clé n'existe pas avec la clé d'un autre compte (erreur 404) : prévoir un repli sur l'agent prêt à l'emploi.
+- **Coffre-fort** : `vaults` (hébergé par H) accepte les champs `username`, `password`, `email`, `totp`, `api_key` ; les valeurs ne sont jamais relues (seules les métadonnées le sont), et un navigateur d'agent s'y lie par `vault_id`. Rattachement à une session d'agent non testé.
+- **Quota** : 60 millions de jetons par mois ; environ 546 000 jetons par onboarding complet (3 agents).
+- **Parallélisme** : trois sessions en parallèle acceptées sans limite rencontrée ; 9 runs complets réussis.
+- **Cassé ou surprenant** : certificats SSL de Python sur macOS (utiliser `certifi`) ; clé API refusée (401) quand elle est mal collée ; envoi d'un message à une session en cours non démontré.
