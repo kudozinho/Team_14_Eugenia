@@ -20,11 +20,15 @@ from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "acces", ".env"))
 import acces  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "equipe"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "docs"))
+import docs as agent_docs  # noqa: E402
+import equipe as agent_equipe  # noqa: E402
 from hai_agents import Client  # noqa: E402
 
-# Agents disponibles. Équipe (messagerie) et Docs (wiki) ne sont pas encore écrits : ils ne sont PAS simulés.
-AGENTS = {"acces": acces.executer}
-A_FAIRE = ["equipe", "docs"]
+# Les trois agents partent en parallèle. Aucun succès n'est simulé : tout est vérifié dans la base.
+AGENTS = {"acces": acces.executer, "equipe": agent_equipe.executer, "docs": agent_docs.executer}
+A_FAIRE = []
 
 
 def personne_de(proposition_id):

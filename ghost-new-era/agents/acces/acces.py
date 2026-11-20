@@ -74,6 +74,12 @@ def reinitialiser(personne_id):
     _req("DELETE", f"rh_acces?personne_id=eq.{q}")
     _req("DELETE", f"rh_materiel?personne_id=eq.{q}")
     _req("PATCH", f"rh_badges?personne_id=eq.{q}", {"zones": [], "statut": "a_demander"})
+    # Messagerie et wiki : uniquement ce que les agents ont écrit pour cette personne de test.
+    if personne_id == "karim-benali":
+        _req("DELETE", "msg_demandes?personne_id=eq.karim-benali")
+        _req("DELETE", "msg_messages?auteur=eq." + urllib.parse.quote("Ghost, pour Sophie Durand") + "&texte=ilike." + urllib.parse.quote("*Karim*"))
+        _req("DELETE", "wiki_pages?titre=ilike." + urllib.parse.quote("Bienvenue Karim*"))
+        _req("DELETE", "wiki_checklists?personne_id=eq.karim-benali")
     print(f"Données de test de {personne_id} remises à zéro.")
 
 

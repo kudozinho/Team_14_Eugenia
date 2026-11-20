@@ -142,6 +142,16 @@ export default function Portail() {
     return () => { actif = false; clearInterval(m); };
   }, [proposition, propositionId]);
 
+  // Garde le service des agents (hébergé, offre gratuite) éveillé pendant que la session est ouverte.
+  useEffect(() => {
+    const url = process.env.NEXT_PUBLIC_ORCH_URL;
+    if (!url || etape !== "observation") return;
+    const ping = () => fetch(`${url}/sante`, { mode: "no-cors" }).catch(() => {});
+    ping();
+    const m = setInterval(ping, 4 * 60 * 1000);
+    return () => clearInterval(m);
+  }, [etape]);
+
   async function decider(id: string) {
     const { data } = await getSupabase().auth.getSession();
     await fetch("/api/decision", {
