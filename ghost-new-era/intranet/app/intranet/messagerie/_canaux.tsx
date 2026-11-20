@@ -13,7 +13,7 @@ export async function chargerCanaux(): Promise<Canal[]> {
 
 export default function ListeCanaux({ canaux, actif }: { canaux: Canal[]; actif?: string }) {
   return (
-    <aside className={s.bloc} aria-label="Canaux">
+    <aside className={`${s.bloc} ${s.barre}`} aria-label="Canaux">
       <h2>Canaux</h2>
       <ul className={s.liste}>
         {canaux.map((c) => (

@@ -41,9 +41,10 @@ export default async function PageCanal({
             <section className={s.bloc} aria-label="Messages du canal">
               <h2>Messages</h2>
               {messages && messages.length > 0 ? (
-                <ul className={s.liste}>
+                <ul className={`${s.liste} ${s.fil}`}>
                   {messages.map((m) => (
                     <li key={m.id}>
+                      <span className={`${s.avatar} ${s["avatar" + (1 + ([...m.auteur].reduce((t, c) => t + c.charCodeAt(0), 0) % 5))]}`} aria-hidden="true">{m.auteur.split(" ").map((x: string) => x[0]).slice(0, 2).join("").toUpperCase()}</span>
                       <strong>{m.auteur}</strong> <span className={s.meta}>· {dateHeure(m.cree_le)}</span>
                       <p className={s.contenu}>{m.texte}</p>
                     </li>
