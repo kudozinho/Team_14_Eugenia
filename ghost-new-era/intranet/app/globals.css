@@ -1,0 +1,25 @@
+/* Identité d'Atelier Nova (PME fictive) : bleu ardoise et sable. Volontairement différente de la charte Ghost.
+   Les noms de variables (--g-*, --o-*) restent ceux de la charte pour que les pages existantes s'adaptent. */
+:root {
+  --bg: #f3f5f8; --card: #ffffff; --ink: #1b2430; --ink-2: #3c4858; --mute: #5b6675;
+  --line: #e1e6ec; --line-2: #cbd3dd;
+  --g-950: #0f1f33; --g-900: #1f3a5f; --g-700: #2c5282; --g-500: #3b76b8; --g-300: #9bbae0; --g-100: #dce8f5; --g-50: #eef4fa;
+  --o-600: #b4541b; --o-700: #8f3f10; --o-400: #f2a65a; --o-100: #fbe3cf; --o-50: #fdf2e7;
+  --ochre-700: #86590b; --ochre-50: #f8eed3;
+  --font-titres: var(--font-texte), system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-texte), system-ui, sans-serif; font-size: 17px; line-height: 1.55; }
+h1, h2, h3 { font-family: var(--font-titres); color: var(--ink); margin: 0; line-height: 1.15; }
+h1 { font-size: 2rem; font-weight: 800; } h2 { font-size: 1.4rem; font-weight: 700; } h3 { font-size: 1.1rem; font-weight: 700; }
+p { margin: 0; color: var(--ink-2); }
+a { color: var(--g-700); }
+:focus-visible { outline: 3px solid var(--o-600); outline-offset: 2px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+.btn { display: inline-block; font: inherit; font-weight: 700; border-radius: 10px; padding: 10px 18px; border: 2px solid transparent; cursor: pointer; }
+.btn-primary { background: var(--g-900); color: #fff; }
+.btn-secondary { background: transparent; color: var(--g-900); border-color: var(--g-900); }
+.bandeau-test { background: var(--ochre-50); color: var(--ochre-700); border-bottom: 1px solid var(--line-2); text-align: center; padding: 8px 16px; font-weight: 600; font-size: 0.9rem; }
+/* Aucune animation : un agent lit l'écran. */
+* { transition: none !important; animation: none !important; }
