@@ -1,1 +1,0 @@
-"""Prompts du mode vocal."""

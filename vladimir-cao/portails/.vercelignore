@@ -1,7 +1,0 @@
-.taste-skill
-shots
-.next
-node_modules
-.env*
-!.env.example
-vitrine/construire.mjs

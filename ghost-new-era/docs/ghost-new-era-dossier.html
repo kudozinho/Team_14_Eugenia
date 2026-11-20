@@ -1,0 +1,380 @@
+<title>GHOST New Era</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#F4F1EA;--card:#FFFDF8;--ink:#18201B;--ink2:#45514A;--mute:#5C655D;--line:#E2DCCF;--g7:#1D6B47;--g9:#123D2C;--g1:#DDEFE3;--g0:#EEF6F0;--o6:#C25418;--o7:#9A4212;--o0:#FDF2E7;--oc:#86590B;--oc0:#F8EED3;--code:#EFEBE0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111A15;--card:#17231C;--ink:#ECEFE8;--ink2:#BFC9BF;--mute:#9AA79C;--line:#2A3A30;--g7:#6CC595;--g9:#0B2A1F;--g1:#1E3A2A;--g0:#16281F;--o6:#F4A261;--o7:#F4A261;--o0:#2A2018;--oc:#E0B25A;--oc0:#2B2514;--code:#0E1712;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111A15;--card:#17231C;--ink:#ECEFE8;--ink2:#BFC9BF;--mute:#9AA79C;--line:#2A3A30;--g7:#6CC595;--g9:#0B2A1F;--g1:#1E3A2A;--g0:#16281F;--o6:#F4A261;--o7:#F4A261;--o0:#2A2018;--oc:#E0B25A;--oc0:#2B2514;--code:#0E1712;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 Inter,system-ui,sans-serif;padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.w{max-width:1000px;margin:0 auto}
+header{padding:28px 0 8px}
+h1{font:700 30px/1.15 "Space Grotesk",Inter,sans-serif;margin:0 0 6px;text-wrap:balance}
+h2{font:700 21px/1.25 "Space Grotesk",Inter,sans-serif;margin:34px 0 10px;color:var(--g7);text-wrap:balance}
+h3{font:600 16px/1.3 "Space Grotesk",Inter,sans-serif;margin:20px 0 6px}
+p{margin:8px 0;max-width:72ch}li{margin:3px 0;max-width:80ch}
+.sub{color:var(--mute);margin:0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+nav a{padding:7px 14px;border-radius:8px;text-decoration:none;color:var(--ink2);border:1px solid var(--line);font-weight:600;font-size:14px}
+nav a.on{background:var(--g9);color:#fff;border-color:var(--g9)}
+section.tab{display:none}section.tab.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+.hl{background:var(--g0);border-color:var(--g1)}
+.warn{background:var(--oc0);border-color:var(--oc)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--g1);color:var(--g7);margin-right:4px}
+.tag.o{background:var(--o0);color:var(--o7)}.tag.r{background:var(--oc0);color:var(--oc)}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--g9);color:#fff;font-weight:600;position:sticky;top:0}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.g2>.card{margin:0;min-width:0}
+pre.mermaid{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;text-align:center}
+.pb{position:relative}
+.pb pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;font:12.5px/1.55 ui-monospace,Menlo,monospace;white-space:pre-wrap;max-height:520px;overflow-y:auto;margin:6px 0}
+button.cp{position:absolute;top:10px;right:10px;background:var(--o6);color:#fff;border:0;border-radius:7px;padding:6px 12px;font-weight:700;cursor:pointer}
+details{margin:8px 0}summary{cursor:pointer;font-weight:600}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:13px}
+.ck li{list-style:none;margin-left:-18px}.ck li::before{content:"☐ "}
+</style>
+
+<div class="w">
+<header>
+<h1>GHOST New Era</h1>
+<p class="sub">Dossier d'équipe pour la nuit du jeudi 19 au vendredi 20 novembre 2026. Départ à 01h00, dépôt à 11h00.</p>
+</header>
+<nav id="nav">
+<a href="#projet">1 · Le projet</a><a href="#plan">2 · Le plan et qui fait quoi</a><a href="#prompts">3 · Les prompts</a>
+</nav>
+
+<!-- ================= 1. PROJET ================= -->
+<section class="tab" id="t-projet">
+
+<h2>Le projet en une minute</h2>
+<div class="card hl">
+<p><b>Ghost est un assistant visible qui travaille avec vous.</b> Il regarde votre écran, uniquement dans les outils que vous autorisez, repère une tâche que vous répétez et vous propose : « Je m'en occupe ? ». Si vous dites oui, des agents H Company prennent la main sous vos yeux, clic après clic, et chaque action est vérifiée.</p>
+<p><b>L'exemple de la démo :</b> Sophie est office manager chez Atelier Nova, une PME de 50 personnes. Préparer l'arrivée d'un nouveau salarié lui prend environ 2 heures dans plusieurs outils. Un oubli et le nouveau arrive sans accès ni badge. Sophie prépare l'arrivée de Léa, développeuse. Quand l'arrivée de Karim, commercial, apparaît à l'écran, Ghost la lit et dit : « Je prépare l'onboarding de Karim comme pour Léa ? ». Sophie dit oui. Trois agents H partent en même temps : l'un crée la fiche, les accès et le badge, l'autre écrit au bon canal et demande un parrain, le troisième prépare le wiki. Un tableau se coche en direct.</p>
+</div>
+
+<h2>Pourquoi cette nouvelle direction</h2>
+<div class="card">
+<p>Les professeurs ont dit : l'idée de base est bonne, mais H Company n'agit qu'à la fin (clic « Prouver »), et le risque est une note nulle sur l'usage de l'agent. Le jury note <b>30 % sur l'excellence technique et l'API des agents</b>, et son critère n°1 est une <b>démo live avec l'agent qui tourne</b>. Ghost doit donc montrer H à trois moments :</p>
+<div class="g2">
+<div class="card"><span class="tag">1</span><b>H observe</b><p>La pastille avec notre logo reste affichée. Holo, le modèle de lecture d'écran de H, lit les captures.</p></div>
+<div class="card"><span class="tag">2</span><b>H propose</b><p>« J'ai vu que tu refais la même chose, je m'en occupe ? » Ni liste fixe, ni écran de résultats à la fin.</p></div>
+<div class="card"><span class="tag">3</span><b>H agit</b><p>Après accord, trois agents travaillent en direct. On voit l'écran, on voit le tableau se cocher, on voit la vérification.</p></div>
+</div>
+</div>
+
+<h2>Le parcours de l'utilisatrice</h2>
+<pre class="mermaid">
+flowchart LR
+A["Landing page"] --> B["Inscription et paiement démo"] --> C["Questionnaire"] --> D["Vocal facultatif"] --> E["Hello Sophie : accord outil par outil"] --> F["Observation avec pastille logo"] --> G["Ghost propose : je m'en occupe ?"] --> H["Sophie accepte"] --> I["3 agents H en direct"] --> J["Vérification et rapport chiffré"]
+</pre>
+
+<h3>Étape par étape, ce que voit Sophie</h3>
+<div class="tw"><table>
+<tr><th>#</th><th>Écran</th><th>Ce qui se passe</th><th>Données</th></tr>
+<tr><td>1</td><td>Landing page</td><td>Message clair : « Ghost prépare l'onboarding de vos nouveaux salariés pendant que vous travaillez. » Pour qui : RH, office managers. Bouton « Commencer ».</td><td>—</td></tr>
+<tr><td>2</td><td>Inscription et paiement</td><td>Nom, prénom, e-mail, mot de passe. Écran de paiement en <b>mode démo</b> (voir encadré). Création du compte.</td><td><code>profils</code>, <code>abonnements</code></td></tr>
+<tr><td>3</td><td>Questionnaire</td><td>Rôle, secteur, taille de l'entreprise, onboardings par an, recrutements par an, départs par an, outils utilisés, outils interdits à Ghost. Donne le contexte aux agents.</td><td><code>profils</code></td></tr>
+<tr><td>4</td><td>Vocal (facultatif)</td><td>Sophie raconte sa journée et ce qui l'agace. Transcription en texte, utilisée comme contexte. La démo marche sans.</td><td><code>vocaux</code></td></tr>
+<tr><td>5</td><td>« Hello Sophie »</td><td>« Prête à démarrer ? » Puis accord <b>outil par outil</b> : « Tu m'autorises à utiliser l'espace RH ? la messagerie ? le wiki ? » Seuls les outils cochés sont lus ou utilisés par les agents.</td><td><code>consentements</code></td></tr>
+<tr><td>6</td><td>Observation</td><td>Partage d'écran du navigateur. Une pastille avec le <b>logo Ghost</b> reste visible : « Hello, je suis là et je te regarde travailler ». Bouton pause.</td><td><code>captures_lues</code></td></tr>
+<tr><td>7</td><td>Proposition</td><td>Ghost lit la notification d'arrivée de Karim et propose en 10 à 30 secondes. Sophie dit oui ou non.</td><td><code>taches_detectees</code>, <code>propositions</code></td></tr>
+<tr><td>8</td><td>Agents en direct</td><td>Trois écrans d'agents, un tableau qui se coche, chaque ligne marquée « vérifié dans l'outil ». Question de l'agent (manager manquant) et validation avant l'irréversible (commande de l'ordinateur).</td><td><code>agents_runs</code>, <code>agents_evenements</code>, <code>decisions_humaines</code></td></tr>
+<tr><td>9</td><td>Rapport</td><td>« Karim est prêt pour son jour 1 » avec les chiffres : actions, outils, oublis évités, décisions en attente, durée contre référence humaine, taux de réussite, coût.</td><td>lecture</td></tr>
+</table></div>
+
+<div class="card warn"><b>Paiement et compte : tout est démo.</b> L'écran « Payer » est une façade clairement étiquetée « mode démo » : il crée l'abonnement de démonstration, sans aucune donnée bancaire. Pour la démo en direct, Sophie a un <b>compte déjà créé</b> (e-mail et mot de passe connus de l'équipe, jamais écrits dans un fichier) : on entre directement au « Hello Sophie ». Inscription et paiement se montrent dans la vidéo ou en les parcourant vite.</div>
+
+<h2>Ce qu'on construit : trois briques</h2>
+<div class="g2">
+<div class="card"><span class="tag">A</span><b>Le site GHOST</b><p>Landing, inscription, paiement démo, questionnaire, portail de la personne (accord, pastille, proposition, suivi des agents, rapport). Un seul projet Next.js sur Vercel. Pas de domaine ghost.ai : on utilise l'adresse Vercel gratuite.</p></div>
+<div class="card"><span class="tag">B</span><b>L'intranet d'Atelier Nova (faux)</b><p>Trois espaces : RH et badges, messagerie, wiki. Présenté comme des outils maison sans API. Il doit être <b>public</b> : les agents H travaillent dans un navigateur hébergé par H et ne voient pas notre ordinateur. Chaque action écrit dans Supabase, ce qui permet de la vérifier.</p></div>
+<div class="card"><span class="tag">C</span><b>Le cerveau</b><p>Capture d'écran, lecture par Holo, reconnaissance de la tâche, trois agents H, orchestration, vérification, Hugging Face (classement des pages du wiki).</p></div>
+</div>
+
+<h2>Architecture</h2>
+<pre class="mermaid">
+flowchart TB
+subgraph NAV["Navigateur de Sophie : un seul onglet"]
+  P["Page Ghost (Next.js sur Vercel)"]
+  I["Zone poste de travail : intranet Atelier Nova dans un iframe"]
+  S["Panneau Ghost : pastille logo, accord, propositions, tableau, vues en direct"]
+end
+P --> I
+P --> S
+S -->|"capture toutes les 3 à 5 s"| API["API Ghost (Vercel)"]
+API -->|"image"| HOLO["Holo (Models API de H) : lit l écran"]
+API -->|"tâche reconnue, proposition"| DB[("Supabase : nouveau projet")]
+S -->|"Sophie accepte"| ORCH["Service agents (Render Free, réveillé avant la démo)"]
+ORCH --> A1["Agent Accès"]
+ORCH --> A2["Agent Équipe"]
+ORCH --> A3["Agent Docs"]
+A1 -->|"clique dans"| INTRA["Intranet de test public (Vercel)"]
+A2 -->|"clique dans"| INTRA
+A3 -->|"clique dans"| INTRA
+INTRA -->|"écrit"| DB
+ORCH -->|"événements, vérification"| DB
+HF["Hugging Face : embeddings, jeu de données"] --> A3
+</pre>
+
+<h2>Les décisions de l'interview</h2>
+<ul>
+<li>Vocal <b>facultatif</b> : la démo fonctionne sans, avec un bouton visible.</li>
+<li>Source principale : l'enregistrement d'écran. Intervention <b>10 s en général, 30 s au maximum</b> après la reconnaissance.</li>
+<li>Les agents H agissent dans le <b>navigateur hébergé de H</b>, avec vue en direct. Le contrôle de l'ordinateur local, WhatsApp, etc. sont en roadmap. L'écran « J'ai besoin de ton Chrome, tu m'autorises ? » existe dans notre portail et décide quels espaces l'agent peut utiliser.</li>
+<li>Trois agents en parallèle, plan B : vidéo d'un vrai run complet filmé avant.</li>
+<li>Ce qu'on garde honnête : aucune donnée réelle, tout rejeu annoncé, aucun succès simulé, une action n'est comptée que si elle est vérifiée dans la base.</li>
+<li><b>Mémoire de session (nouveau) :</b> Binta propose d'enregistrer avant la démo quelques minutes de vraies sessions pour donner du contexte à l'agent, puis de refaire le geste en quelques secondes en direct. C'est honnête si on le dit : « mémoire d'une session précédente, réelle, enregistrée avant ». La détection pendant la démo reste réelle.</li>
+<li>Pas de région UE obligatoire, trois garanties de confidentialité à vérifier avant d'être annoncées (captures limitées aux outils cochés, pastille et pause toujours visibles, images non conservées).</li>
+</ul>
+
+<h2>Ce que le hackathon attend (PDF, à ne pas rater)</h2>
+<div class="g2">
+<div class="card"><b>Vendredi avant 11h00</b>
+<ul class="ck"><li>Prototype fonctionnel, démontrable en live</li><li>Fiche projet et repo GitHub : problème, solution, stack, architecture, lien du prototype, comment le tester</li><li>Vidéo démo de 5 minutes</li><li>Évaluation des pairs (chacun, le soir 17h à 9h)</li><li>Vérifier les droits d'accès de chaque lien</li></ul></div>
+<div class="card"><b>Vendredi avant 15h00 : deck de 8 à 12 slides</b>
+<ol><li>Problème</li><li>Solution</li><li>Démo</li><li>Business model (qui paie, combien)</li><li>Go-to-market</li><li>Architecture technique</li><li>Limites, axes d'amélioration, roadmap</li><li>Estimation du coût de run</li></ol>Pitch 6 min, Q&amp;A 4 min.</div>
+</div>
+<div class="g2">
+<div class="card"><b>Critères</b><p>25 % pertinence et impact · <b>30 % excellence technique et API des agents</b> · 25 % faisabilité, adoption, apprentissages · 20 % UX, démo, pitch.</p></div>
+<div class="card"><b>Stack obligatoire</b><p>H Company (IA), Hugging Face (modèles, données), GitHub (dépôt). Les retours sur l'API de H font partie du livrable : ce qui a marché, ce qui a cassé, ce qui a surpris. Notez-les pendant la nuit.</p></div>
+</div>
+<div class="card warn"><b>Pièges cités par le PDF :</b> idée trop large, sur-concevoir (dix fonctionnalités à moitié faites), un projet sans agent, des slides sans prototype, ne pas mesurer (taux de réussite, latence, cas d'échec), venir au support sans diagnostic, des liens inaccessibles. Il manque encore à décider : le prix (par audit ou par mois). Le coût de run se calcule avec les crédits H consommés par un onboarding mesuré.</div>
+</section>
+
+<!-- ================= 2. PLAN ================= -->
+<section class="tab" id="t-plan">
+
+<h2>Qui fait quoi, en un coup d'œil</h2>
+<div class="g2">
+<div class="card hl"><b>Binta (CEO)</b><p>GitHub propre, message au groupe, site GHOST (landing, inscription, portail, pastille), intranet RH, Agent Docs, assemblage, fiche et deck. Reprend les agents si Alejandro glisse.</p></div>
+<div class="card hl"><b>Henriquet</b><p>Supabase, schéma, données fictives, vue de vérification, intranet messagerie et wiki, test Holo, Hugging Face, vocal, vérifications finales. Pas d'agent sauf s'il a du temps.</p></div>
+<div class="card hl"><b>Alejandro</b><p>Tests H, Agent Accès (le modèle), Agent Équipe, orchestration. Chemin critique de la démo.</p></div>
+</div>
+
+<h2>Schéma de travail en parallèle</h2>
+<p>Chaque barre est une tâche. Chaque ligne est une personne. Une tâche commence quand celle dont elle dépend est terminée (indiqué dans le tableau). Les horaires sont des estimations à partir de 01h00.</p>
+<pre class="mermaid">
+gantt
+dateFormat HH:mm
+axisFormat %H:%M
+section Binta
+GitHub propre :b1, 01:00, 15m
+Message groupe :b2, after b1, 15m
+Vercel et squelette :b3, after b2, 45m
+Landing page via v0 :b4, after b3, 60m
+Intranet RH :b5, after b4, 90m
+Portail Ghost :b6, after b5, 120m
+Agent Docs :b7, after b6, 45m
+Assemblage :b8, 08:00, 75m
+Run filmé et chiffres :b9, after b8, 45m
+Fiche et repo :b10, after b9, 45m
+section Henriquet
+Supabase neuf :h0, 01:30, 30m
+Schéma et données :h1, after h0, 60m
+Messagerie et wiki :h2, after h1, 120m
+Test Holo :h3, after h2, 45m
+Hugging Face embeddings :h4, after h3, 45m
+Vocal transcription :h5, after h4, 60m
+Sessions mémoire :h6, after h5, 45m
+Vérifications finales :h7, after b8, 60m
+section Alejandro
+Tests H :a1, 01:30, 60m
+Orchestration squelette :a2, after a1, 120m
+Agent Accès :a3, after b5, 90m
+Agent Équipe :a4, after a3, 60m
+Orchestration finale :a5, after a4, 45m
+</pre>
+
+<h2>Le tableau des tâches</h2>
+<div class="tw"><table>
+<tr><th>#</th><th>Tâche</th><th>Qui</th><th>Diff.</th><th>Après</th><th>Livre</th><th>Puis prévenir</th></tr>
+<tr><td>1</td><td>Nettoyage GitHub : archive, <code>main</code> propre, README GHOST New Era</td><td>Binta</td><td>F</td><td>—</td><td>Dépôt propre</td><td>Tous : ne pas pousser 15 min, puis <code>git pull</code></td></tr>
+<tr><td>2</td><td>Message au groupe + prompts</td><td>Binta</td><td>F</td><td>1</td><td>Équipe alignée</td><td>—</td></tr>
+<tr><td>3</td><td>Nouveau Supabase, invitations</td><td>Henriquet</td><td>F</td><td>2</td><td>Projet vide, accès</td><td>Binta, Alejandro</td></tr>
+<tr><td>4</td><td>Tests H : une session, trois en parallèle, vue en direct dans un iframe, envoi d'un message à une session, crédits</td><td>Alejandro</td><td>M</td><td>2</td><td>Chiffres et limites</td><td>Tout le groupe (décide parallèle ou série)</td></tr>
+<tr><td>5</td><td>Vercel neuf, squelette Next.js, charte, Supabase Auth</td><td>Binta</td><td>F/M</td><td>1, 3</td><td>Site déployé</td><td>—</td></tr>
+<tr><td>6</td><td>Schéma SQL, données minimales, vue <code>v_onboarding</code></td><td>Henriquet</td><td>M</td><td>3</td><td>Base remplie</td><td>Binta (elle peut vérifier toute seule dans Supabase)</td></tr>
+<tr><td>7</td><td>Landing page (v0)</td><td>Binta</td><td>F</td><td>5</td><td>Page d'accueil</td><td>—</td></tr>
+<tr><td>8</td><td>Intranet RH v0, public</td><td>Binta</td><td>M</td><td>5, 6</td><td>URL RH</td><td>Alejandro (signal de départ de l'Agent Accès), Henriquet (vérifier les lignes en base)</td></tr>
+<tr><td>9</td><td>Messagerie et wiki v0, publics</td><td>Henriquet</td><td>M</td><td>6</td><td>URL des deux espaces</td><td>Alejandro</td></tr>
+<tr><td>10</td><td>Squelette d'orchestration avec faux événements</td><td>Alejandro</td><td>D</td><td>4</td><td>Service qui lance et écoute</td><td>Binta (format des événements)</td></tr>
+<tr><td>11</td><td>Agent Accès (modèle)</td><td>Alejandro</td><td>D</td><td>8, 10</td><td>Fiche, accès, badge vérifiés</td><td>Binta, Henriquet</td></tr>
+<tr><td>12</td><td>Portail Ghost : inscription, questionnaire, accord, pastille logo, partage d'écran, proposition, suivi, rapport</td><td>Binta</td><td>D</td><td>5, 7</td><td>Écrans fonctionnels (faux événements d'abord)</td><td>—</td></tr>
+<tr><td>13</td><td>Test Holo : durée, prompt JSON</td><td>Henriquet</td><td>M</td><td>9</td><td>Chiffre de latence</td><td>Binta</td></tr>
+<tr><td>14</td><td>Hugging Face : embeddings pour classer le wiki</td><td>Henriquet</td><td>M</td><td>9</td><td>Fonction « 5 meilleures pages »</td><td>Binta (Agent Docs)</td></tr>
+<tr><td>15</td><td>Agent Équipe</td><td>Alejandro</td><td>M</td><td>9, 11</td><td>Message, parrain, café vérifiés</td><td>Binta</td></tr>
+<tr><td>16</td><td>Orchestration finale : trois sessions, événements, réponse, validation</td><td>Alejandro</td><td>D</td><td>15</td><td>Route de lancement</td><td>Binta</td></tr>
+<tr><td>17</td><td>Agent Docs</td><td>Binta</td><td>M</td><td>12, 14</td><td>Page « Bienvenue Karim »</td><td>Alejandro</td></tr>
+<tr><td>18</td><td>Vocal : enregistrement, transcription Hugging Face (facultatif)</td><td>Henriquet</td><td>M</td><td>14</td><td>Texte du vocal</td><td>Binta (bouton)</td></tr>
+<tr><td>19</td><td>Sessions mémoire (vraies sessions enregistrées avant)</td><td>Henriquet, Binta</td><td>M</td><td>12, 13</td><td>Journal de capture réel</td><td>—</td></tr>
+<tr><td>20</td><td>Assemblage de bout en bout</td><td>Binta + Alejandro</td><td>D</td><td>13, 16, 17</td><td>Parcours complet</td><td>Henriquet</td></tr>
+<tr><td>21</td><td>Run complet filmé, chiffres, gel du code</td><td>Binta + Henriquet</td><td>M</td><td>20</td><td>Vidéo plan B</td><td>Tous</td></tr>
+<tr><td>22</td><td>Vérifier les 3 garanties, chronométrer les gestes de Léa</td><td>Henriquet</td><td>M</td><td>20</td><td>Chiffres sourcés</td><td>Binta</td></tr>
+<tr><td>23</td><td>Fiche, README, dépôt avant 11h00 ; jeu de données HF</td><td>Binta, Henriquet</td><td>M</td><td>21</td><td>Livrables</td><td>—</td></tr>
+<tr><td>24</td><td>Deck, entraînement du pitch (jusqu'à 15h00)</td><td>Binta (tous)</td><td>M</td><td>23</td><td>Deck</td><td>—</td></tr>
+</table></div>
+
+<h2>Le plus facile au plus dur</h2>
+<div class="g2">
+<div class="card"><span class="tag">Facile</span> GitHub propre, message, Supabase vide, squelette Vercel, landing via v0, jeu de données Hugging Face.</div>
+<div class="card"><span class="tag o">Moyen</span> schéma et données, intranet (3 espaces), test Holo, embeddings, agents Équipe et Docs, vocal, vérifications.</div>
+<div class="card"><span class="tag r">Difficile</span> portail avec partage d'écran, Agent Accès (le modèle), orchestration à trois sessions, assemblage.</div>
+</div>
+
+<h2>Règles d'équipe</h2>
+<ul>
+<li><b>Un dossier par personne</b> dans <code>ghost-new-era/</code> : Binta <code>site/app/(site)</code>, <code>site/app/portail</code>, <code>site/app/intranet/rh</code> ; Henriquet <code>supabase/</code>, <code>donnees/</code>, <code>site/app/intranet/messagerie</code>, <code>site/app/intranet/wiki</code> ; Alejandro <code>agents/</code> (un fichier par agent : <code>acces</code>, <code>equipe</code>, <code>docs</code>). On prévient le groupe avant de toucher à un fichier partagé.</li>
+<li><b>Chacun a sa branche</b> (<code>binta/new-era</code>, <code>henriquet/new-era</code>, <code>alejandro/new-era</code>) et pousse sans attendre de relecture, toutes les heures. Binta fusionne dans <code>main</code> à 06h00, 09h00 et au gel du code.</li>
+<li><b>Aucune clé ni mot de passe</b> dans un fichier, un message ou une capture. Variables d'environnement seulement.</li>
+<li><b>Comptes :</b> chacun utilise son propre accès H (code du PDF contre crédits). Un budget d'essais par personne.</li>
+<li><b>Relais :</b> celui qui livre écrit « livré : où, comment s'en servir, comment tester ». Le suivant démarre après.</li>
+<li><b>Point toutes les 2 h</b> : fait, bloqué, prochain. Blocage de plus de 30 minutes : message immédiat. Binta tranche en 10 minutes.</li>
+<li>On n'annonce comme testé que ce qui a été testé.</li>
+</ul>
+
+<h2>Le nettoyage GitHub, étape par étape (Binta)</h2>
+<div class="card warn"><b>Je ne pousse rien. Tu lances ces commandes toi-même, ou tu me dis « vas-y » pour chaque push.</b> Si GitHub refuse un push direct sur <code>main</code>, passe par une branche et une PR.</div>
+<ol>
+<li>Prévenir le groupe : « Ne poussez rien sur main jusqu'à nouvel ordre. »</li>
+<li>Se mettre à jour : <code>git checkout main</code> puis <code>git pull</code></li>
+<li>Créer l'archive : <code>git branch archive-avant-new-era</code> puis <code>git push origin archive-avant-new-era</code>. Tout l'ancien projet reste là, intact.</li>
+<li>Copier à part (hors dépôt) ce que tu veux garder : <code>binta-cpo/design</code> (charte, logo) et les fichiers de <code>binta-cpo/specs</code>.</li>
+<li>Retirer les anciens dossiers : <code>git rm -r alejandro-cto assel-ceo binta-cpo commun henriquet-cdo omar-caio vladimir-cao</code> (vérifie la liste avec <code>ls</code> d'abord ; garde <code>.github</code> si elle contient la CI).</li>
+<li>Recréer le nouveau dossier et le README : <code>ghost-new-era/README.md</code> avec le titre « GHOST New Era », ce que fait le projet, comment le tester, un lien vers l'archive. Recopier la charte et les docs dans <code>ghost-new-era/docs</code>.</li>
+<li>Commit et push : <code>git add -A</code>, <code>git commit -m "GHOST New Era : nouvelle base, ancien projet archivé"</code>, <code>git push origin main</code>.</li>
+<li>Prévenir le groupe : « main est propre. Faites git pull puis créez votre branche. » Les anciennes PR ouvertes (#62, #63, #65) sont à fermer, leur code reste dans l'archive.</li>
+</ol>
+
+<h2>Replis décidés à l'avance</h2>
+<div class="tw"><table>
+<tr><th>Si ça casse</th><th>On fait</th></tr>
+<tr><td>La vue en direct n'est pas intégrable</td><td>Lien « voir l'agent en direct » dans un nouvel onglet</td></tr>
+<tr><td>Trois sessions en parallèle refusées</td><td>Agents lancés en série, annoncé au jury</td></tr>
+<tr><td>Holo dépasse 30 s</td><td>Capture plus espacée, image plus petite</td></tr>
+<tr><td>L'appel Hugging Face échoue</td><td>Classement par <code>role_cible</code>, annoncé</td></tr>
+<tr><td>Le service Render ne se réveille pas</td><td>Vidéo du run complet (plan B)</td></tr>
+<tr><td>Tout est en retard</td><td>On coupe dans cet ordre : vocal, écran de paiement, landing soignée, Agent Docs. On garde le portail, l'Agent Accès, la vérification, la vidéo</td></tr>
+</table></div>
+<div class="card warn"><b>Risque n°1 : la surcharge de Binta.</b> Le plan donne à Binta la landing, l'inscription, le portail, l'intranet RH, l'Agent Docs et l'assemblage. C'est le maximum. Si l'intranet RH dépasse 04h45, Alejandro attend. Dès que Henriquet a fini son vocal (07h30), il peut reprendre la landing, l'inscription ou une partie du portail : dis-le-lui à ce moment-là.</div>
+</section>
+
+<!-- ================= 3. PROMPTS ================= -->
+<section class="tab" id="t-prompts">
+<h2>Les prompts</h2>
+<p>Chaque bloc se copie avec le bouton orange. À donner dans l'assistant de code de la personne, après qu'elle a lu les onglets 1 et 2. Remplace « ghost-new-era » si tu choisis un autre nom de dossier.</p>
+
+<h3>Message pour le groupe (à envoyer d'abord)</h3>
+<div class="pb"><button class="cp">Copier</button><pre>Nouvelle direction pour la démo de vendredi : GHOST New Era. Ghost fait travailler les agents H Company du début à la fin (il observe, il propose, il agit après accord). Cas : onboarding d'un salarié, 3 agents H en parallèle sur un intranet de test. Je nettoie d'abord GitHub : ne poussez rien sur main jusqu'à mon message. Ensuite, nouveau dossier ghost-new-era, nouveau Supabase (Henriquet), nouveau Vercel (moi). Lisez le dossier d'équipe (je vous l'envoie), puis répondez en une ligne : dispo jusqu'à quelle heure, et un point bloquant éventuel. Chacun travaille dans son dossier et sa branche, aucune clé dans un fichier, on se prévient ici à chaque livraison. Premier point à 03h00.</pre></div>
+
+<h3>Prompt Henriquet : données, Supabase, intranet messagerie et wiki, Holo, Hugging Face</h3>
+<div class="pb"><button class="cp">Copier</button><pre>Tu es Henriquet, CDO de l'équipe 14 au hackathon Build The Future (Eugenia x H Company). Livraison vendredi 20/11 : prototype et repo avant 11h00, deck avant 15h00. Tu travailles dans le dossier ghost-new-era du dépôt GitHub de l'équipe, sur ta branche henriquet/new-era. Jamais dans le dossier d'un autre. Je te dis ce que nous construisons, puis tes étapes dans l'ordre.
+
+PROJET
+GHOST New Era : un assistant visible qui observe l'écran d'une personne dans les outils qu'elle a autorisés, repère une tâche répétée, propose de la faire à sa place, puis des agents H Company agissent en direct dans les outils, avec vérification de chaque action. Cas de démo : onboarding dans la PME fictive Atelier Nova (50 personnes). Sophie Durand, office manager, a préparé l'arrivée de Léa (développeuse). Une notification annonce l'arrivée de Karim (commercial). Ghost propose de tout préparer comme pour Léa ; 3 agents H partent en parallèle dans un intranet de test sans API : Accès (RH, accès, badge), Équipe (messagerie : bienvenue, parrain, café), Docs (wiki : documents utiles, page Bienvenue Karim avec checklist jour 1, semaine 1, mois 1). Le jury note 30 % l'excellence technique et l'API des agents, et veut une démo live avec des résultats chiffrés. Les données sont 100 % fictives : rien du projet précédent (agence Belvédère).
+
+TES ÉTAPES, DANS L'ORDRE (les données bloquent tout le monde : va vite sur la première livraison)
+
+1. SUPABASE (01h30 à 02h00). Crée un NOUVEAU projet Supabase gratuit. Invite Binta et Alejandro comme collaborateurs. Aucune clé dans un fichier, un commit ou un message : donne l'accès par l'invitation et un canal privé pour les clés. Annonce-le dans le groupe.
+
+2. SCHÉMA ET DONNÉES MINIMALES (02h00 à 03h00). Écris ghost-new-era/supabase/schema.sql avec ces tables, ces noms et ces valeurs (les noms ne changent pas sans prévenir le groupe). Active la sécurité par ligne ; l'intranet écrit par des routes serveur avec la clé de service, jamais depuis le navigateur.
+- profils : user_id, prenom, nom, role, secteur, taille_entreprise, onboardings_par_an, recrutements_par_an, departs_par_an, outils_utilises (liste), outils_interdits (liste).
+- abonnements : user_id, plan, statut (demo), cree_le.
+- personnes : id, prenom, nom, poste, equipe, manager_id (peut être vide), date_arrivee, statut (en_poste ou arrivee_prevue).
+- arrivees : id, personne_id, statut (nouvelle, en_cours, terminee), cree_le.
+- rh_fiches : personne_id, poste, equipe, manager_id, date_arrivee, statut_fiche (vide ou creee). catalogue_acces : poste, outil, niveau. rh_acces : personne_id, outil, niveau, statut (demande ou accorde). rh_badges : personne_id, zones, statut (a_demander, demande, pret). rh_materiel : personne_id, article, statut (a_valider, valide) ; irréversible, validé seulement par un humain.
+- msg_canaux : id, nom, description (general, tech, ventes, rh, accueil, cafe). msg_messages : id, canal_id, auteur, texte, cree_le. msg_demandes : id, type (parrain ou cafe), personne_id, destinataire_id, statut (envoyee ou acceptee), creneau.
+- wiki_pages : id, titre, espace, role_cible, tags, contenu, cree_par. wiki_checklists : id, personne_id, periode (jour1, semaine1, mois1), libelle, coche.
+- sessions_audit : id, user_id, outils_autorises (liste), statut, debut, fin. consentements : session_id, outil, accorde, horodatage. vocaux : session_id, transcription, cree_le. captures_lues : id, session_id, horodatage, resume_holo, latence_ms, memoire (vrai si session précédente enregistrée avant la démo). Jamais d'image stockée.
+- taches_detectees : id, session_id, libelle, outils (liste), confiance, declencheur_arrivee_id. propositions : id, tache_id, texte, statut (proposee, acceptee, refusee).
+- agents_runs : id, proposition_id, agent (acces, equipe, docs), statut (en_cours, termine, echec, en_attente), session_h_id, vue_directe_url, debut, fin, actions_total, actions_verifiees, cout_credits. agents_evenements : id, run_id, horodatage, action, outil, statut (en_cours, ok, echec, question, attente_validation), detail. decisions_humaines : id, run_id, libelle, statut (en_attente, validee), reponse.
+Jeu de données minimal dans ghost-new-era/donnees : Sophie Durand (office manager, utilisatrice), Léa Martin (développeuse, équipe Tech, manager renseigné, arrivée terminée), Karim Benali (commercial, équipe Ventes, MANAGER VIDE volontairement, arrivée nouvelle), 10 à 12 autres personnes avec des managers et des parrains possibles par équipe ; catalogue d'accès (développeuse : dépôt de code, VPN, suivi de tickets ; commercial : CRM, devis, agenda) ; 6 canaux ; 15 pages wiki dont au moins 5 pour un commercial (playbook de vente, grille de prix fictive, charte client, process devis, guide CRM) et 5 pour un développeur. Léa : tout fait (fiche, accès, badge prêt, message de bienvenue dans le canal tech, page Bienvenue Léa avec checklist). Karim : rien de fait. Vue SQL v_onboarding(personne_id) : éléments attendus et présents dans chaque espace (fiche, accès, badge, canal, message, parrain, café, page wiki, checklist). C'est elle qui prouve qu'une action d'agent est réelle ; teste-la sur Léa (complète) et Karim (vide). Annonce dans le groupe : « Données minimales livrées : où, comment se connecter, comment tester ». Binta et Alejandro attendent ce message.
+
+3. INTRANET MESSAGERIE ET WIKI (03h00 à 05h00), dans ghost-new-era/site/app/intranet/messagerie et .../wiki. Binta crée le squelette Next.js avant. Pages simples, en français, avec des libellés clairs et stables : un agent H lit l'écran, évite menus cachés, animations, pop-ups. Messagerie : liste de canaux, poster un message, demande de parrain, proposer un créneau café. Wiki : liste de pages avec recherche par rôle, créer une page, cocher une checklist. Chaque action écrit dans Supabase par une route serveur. Bandeau visible « Environnement de test fictif ». Ne touche pas aux dossiers rh, portail et ghost (à Binta). Annonce « URL publiques des deux espaces ».
+
+4. TEST HOLO (05h00 à 05h45). Avec une capture de l'intranet, appelle le modèle de lecture d'écran de H via la Models API (variable HAI_API_KEY, jamais dans le code ; liste d'abord les modèles disponibles). Mesure la durée sur 5 captures. Écris un prompt qui renvoie UNIQUEMENT ce JSON : tache, outils (liste), confiance (0 à 1), declencheur (arrivee_karim ou null), resume. Il met arrivee_karim seulement si la capture montre la notification d'arrivée de Karim. Livre durées et prompt dans ghost-new-era/agents/holo/. Au-dessus de 30 s : réduis la taille de l'image et dis-le.
+
+5. HUGGING FACE (05h45 à 06h30) : stack obligatoire, usage réel. Active le coupon de crédits fourni par l'organisation, crée un jeton dans HF_TOKEN. Choisis dans le Hub un modèle d'embeddings multilingue disponible chez un fournisseur d'inférence (vérifie, n'invente pas d'identifiant). Appelle-le via https://router.huggingface.co/v1 pour classer les pages wiki selon un poste. Écris la fonction qui renvoie les 5 meilleures pages et donne-la à Binta (Agent Docs). Repli si l'appel échoue : role_cible, et le dire.
+
+6. VOCAL FACULTATIF (06h30 à 07h30) : la personne enregistre sa journée dans le portail ; route serveur qui envoie l'audio à un modèle de reconnaissance vocale du Hub ; le texte est stocké dans vocaux. Binta branche le bouton. Repli : une zone de texte.
+
+7. SESSIONS MÉMOIRE (07h30 à 08h15) avec Binta : enregistrer quelques minutes de VRAIES sessions (tu fais les gestes de Sophie pour Léa et d'autres arrivées) dans le portail, stockées avec memoire = vrai. C'est de la vraie observation faite avant, annoncée comme telle.
+
+8. APRÈS L'ASSEMBLAGE : (a) vérifier les 3 garanties de confidentialité avant de les annoncer : captures limitées aux fenêtres des outils cochés, pastille et pause toujours visibles, images non conservées ; sinon on les retire du pitch ; (b) chronométrer les gestes de Léa pour remplacer l'hypothèse « 2 h par arrivée » ; (c) publier le jeu de données fictives en public sur le Hub et noter l'URL.
+
+RÈGLES : dossiers à toi seulement (supabase, donnees, intranet/messagerie, intranet/wiki, agents/holo). Pousse sur ta branche toutes les heures. Aucune clé ni mot de passe dans un fichier, un commit ou un message. Bloqué plus de 30 minutes : message au groupe (ce que tu essaies, ce qui bloque, ce que tu as tenté). Tu n'annonces comme testé que ce que tu as testé. À chaque étape terminée, réponds : fait, reste, et la commande ou l'URL pour vérifier.</pre></div>
+
+<h3>Prompt Alejandro : agents H, orchestration</h3>
+<div class="pb"><button class="cp">Copier</button><pre>Tu es Alejandro, CTO de l'équipe 14 au hackathon Build The Future (Eugenia x H Company). Livraison vendredi 20/11 : prototype et repo avant 11h00, deck avant 15h00. Tu travailles dans ghost-new-era/agents sur ta branche alejandro/new-era. Fais d'abord git pull : le service HTTP de l'agent H (déployable sur Render Free) est déjà fusionné ; il sera dans l'archive de l'ancien projet (branche archive-avant-new-era) si main a été nettoyé. Récupère-en la structure, pas le contenu (pas de mandats Belvédère).
+
+PROJET
+GHOST New Era : un assistant visible qui observe l'écran, repère une tâche répétée, propose de la faire, puis des agents H agissent EN DIRECT dans les outils, avec vérification de chaque action. Cas de démo : onboarding dans la PME fictive Atelier Nova. Sophie a préparé l'arrivée de Léa (développeuse). La notification de l'arrivée de Karim (commercial) déclenche la proposition. Après accord de Sophie, 3 agents H partent EN PARALLÈLE sur l'intranet de test sans API (3 espaces) : Accès (RH : fiche, accès adaptés au poste, badge), Équipe (messagerie : bienvenue dans le bon canal, demande de parrain au manager, créneau café), Docs (wiki : documents utiles, page Bienvenue Karim avec checklist jour 1, semaine 1, mois 1). Le jury note 30 % l'excellence technique et l'API des agents : l'effet voulu est « waouh, ils font vraiment le travail et c'est fiable ». Tu es sur le chemin critique de la démo.
+
+TES ÉTAPES
+
+1. TESTS DE RISQUE (01h30 à 02h30), à annoncer dans le groupe avec des chiffres, sur une page publique simple, sans attendre personne :
+ a. Une session H avec vue en direct : note l'agent_view_url ; dis si elle s'ouvre dans un iframe de notre site ou seulement dans un onglet.
+ b. TROIS sessions en parallèle : limites de concurrence, crédits restants, erreurs. Note la limite précisément.
+ c. Quel agent : le code existant utilisait h/web-surfer-pro (web-surfer-flash reformulait les valeurs). Vérifie avec la liste des agents.
+ d. Lis la doc officielle (hub.hcompany.ai) : sessions, flux d'événements en long-poll (changes), délai d'inactivité (idle_timeout_s), états terminaux, et surtout comment ENVOYER UN MESSAGE à une session en cours. Cela conditionne la question de l'agent (manager manquant) et la validation avant l'irréversible. Teste-le.
+ Ta clé est dans HAI_API_KEY (environnement), jamais dans un fichier ni un message.
+
+2. SQUELETTE D'ORCHESTRATION (02h30 à 04h30), avant que l'intranet existe : un service (structure du service de la PR #66, Render Free, réveil environ 1 min) avec : lancer(proposition_id) qui démarre les 3 sessions ; écriture de chaque événement dans agents_evenements (action, outil, statut parmi en_cours, ok, echec, question, attente_validation, detail) ; renseigner agents_runs (session_h_id, vue_directe_url, debut, fin, actions_total, actions_verifiees, cout_credits) ; repondre(run_id, texte) ; valider(run_id). Teste avec une page publique et de faux agents. Donne à Binta le format exact des événements. Si le parallèle est refusé au test 1b : agents en série, et dis-le.
+
+3. AGENT ACCÈS, LE MODÈLE (dès que Binta annonce l'URL de l'espace RH, vers 04h45). Consigne type (adapte-la, fais-la lire à l'agent, ne code pas des clics) : « Tu es l'assistant RH d'Atelier Nova. Ouvre l'espace RH à cette adresse. Crée la fiche de la personne indiquée (poste, équipe, manager, date d'arrivée). Demande les accès correspondant à son poste en lisant le catalogue : un commercial n'a pas les mêmes accès qu'une développeuse. Demande le badge avec les zones du poste. Si le manager n'est pas renseigné, ARRÊTE-TOI et pose la question, n'invente rien. N'achète pas le matériel : mets-le en attente de validation humaine. Ne sors jamais de l'espace RH. » Limites d'étapes et de temps par agent. Chaque action est vérifiée en relisant Supabase (vue v_onboarding) ; une action non vérifiée n'est jamais comptée comme un succès. Si H ne répond pas : jamais de succès simulé. Relance une fois en cas d'erreur, puis affiche l'échec honnêtement. Annonce à Binta et Henriquet : « Agent Accès prêt ».
+
+4. AGENT ÉQUIPE (dès que Henriquet annonce messagerie et wiki), même structure. Consigne : « Ouvre la messagerie. Poste un message de bienvenue dans le canal adapté au poste (ventes pour un commercial). Demande un parrain au manager de la personne ; si le manager est vide, arrête-toi et pose la question. Propose un créneau café dans le canal accueil. Ne sors pas de la messagerie. » Vérification en base.
+
+5. AGENT DOCS : écrit par Binta si tu n'as pas le temps ; sinon même structure : il reçoit la liste des 5 pages les mieux classées (fonction de Henriquet, modèle Hugging Face), les ouvre, puis crée la page « Bienvenue Prénom » avec les liens et la checklist jour 1, semaine 1, mois 1.
+
+6. ORCHESTRATION FINALE (07h15 à 08h00) : branche les 3 agents ; relais des questions et des validations ; mesure la durée de chaque agent et la durée totale en parallèle, le nombre d'actions, le taux de réussite, le coût en crédits H ; écris tout dans agents_runs. Vue en direct pour chaque run.
+
+7. ASSEMBLAGE AVEC BINTA (08h00) : branche l'interface du portail sur ton service (proposition acceptée, lancer, flux d'événements, vues en direct, question, validation).
+
+8. NOTE TES RETOURS SUR L'API DE H pendant la nuit : ce qui a marché, ce qui a cassé, ce qui t'a surpris. Le hackathon les compte dans le livrable.
+
+RÈGLES : dossier agents seulement (un fichier par agent : acces, equipe, docs). Pousse sur ta branche toutes les heures. Aucune dépense nouvelle, aucune clé dans un fichier, un commit ou un message. Données 100 % fictives. Les agents n'agissent que dans les espaces de l'intranet de test autorisés par la session. Bloqué plus de 30 minutes : message au groupe. Tu n'annonces comme testé que ce que tu as testé. À chaque étape terminée, réponds : fait, reste, et la commande ou l'URL pour vérifier.</pre></div>
+
+<h3>Prompt Binta : site GHOST, portail, intranet RH, assemblage</h3>
+<div class="pb"><button class="cp">Copier</button><pre>Tu es mon assistant de code. Je suis Binta, CEO de l'équipe 14 au hackathon Build The Future (Eugenia x H Company). Nous livrons vendredi 20/11 : prototype et repo avant 11h00, deck avant 15h00. Je travaille dans le dossier ghost-new-era/site du dépôt, sur ma branche binta/new-era. Je ne suis pas experte de GitHub : explique-moi chaque commande avant de la lancer, et ne pousse jamais sans mon accord. Aucune clé dans un fichier ou dans le chat : variables d'environnement seulement.
+
+PROJET : GHOST New Era. Un assistant visible qui observe l'écran dans les outils autorisés, repère une tâche répétée, propose de la faire, puis des agents H Company agissent en direct avec vérification. Cas : onboarding dans la PME fictive Atelier Nova ; Sophie (office manager) prépare l'arrivée de Léa, puis Ghost propose de préparer celle de Karim ; 3 agents H en parallèle (Accès, Équipe, Docs). Stack : Next.js sur Vercel, Supabase (nouveau projet d'Henriquet, auth et base), Holo et agents H de H Company, Hugging Face (Henriquet). Charte : vert forêt, blanc cassé, orange rare (un seul bouton orange par écran), logo Ghost (fichier logo-ghost.svg de l'ancien dépôt, bleu nuit réservé au logo), pas de violet.
+
+CE QUE TU CONSTRUIS, DANS L'ORDRE
+1. Squelette Next.js, déploiement Vercel, charte, Supabase Auth.
+2. Landing page (génère-la avec v0 ou à la main) : cible RH et office managers sur l'onboarding ; message en une phrase, comment ça marche en trois temps (il observe, il propose, il agit après ton accord), confiance (ce que Ghost voit et ne voit jamais), bouton « Commencer ».
+3. Inscription : nom, prénom, e-mail, mot de passe (Supabase Auth). Paiement : écran de façade en MODE DÉMO clairement étiqueté, qui crée une ligne dans abonnements. Jamais de coordonnées bancaires. Je crée aussi le compte de démo de Sophie (identifiants communiqués en privé à l'équipe, jamais dans un fichier).
+4. Questionnaire, dans notre site (pas de formulaire externe) : rôle, secteur, taille de l'entreprise, onboardings par an, recrutements par an, départs par an, outils utilisés (messagerie, RH, wiki), outils que Ghost n'a pas le droit d'utiliser. Enregistré dans profils.
+5. Intranet RH d'Atelier Nova (dossier intranet/rh), PUBLIC, sans connexion : liste des personnes, fiche, accès, badge, matériel, notification d'arrivée (Karim). Libellés clairs et stables, pas de menu caché, pas d'animation ni de pop-up : un agent H lit l'écran. Bandeau « Environnement de test fictif ». Chaque action écrit dans Supabase par une route serveur (clé de service côté serveur seulement). Dès que l'URL est en ligne, je préviens Alejandro et Henriquet.
+6. Portail Ghost (dossier portail), à développer d'abord avec de faux événements au format du contrat : « Hello Sophie, prête à démarrer ? » ; accord outil par outil (RH, messagerie, wiki), enregistré dans consentements ; bouton vocal facultatif ; partage d'écran du navigateur (getDisplayMedia, onglet courant, Chrome) avec la page Ghost qui contient l'intranet dans un iframe à gauche et le panneau Ghost à droite ; PASTILLE avec le logo Ghost en bas de l'écran (« Hello, je suis là et je te regarde travailler »), bouton pause, état visible quand Ghost n'observe pas ; envoi d'une capture toutes les 3 à 5 secondes à une route serveur qui appelle Holo (jamais de clé dans le navigateur, aucune image stockée, on garde seulement le résumé) ; fenêtre de proposition « Je prépare l'onboarding de Karim comme pour Léa ? » avec oui et non ; tableau de suivi qui se coche à partir de agents_evenements, avec « vérifié dans l'outil » ; trois zones de vue en direct ; question de l'agent (manager manquant) avec champ de réponse ; bouton de validation pour la commande de l'ordinateur ; rapport final avec les chiffres.
+7. Agent Docs (dans agents/docs, un fichier à moi) quand Alejandro aura livré le modèle de l'Agent Accès et Henriquet la fonction de classement Hugging Face.
+8. Assemblage avec Alejandro vers 08h00, puis run filmé (plan B et vidéo de 5 minutes), fiche projet, README, repo avant 11h00 (problème, solution, stack, architecture, lien du prototype, comment le tester), deck avant 15h00 (problème, solution, démo, business model, go-to-market, architecture, limites et roadmap, coût de run).
+
+RÈGLES : mes dossiers seulement (site/app/(site), site/app/portail, site/app/intranet/rh, agents/docs). Avant de modifier un fichier partagé (package.json, layout racine), je préviens le groupe. Je vérifie moi-même dans Supabase que le site écrit bien les données. Tu n'annonces comme testé que ce que tu as testé. Si tu es bloqué plus de 30 minutes, dis-moi ce que tu as essayé et ce que tu proposes. Priorités si je suis en retard, dans cet ordre de sacrifice : vocal, écran de paiement, finition de la landing, Agent Docs. Je garde : portail, intranet RH, accord, pastille, vérification, vidéo. À chaque étape terminée, dis-moi : ce qui est fait, ce qui reste, comment le vérifier, et qui je dois prévenir.</pre></div>
+</section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+(function(){
+var tabs=["projet","plan","prompts"];
+function show(){
+  var h=(location.hash||"#projet").slice(1); if(tabs.indexOf(h)<0)h="projet";
+  tabs.forEach(function(t){document.getElementById("t-"+t).classList.toggle("on",t===h)});
+  var a=document.querySelectorAll("#nav a");
+  for(var i=0;i<a.length;i++)a[i].classList.toggle("on",a[i].getAttribute("href")==="#"+h);
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",show);show();
+document.querySelectorAll("button.cp").forEach(function(b){
+  b.addEventListener("click",function(){
+    var pre=b.parentNode.querySelector("pre");
+    var done=function(){b.textContent="Copié";setTimeout(function(){b.textContent="Copier"},1500)};
+    try{navigator.clipboard.writeText(pre.textContent).then(done,function(){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Sélectionné"})}
+    catch(e){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Sélectionné"}
+  });
+});
+})();
+</script>
