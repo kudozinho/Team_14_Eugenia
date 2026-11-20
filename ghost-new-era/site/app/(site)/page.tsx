@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Plans from "@/components/Plans";
+import Fantome from "@/components/portail/Fantome";
+import { agentInfo } from "@/lib/agents";
 
 const temps = [
   { n: "1", titre: "Il observe", texte: "Ghost regarde ton écran, uniquement dans les outils que tu as cochés. Une pastille reste affichée et tu peux le mettre en pause à tout moment." },
@@ -17,17 +19,36 @@ const faq = [
 export default function Accueil() {
   return (
     <>
-      <section className="wrap" style={{ padding: "56px 40px 40px", display: "grid", gap: 24, maxWidth: 980, margin: 0 }}>
-        <span className="eyebrow">Pour les RH et les office managers</span>
-        <h1>L'arrivée d'un nouveau salarié ne devrait plus te prendre des heures.</h1>
-        <p style={{ fontSize: "1.15rem", maxWidth: 680 }}>
-          Ghost regarde ton travail, repère ce que tu répètes et s'en occupe quand tu l'autorises. Accès, badge, message
-          d'accueil, page de bienvenue : rien n'est oublié.
-        </p>
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-          <Link href="/inscription" className="btn btn-primary">Commencer</Link>
-          <Link href="/connexion" className="btn btn-secondary">Se connecter</Link>
+      <section className="wrap" style={{ padding: "24px 40px 8px" }}>
+        <div className="cockpit hero-sombre">
+          <div className="hero-texte">
+            <span className="etiquette">Pour les RH et les office managers</span>
+            <h1>L&apos;arrivée d&apos;un nouveau salarié ne devrait plus te prendre des heures.</h1>
+            <p>Ghost regarde ton travail, repère l&apos;arrivée à préparer et s&apos;en occupe quand tu l&apos;autorises. Accès, badge, message d&apos;accueil, page de bienvenue : trois agents IA agissent sous tes yeux, et chaque action est vérifiée dans l&apos;outil.</p>
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+              <Link href="/inscription" className="btn btn-primary">Commencer</Link>
+              <Link href="/connexion" className="btn btn-secondary">Se connecter</Link>
+            </div>
+          </div>
+          <div className="hero-agents" aria-label="Les trois agents de Ghost">
+            {[{ k: "acces", t: "Fiche, accès, badge" }, { k: "equipe", t: "Messagerie, parrain, café" }, { k: "docs", t: "Wiki, checklist" }].map((x) => {
+              const a = agentInfo(x.k);
+              return (
+                <div key={x.k} className="hero-agent" style={{ ["--c" as string]: a.couleur }}>
+                  <Fantome couleur={a.couleur} taille={64} actif />
+                  <b>{a.prenom}</b>
+                  <small>{x.t}</small>
+                </div>
+              );
+            })}
+          </div>
         </div>
+        <ul className="faits" aria-label="Chiffres mesurés">
+          <li><b>9</b> éléments vérifiés dans les outils</li>
+          <li><b>≈ 3 min</b> pour une arrivée complète (8 essais en conditions réelles)</li>
+          <li><b>0</b> image conservée : seul un résumé en texte l&apos;est</li>
+          <li><b>1</b> validation humaine avant toute action irréversible</li>
+        </ul>
       </section>
 
       <section id="probleme" className="wrap" style={{ padding: "24px 40px" }}>
