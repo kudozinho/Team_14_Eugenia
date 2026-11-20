@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Logo from "@/components/Logo";
 import Pastille from "@/components/portail/Pastille";
 import VueAgent from "@/components/portail/VueAgent";
 import Rapport, { type DonneesRapport } from "@/components/portail/Rapport";
 import { getSupabase } from "@/lib/supabase";
+import { ecouter, microDispo, parler, taire, voixDispo } from "@/lib/voix";
 
 // L'intranet d'Atelier Nova est un autre site, déployé à part.
 const INTRANET = process.env.NEXT_PUBLIC_INTRANET_URL ?? "https://atelier-nova-intranet.vercel.app";
@@ -47,6 +49,15 @@ export default function Portail() {
   const [vus, setVus] = useState<{ t: string; resume: string }[]>([]);
   const [rafraichir, setRafraichir] = useState(0);
   const vueAgentsAuto = useRef(false);
+  const [voix, setVoix] = useState(true);
+  const [ecoute, setEcoute] = useState(false);
+  const [interim, setInterim] = useState("");
+  const [transcript, setTranscript] = useState<{ t: string; texte: string }[]>([]);
+  const [erreurVoix, setErreurVoix] = useState("");
+  const parle = useRef(false);
+  const stopEcoute = useRef<null | (() => void)>(null);
+  const dits = useRef<Set<string>>(new Set());
+  const etatRef = useRef<{ proposition: string; suivi: Suivi | null; sessionId: string }>({ proposition: "aucune", suivi: null, sessionId: "" });
   const flux = useRef<MediaStream | null>(null);
   const enCours = useRef(false);
 
@@ -195,6 +206,61 @@ export default function Portail() {
     if (suivi?.runs.length && !vueAgentsAuto.current) { vueAgentsAuto.current = true; setOngletActif("__agents"); }
   }, [suivi]);
 
+  etatRef.current = { proposition, suivi, sessionId };
+
+  // Ghost parle : chaque phrase n'est dite qu'une fois, et seulement si la voix est activée.
+  function dire(cle: string, texte: string) {
+    if (!voix || dits.current.has(cle)) return;
+    dits.current.add(cle);
+    parler(texte, { debut: () => { parle.current = true; }, fin: () => { parle.current = false; } });
+  }
+
+  useEffect(() => {
+    if (etape === "observation") dire("accueil", `Hello ${prenom || ""}, je suis là et je te regarde travailler. Partage ton onglet, et laisse l'espace RH visible.`);
+    if (proposition === "affichee") dire("proposition", "J'ai vu l'arrivée de Karim. Je prépare son onboarding comme celui de Léa ? Dis oui, ou clique sur le bouton.");
+    if (suivi?.runs.length) dire("agents", "Les trois agents sont au travail. Regarde leurs écrans : tu vois où ils cliquent.");
+    suivi?.decisions.filter((d) => d.statut === "en_attente").forEach((d) =>
+      d.libelle.startsWith("Valider la commande")
+        ? dire("valid", "Il faut ta validation pour la commande de l'ordinateur. Dis valide, ou clique sur le bouton.")
+        : dire(`q-${d.id}`, `L'agent a une question. ${d.libelle}`));
+    if (suivi && suivi.runs.length >= 3 && suivi.runs.every((r) => r.statut !== "en_cours") && suivi.rapport?.preuve && Object.values(suivi.rapport.preuve).every(Boolean))
+      dire("rapport", "Karim est prêt pour son jour 1. Chaque élément a été vérifié dans les outils.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [etape, proposition, suivi, voix]);
+
+  // Ce que dit la personne : transcrit, enregistré, et compris comme commande (oui, non, valide).
+  async function enregistrerDit(texte: string) {
+    const heure = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    setTranscript((x) => [...x.slice(-9), { t: heure, texte }]);
+    const { data } = await getSupabase().auth.getSession();
+    fetch("/api/vocal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token}` },
+      body: JSON.stringify({ session_id: etatRef.current.sessionId, texte }),
+    }).catch(() => {});
+    const m = texte.toLowerCase();
+    const { proposition: prop, suivi: sv } = etatRef.current;
+    if (prop === "affichee" && /\b(oui|vas-y|vas y|d'accord|ok|go|allez)\b/.test(m)) repondre("acceptee");
+    else if (prop === "affichee" && /\b(non|annule|stop)\b/.test(m)) repondre("refusee");
+    else if (/\bvalide\b/.test(m)) {
+      const d = sv?.decisions.find((x) => x.statut === "en_attente" && x.libelle.startsWith("Valider la commande"));
+      if (d) decider(d.id);
+    }
+  }
+
+  function basculerMicro() {
+    setErreurVoix("");
+    if (ecoute) { stopEcoute.current?.(); stopEcoute.current = null; setEcoute(false); setInterim(""); return; }
+    taire();
+    stopEcoute.current = ecouter({
+      interim: (t) => { if (!parle.current) setInterim(t); },
+      final: (t) => { if (!parle.current && t) { setInterim(""); enregistrerDit(t); } },
+      fin: () => { setEcoute(false); setInterim(""); },
+      erreur: (m) => { setErreurVoix(m); setEcoute(false); },
+    });
+    setEcoute(true);
+  }
+
   async function secours() {
     setErreur("");
     const { data } = await getSupabase().auth.getSession();
@@ -245,32 +311,42 @@ export default function Portail() {
 
   if (etape === "accord") {
     return (
-      <main className="wrap" style={{ padding: "40px", maxWidth: 720, margin: 0 }}>
-        <span className="eyebrow">Portail Ghost</span>
-        <h1 style={{ margin: "12px 0 8px" }}>Hello {prenom || "toi"}, prête à démarrer ?</h1>
-        <p style={{ marginBottom: 20 }}>Dis-moi dans quels outils j'ai le droit de regarder et d'agir. Je n'utiliserai que ceux que tu coches.</p>
-        <fieldset className="card" style={{ border: "1px solid var(--line)", display: "grid", gap: 12 }}>
-          <legend style={{ fontWeight: 700, padding: "0 6px" }}>Tu m'autorises à utiliser…</legend>
-          {TOUS.map((o) => {
-            const nonAutorise = refuse(o);
-            return (
-              <label key={o.id} style={{ display: "flex", gap: 10, alignItems: "center", opacity: nonAutorise ? 0.6 : 1 }}>
-                <input
-                  type="checkbox"
-                  disabled={nonAutorise}
-                  checked={coches.includes(o.id)}
-                  onChange={(e) => setCoches((c) => (e.target.checked ? [...c, o.id] : c.filter((x) => x !== o.id)))}
-                />
-                <span>{o.nom}{nonAutorise ? " (tu as interdit cet outil dans le questionnaire)" : ""}</span>
-              </label>
-            );
-          })}
-        </fieldset>
-        {erreur && <p role="alert" style={{ color: "var(--o-700)", margin: "12px 0" }}>{erreur}</p>}
-        <p style={{ marginTop: 20 }}>
-          <button className="btn btn-primary" disabled={coches.length === 0} onClick={commencer}>Commencer l'observation</button>
-        </p>
-        <p style={{ marginTop: 20 }}><button className="btn btn-secondary" onClick={deconnecter}>Se déconnecter</button></p>
+      <main className="cockpit accueil-portail">
+        <div className="accueil-carte">
+          <div className="halo" aria-hidden="true"><Logo taille={52} /></div>
+          <span className="etiquette">Portail Ghost</span>
+          <h1>Hello {prenom || "toi"}, prête à démarrer ?</h1>
+          <p>Ghost observe ton écran dans les outils que tu autorises, repère l&apos;arrivée d&apos;un nouveau salarié et te propose de s&apos;en occuper. Tu décides à chaque étape.</p>
+          <ol className="consignes" aria-label="Comment ça va se passer">
+            <li><b>Tu autorises</b> les outils que Ghost peut regarder, un par un.</li>
+            <li><b>Tu partages ton onglet</b> : Ghost lit ton écran, une pastille reste visible et tu peux le mettre en pause.</li>
+            <li><b>Il te propose</b> de préparer l&apos;arrivée de Karim. Tu dis oui (au clic ou à voix haute).</li>
+            <li><b>Trois agents H agissent</b> sous tes yeux : tu vois leurs écrans et où ils cliquent. Chaque action est vérifiée.</li>
+          </ol>
+          <fieldset className="choix-outils">
+            <legend>Tu m&apos;autorises à utiliser…</legend>
+            {TOUS.map((o) => {
+              const nonAutorise = refuse(o);
+              return (
+                <label key={o.id} style={{ opacity: nonAutorise ? 0.6 : 1 }}>
+                  <input
+                    type="checkbox"
+                    disabled={nonAutorise}
+                    checked={coches.includes(o.id)}
+                    onChange={(e) => setCoches((c) => (e.target.checked ? [...c, o.id] : c.filter((x) => x !== o.id)))}
+                  />
+                  <span>{o.nom}{nonAutorise ? " (tu as interdit cet outil dans le questionnaire)" : ""}</span>
+                </label>
+              );
+            })}
+          </fieldset>
+          {erreur && <p role="alert" className="erreur">{erreur}</p>}
+          <div className="rang">
+            <button className="btn btn-primary" disabled={coches.length === 0} onClick={commencer}>Commencer l&apos;observation</button>
+            <button className="btn btn-secondary" onClick={deconnecter}>Se déconnecter</button>
+          </div>
+          <p className="petit">Ghost a une voix (Chrome) : elle est activée au démarrage, et tu peux la couper à tout moment.</p>
+        </div>
       </main>
     );
   }
@@ -280,10 +356,14 @@ export default function Portail() {
   const rapportPret = !!suivi && suivi.runs.length >= 3 && suivi.runs.every((r) => r.statut !== "en_cours") && rapportOuvert;
   const phase = proposition === "acceptee" ? (rapportPret ? 5 : 4) : proposition === "affichee" ? 3 : 2;
   const ETAPES = ["Accord", "Il observe", "Il propose", "Ils agissent", "Preuve"];
+  const consigne = phase === 5 ? "Karim est prêt. Regarde le rapport : chaque ligne est prouvée dans l'outil. Valide la commande si elle est en attente."
+    : phase === 4 ? "Les trois agents travaillent en parallèle. Regarde leurs écrans : le point rouge montre où ils cliquent. S'ils te posent une question, réponds."
+    : phase === 3 ? "Ghost te propose de s'en occuper. Dis « oui » à voix haute, ou clique sur « Oui, vas-y »."
+    : "Clique sur « Partager mon onglet » (Onglet Chrome, cet onglet) et laisse l'accueil RH visible : Ghost attend l'arrivée de Karim. Pas de partage possible ? Utilise le bouton de secours.";
   const nomAgent = (a: string) => (a === "acces" ? "Accès" : a === "equipe" ? "Équipe" : "Docs");
 
   return (
-    <main className="portail">
+    <main className="portail cockpit">
       <header className="portail-haut">
         <span className="portail-marque"><span aria-hidden>👻</span> Ghost</span>
         <ol className="etapes" aria-label="Avancement">
@@ -295,6 +375,7 @@ export default function Portail() {
       </header>
 
       <section aria-label="Poste de travail" className="poste">
+        <p className="consigne" role="note"><b>Maintenant :</b> {consigne}</p>
         <nav className="onglets">
           {outilsAutorises.map((o) => (
             <button key={o.id} className={o.id === courant?.id ? "actif" : ""} onClick={() => setOngletActif(o.id)}>{o.nom}</button>
@@ -324,6 +405,23 @@ export default function Portail() {
           )}
           {lecture && <p className="petit">Lecture par Holo en {(lecture.latence_ms / 1000).toFixed(1)} s. Les images ne sont jamais conservées, seul ce texte l'est.</p>}
           {!partage && <p className="petit">Pas de partage possible ? Le bouton de secours ci-dessous déclenche la vraie proposition ; le rapport final l'indiquera.</p>}
+        </div>
+
+        <div className="bloc voix">
+          <h2>Voix de Ghost</h2>
+          {!voixDispo() && !microDispo() && <p className="petit">La voix n'est pas disponible dans ce navigateur : utilise Chrome.</p>}
+          <div className="rang">
+            <button className="btn btn-secondary" onClick={() => { if (voix) taire(); setVoix(!voix); }}>{voix ? "Ghost parle : activé" : "Ghost parle : coupé"}</button>
+            {microDispo() && <button className={`btn ${ecoute ? "btn-primary" : "btn-secondary"}`} onClick={basculerMicro}>{ecoute ? "● J'écoute… (cliquer pour arrêter)" : "Parler à Ghost"}</button>}
+          </div>
+          {interim && <p className="petit"><i>{interim}…</i></p>}
+          {erreurVoix && <p role="alert" className="erreur">{erreurVoix}</p>}
+          {transcript.length > 0 && (
+            <ul className="fil" aria-label="Ce que tu as dit">
+              {transcript.map((x, i) => <li key={`${x.t}-${i}`}><time>{x.t}</time> {x.texte}</li>)}
+            </ul>
+          )}
+          <p className="petit">Dis « oui » à la proposition, ou « valide » pour la commande. Le texte de ce que tu dis est gardé ; aucun son ne l&apos;est.</p>
         </div>
 
         {proposition === "aucune" && (
