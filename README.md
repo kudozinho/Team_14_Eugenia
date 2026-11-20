@@ -30,7 +30,7 @@ Un tableau se coche en direct, et chaque action est vérifiée dans l'outil.
 
 ## Équipe
 
-Binta Kande (CEO), Henriquet Makiadi (données), Alejandro Mendoza (agents H).
+Binta Kande (CEO), Henriquet Makiadi (données), Alejandro Mendoza (agents H), avec Assel Alla, Omar Medkouri et Vladimir Pilioua, qui ont contribué à la première version du projet (voir la branche `archive-avant-new-era`).
 
 ## Ancien projet
 
