@@ -1,0 +1,28 @@
+/* Styles de l'intranet de test : sobres, sans animation ni élément caché, pour qu'un agent lise l'écran sans piège. */
+.page { max-width: 1180px; margin: 0 auto; padding: 24px 32px 64px; }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 32px; border-bottom: 1px solid var(--line); background: var(--card); }
+.nav strong { margin-right: 16px; font-family: var(--font-titres); }
+.navLien { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line-2); color: var(--ink); }
+.navActif { background: var(--g-900); color: #fff; border-color: var(--g-900); }
+.grille { display: grid; grid-template-columns: 260px 1fr; gap: 24px; margin-top: 24px; }
+@media (max-width: 860px) { .grille { grid-template-columns: 1fr; } }
+.bloc { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+.bloc h2 { font-size: 1.25rem; margin-bottom: 12px; }
+.liste { list-style: none; margin: 0; padding: 0; }
+.liste li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.liste li:last-child { border-bottom: 0; }
+.canal { display: block; padding: 8px 10px; border-radius: 8px; color: var(--ink); }
+.canalActif { background: var(--g-50); font-weight: 700; }
+.meta { color: var(--mute); font-size: 0.85rem; }
+.formulaire { display: grid; gap: 12px; }
+.formulaire label { display: grid; gap: 4px; font-weight: 600; font-size: 0.95rem; }
+.formulaire input, .formulaire select, .formulaire textarea { font: inherit; padding: 10px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: #fff; color: var(--ink); }
+.formulaire textarea { min-height: 110px; }
+.bouton { justify-self: start; font: inherit; font-weight: 700; padding: 10px 18px; border-radius: 10px; border: 0; background: var(--g-900); color: #fff; cursor: pointer; }
+.boutonSecondaire { font: inherit; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line-2); background: #fff; color: var(--ink); cursor: pointer; }
+.succes { background: var(--g-50); border: 1px solid var(--g-300); color: var(--g-900); padding: 12px 16px; border-radius: 10px; margin-top: 16px; font-weight: 600; }
+.erreur { background: var(--o-50); border: 1px solid var(--o-400); color: var(--o-700); padding: 12px 16px; border-radius: 10px; margin-top: 16px; font-weight: 600; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; background: var(--g-100); color: var(--g-900); }
+.tableau { width: 100%; border-collapse: collapse; }
+.tableau th, .tableau td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.contenu { white-space: pre-wrap; line-height: 1.6; }
