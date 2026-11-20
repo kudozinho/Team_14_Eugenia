@@ -3,7 +3,7 @@ export type DonneesRapport = {
   runs: { agent: string; statut: string; debut: string; fin: string | null; actions_verifiees: number; actions_total: number; cout_credits: number | null }[];
   evenements: { outil: string | null; statut: string }[];
   decisions: { libelle: string; statut: string }[];
-  rapport: { personne: { prenom: string; nom: string; poste: string } | null; preuve: Record<string, boolean>; onboardings_par_an: number | null; materiel: { article: string; statut: string }[] } | null;
+  rapport: { personne: { prenom: string; nom: string; poste: string } | null; preuve: Record<string, boolean>; onboardings_par_an: number | null; materiel: { article: string; statut: string }[]; secours?: boolean } | null;
 };
 
 const ELEMENTS: [string, string, string][] = [
@@ -78,6 +78,7 @@ export default function Rapport({ d, onFermer }: { d: DonneesRapport; onFermer: 
         <ul style={{ margin: "8px 0 0", paddingLeft: 20, display: "grid", gap: 6, color: "var(--ink-2)" }}>
           <li><b>Coût en crédits H</b> : non mesuré pour ce run.</li>
           <li><b>Gain de temps</b> : l&apos;hypothèse de l&apos;équipe est d&apos;environ {HEURES_REFERENCE} h par arrivée à la main, <b>non chronométrée</b>. {heuresAn ? `Avec tes ${r?.onboardings_par_an} onboardings par an, cela ferait environ ${heuresAn} h par an : une estimation, pas une mesure.` : ""}</li>
+          {r?.secours && <li><b>Détection</b> : cette proposition a été déclenchée par le bouton de secours, pas par la lecture de l&apos;écran par Holo. Les agents et les vérifications, eux, sont réels.</li>}
           <li><b>Taux de réussite</b> : ce rapport décrit un seul run, il ne permet pas d&apos;en tirer un taux.</li>
         </ul>
       </section>

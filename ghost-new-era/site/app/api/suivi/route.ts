@@ -23,7 +23,7 @@ export async function GET(req: Request) {
 
   // Données du rapport final : preuve dans la base, profil de la personne, état du matériel.
   const { data: prop } = await admin.from("propositions").select("tache_id").eq("id", proposition).maybeSingle();
-  const { data: tache } = await admin.from("taches_detectees").select("declencheur_arrivee_id").eq("id", prop?.tache_id ?? "").maybeSingle();
+  const { data: tache } = await admin.from("taches_detectees").select("declencheur_arrivee_id,libelle").eq("id", prop?.tache_id ?? "").maybeSingle();
   const { data: arrivee } = await admin.from("arrivees").select("personne_id").eq("id", tache?.declencheur_arrivee_id ?? "").maybeSingle();
   let rapport = null;
   if (arrivee) {
@@ -38,6 +38,7 @@ export async function GET(req: Request) {
       preuve: Object.fromEntries((lignes ?? []).map((l) => [l.element, l.present])),
       onboardings_par_an: profil?.onboardings_par_an ?? null,
       materiel: materiel ?? [],
+      secours: String(tache?.libelle ?? "").startsWith("[secours]"),
     };
   }
   return NextResponse.json({ runs: runs ?? [], evenements: evenements ?? [], decisions: decisions ?? [], rapport });

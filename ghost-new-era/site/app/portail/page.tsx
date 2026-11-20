@@ -43,6 +43,8 @@ export default function Portail() {
   const [suivi, setSuivi] = useState<Suivi | null>(null);
   const [rapportOuvert, setRapportOuvert] = useState(true);
   const [saisies, setSaisies] = useState<Record<string, string>>({});
+  const [vus, setVus] = useState<{ t: string; resume: string }[]>([]);
+  const [rafraichir, setRafraichir] = useState(0);
   const flux = useRef<MediaStream | null>(null);
   const enCours = useRef(false);
 
@@ -134,6 +136,7 @@ export default function Portail() {
         setErreur("");
         setEtatCapture("Dernière image lue par Holo.");
         setLecture({ resume: j.resume, latence_ms: j.latence_ms });
+        setVus((v) => (v[0]?.resume === j.resume ? v : [{ t: new Date().toLocaleTimeString("fr-FR"), resume: j.resume }, ...v].slice(0, 6)));
         if (j.proposition) { setPropositionId(j.proposition.id); setProposition("affichee"); }
       } catch (e) {
         setEtatCapture(`Envoi impossible : ${e instanceof Error ? e.message : "erreur réseau"}`);
@@ -160,6 +163,21 @@ export default function Portail() {
     return () => { actif = false; clearInterval(m); };
   }, [proposition, propositionId]);
 
+  // Pendant que les agents travaillent, l'intranet affiché se recharge pour montrer les changements en direct
+  // et l'onglet suit l'outil que l'agent utilise (la vue de la plateforme H ne peut pas être intégrée : elle l'interdit).
+  const agentsAuTravail = proposition === "acceptee" && !!suivi && suivi.runs.some((r) => r.statut === "en_cours");
+  useEffect(() => {
+    if (!agentsAuTravail) return;
+    const m = setInterval(() => setRafraichir((n) => n + 1), 5000);
+    return () => clearInterval(m);
+  }, [agentsAuTravail]);
+  const dernierOutil = suivi?.evenements.length ? suivi.evenements[suivi.evenements.length - 1].outil : null;
+  useEffect(() => {
+    if (!agentsAuTravail || !dernierOutil) return;
+    const id = dernierOutil.includes("RH") ? "rh" : dernierOutil.includes("Messagerie") ? "messagerie" : dernierOutil.includes("Wiki") ? "wiki" : null;
+    if (id && actifs.includes(id)) setOngletActif(id);
+  }, [agentsAuTravail, dernierOutil, actifs]);
+
   // Garde le service des agents (hébergé, offre gratuite) éveillé pendant que la session est ouverte.
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_ORCH_URL;
@@ -169,6 +187,26 @@ export default function Portail() {
     const m = setInterval(ping, 4 * 60 * 1000);
     return () => clearInterval(m);
   }, [etape]);
+
+  async function secours() {
+    setErreur("");
+    const { data } = await getSupabase().auth.getSession();
+    const r = await fetch("/api/secours", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token}` },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+    const j = await r.json();
+    if (!r.ok) { setErreur(j.erreur ?? "Déclenchement impossible."); return; }
+    setPropositionId(j.proposition.id);
+    setProposition("affichee");
+  }
+
+  function ouvrirVue(url: string) {
+    // Fenêtre à droite de l'écran : l'agent H apparaît à côté du portail.
+    const l = Math.round(window.screen.width * 0.5);
+    window.open(url, "vue-agent-h", `popup=yes,width=${window.screen.width - l},height=${window.screen.height - 80},left=${l},top=0`);
+  }
 
   async function decider(id: string) {
     const { data } = await getSupabase().auth.getSession();
@@ -232,86 +270,109 @@ export default function Portail() {
 
   const outilsAutorises = TOUS.filter((o) => actifs.includes(o.id));
   const courant = outilsAutorises.find((o) => o.id === ongletActif) ?? outilsAutorises[0];
+  const rapportPret = !!suivi && suivi.runs.length >= 3 && suivi.runs.every((r) => r.statut !== "en_cours") && rapportOuvert;
+  const phase = proposition === "acceptee" ? (rapportPret ? 5 : 4) : proposition === "affichee" ? 3 : 2;
+  const ETAPES = ["Accord", "Il observe", "Il propose", "Ils agissent", "Preuve"];
+  const nomAgent = (a: string) => (a === "acces" ? "Accès" : a === "equipe" ? "Équipe" : "Docs");
 
   return (
-    <main style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 360px", gap: 16, padding: 16, minHeight: "100vh", paddingBottom: 80 }}>
-      <section aria-label="Poste de travail" style={{ display: "grid", gridTemplateRows: "auto 1fr", gap: 8 }}>
-        <nav style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {outilsAutorises.map((o) => (
-            <button key={o.id} className="btn btn-secondary" style={{ padding: "8px 16px", background: o.id === courant?.id ? "var(--g-100)" : "transparent" }} onClick={() => setOngletActif(o.id)}>{o.nom}</button>
+    <main className="portail">
+      <header className="portail-haut">
+        <span className="portail-marque"><span aria-hidden>👻</span> Ghost</span>
+        <ol className="etapes" aria-label="Avancement">
+          {ETAPES.map((e, i) => (
+            <li key={e} className={i + 1 < phase ? "fait" : i + 1 === phase ? "courant" : ""}><span>{i + 1 < phase ? "✓" : i + 1}</span>{e}</li>
           ))}
+        </ol>
+        <span className={`etat ${enPause ? "pause" : "vit"}`}>{enPause ? "En pause" : "Il observe"}</span>
+      </header>
+
+      <section aria-label="Poste de travail" className="poste">
+        <nav className="onglets">
+          {outilsAutorises.map((o) => (
+            <button key={o.id} className={o.id === courant?.id ? "actif" : ""} onClick={() => setOngletActif(o.id)}>{o.nom}</button>
+          ))}
+          {agentsAuTravail && <span className="direct">● Intranet en direct : se met à jour pendant que les agents agissent</span>}
         </nav>
-        {suivi && suivi.runs.length >= 3 && suivi.runs.every((r) => r.statut !== "en_cours") && rapportOuvert
-          ? <div style={{ overflowY: "auto" }}><Rapport d={suivi as unknown as DonneesRapport} onFermer={() => setRapportOuvert(false)} /></div>
-          : courant && <iframe title={courant.nom} src={courant.chemin} style={{ width: "100%", height: "100%", minHeight: 520, border: "1px solid var(--line-2)", borderRadius: 14, background: "#fff" }} />}
+        {rapportPret
+          ? <div className="rapport-zone"><Rapport d={suivi as unknown as DonneesRapport} onFermer={() => setRapportOuvert(false)} /></div>
+          : courant && <iframe key={`${courant.id}-${rafraichir}`} title={courant.nom} src={courant.chemin} className="cadre" />}
       </section>
 
-      <aside aria-label="Panneau Ghost" className="card" style={{ alignSelf: "start", display: "grid", gap: 14 }}>
-        <h2>Ghost</h2>
-        <p>Outils autorisés : <b>{outilsAutorises.map((o) => o.nom).join(", ") || "aucun"}</b></p>
-        <p>État : <b>{enPause ? "En pause" : "Il observe"}</b></p>
-
-        <div>
-          <p style={{ marginBottom: 8 }}>Partage d'écran : <b>{partage ? "actif" : "inactif"}</b></p>
+      <aside aria-label="Panneau Ghost" className="panneau">
+        <div className="bloc">
+          <h2>Ce que Ghost voit</h2>
+          <p className="petit">Outils autorisés : <b>{outilsAutorises.map((o) => o.nom).join(", ") || "aucun"}</b></p>
           {partage
-            ? <button className="btn btn-secondary" onClick={arreterPartage}>Arrêter le partage</button>
-            : <button className="btn btn-secondary" onClick={partager}>Partager mon onglet</button>}
-          <p style={{ marginTop: 8, fontSize: "0.9rem", color: "var(--mute)" }}>Une image de l'onglet part toutes les 4 secondes (sauf en pause) pour être lue par Holo. Les images ne sont jamais conservées : seul un résumé en texte est gardé.</p>
-          <p role="status" style={{ marginTop: 8, fontWeight: 600 }}>Capture : {etatCapture}</p>
-          {lecture && <p style={{ marginTop: 8 }}>Ghost voit : {lecture.resume} <span style={{ color: "var(--mute)" }}>({(lecture.latence_ms / 1000).toFixed(1)} s)</span></p>}
+            ? <button className="btn btn-secondary" onClick={arreterPartage}>Arrêter le partage d'écran</button>
+            : <button className="btn btn-primary" onClick={partager}>Partager mon onglet</button>}
+          <p className="petit" role="status">{etatCapture}</p>
+          {vus.length > 0 && (
+            <ul className="fil" aria-label="Ce que Ghost a lu">
+              {vus.map((v, i) => <li key={`${v.t}-${i}`}><time>{v.t}</time> {v.resume}</li>)}
+            </ul>
+          )}
+          {lecture && <p className="petit">Lecture par Holo en {(lecture.latence_ms / 1000).toFixed(1)} s. Les images ne sont jamais conservées, seul ce texte l'est.</p>}
+          {!partage && <p className="petit">Pas de partage possible ? Le bouton de secours ci-dessous déclenche la vraie proposition ; le rapport final l'indiquera.</p>}
         </div>
 
-        <div role="note" style={{ background: "var(--ochre-50)", color: "var(--ochre-700)", borderRadius: 12, padding: "10px 12px", fontWeight: 600 }}>
-          Mode démo : le bouton ci-dessous simule la détection si le partage d'écran n'est pas utilisé.
-        </div>
         {proposition === "aucune" && (
-          <button className="btn btn-secondary" disabled={enPause} onClick={() => setProposition("affichee")}>Simuler : arrivée de Karim détectée</button>
+          <div className="bloc secours">
+            <button className="btn btn-secondary" disabled={enPause || !sessionId} onClick={secours}>Secours : signaler l'arrivée de Karim</button>
+            <p className="petit">Mode secours, utilisé seulement si l'observation ne peut pas démarrer.</p>
+          </div>
         )}
+
         {proposition === "affichee" && (
-          <div role="dialog" aria-label="Proposition de Ghost" className="card" style={{ borderColor: "var(--g-700)", borderWidth: 2 }}>
+          <div role="dialog" aria-label="Proposition de Ghost" className="bloc proposition">
+            <span className="etiquette">Ghost propose</span>
             <h3>Je prépare l'onboarding de Karim comme pour Léa ?</h3>
-            <p style={{ margin: "6px 0 12px" }}>J'ai vu la notification d'arrivée de Karim. Je m'en occupe ?</p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button className="btn btn-secondary" onClick={() => repondre("acceptee")}>Oui, vas-y</button>
+            <p>L'arrivée de Karim est apparue dans l'espace RH. Trois agents H s'en occupent en parallèle : accès et badge, messagerie, wiki.</p>
+            <div className="rang">
+              <button className="btn btn-primary" onClick={() => repondre("acceptee")}>Oui, vas-y</button>
               <button className="btn btn-secondary" onClick={() => repondre("refusee")}>Non, merci</button>
             </div>
           </div>
         )}
+
         {proposition === "acceptee" && (
-          <div role="status" style={{ display: "grid", gap: 12 }}>
-            <p><b>D'accord, je m'en occupe.</b> Les agents H travaillent sous tes yeux ; chaque ligne n'est cochée que si l'outil l'a confirmée.</p>
-            {!propositionId && <p style={{ color: "var(--ochre-700)" }}>Mode démo : proposition simulée, aucun agent n'est lancé.</p>}
-            {propositionId && !suivi?.runs.length && <p>En attente du démarrage des agents…</p>}
+          <div role="status" className="bloc">
+            <h2>Les agents H travaillent</h2>
+            {!propositionId && <p className="petit">Aucune proposition enregistrée : aucun agent n'est lancé.</p>}
+            {propositionId && !suivi?.runs.length && <p className="petit">Démarrage des agents… (le service peut mettre une minute à se réveiller)</p>}
             {suivi?.runs.map((r) => (
-              <div key={r.id} className="card" style={{ padding: 14 }}>
-                <h3>Agent {r.agent === "acces" ? "Accès" : r.agent === "equipe" ? "Équipe" : "Docs"} · {r.statut === "en_cours" ? "au travail" : r.statut === "termine" ? "terminé" : "échec"}</h3>
-                <ul style={{ margin: "8px 0", paddingLeft: 0, listStyle: "none", display: "grid", gap: 4 }}>
+              <div key={r.id} className={`agent ${r.statut}`}>
+                <div className="agent-tete">
+                  <h3>Agent {nomAgent(r.agent)}</h3>
+                  <span>{r.statut === "en_cours" ? "au travail" : r.statut === "termine" ? "terminé" : "échec"}</span>
+                </div>
+                <ul>
                   {suivi.evenements.filter((e) => e.run_id === r.id).map((e) => (
-                    <li key={e.id}>
-                      {e.statut === "ok" ? "☑" : e.statut === "echec" ? "✗" : e.statut === "question" || e.statut === "attente_validation" ? "⏸" : "…"} {e.action}
-                      {e.detail ? <span style={{ color: "var(--mute)" }}> : {e.detail}</span> : null}
+                    <li key={e.id} className={e.statut}>
+                      <i>{e.statut === "ok" ? "☑" : e.statut === "echec" ? "✗" : e.statut === "question" || e.statut === "attente_validation" ? "⏸" : "…"}</i>
+                      <span>{e.action}{e.detail ? <small> : {e.detail}</small> : null}</span>
                     </li>
                   ))}
                 </ul>
-                {r.vue_directe_url && <a href={r.vue_directe_url} target="_blank" rel="noreferrer">Voir l&apos;agent en direct</a>}
+                {r.vue_directe_url && <button className="lien" onClick={() => ouvrirVue(r.vue_directe_url!)}>Voir l&apos;agent H en direct ↗</button>}
               </div>
             ))}
             {suivi?.decisions.filter((d) => d.statut === "en_attente").map((d) => (
-              <div key={d.id} className="card" style={{ borderColor: "var(--o-600)", padding: 14 }}>
+              <div key={d.id} className="agent question">
                 <h3>{d.libelle.startsWith("Valider la commande") ? "Validation nécessaire" : "L'agent a une question"}</h3>
-                <p style={{ margin: "6px 0 10px" }}>{d.libelle}</p>
+                <p>{d.libelle}</p>
                 {!d.libelle.startsWith("Valider la commande") && (
-                  <input aria-label="Ta réponse" style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid var(--line-2)", marginBottom: 8, font: "inherit" }}
-                    value={saisies[d.id] ?? ""} onChange={(e) => setSaisies((x) => ({ ...x, [d.id]: e.target.value }))} placeholder="Ta réponse" />
+                  <input aria-label="Ta réponse" value={saisies[d.id] ?? ""} onChange={(e) => setSaisies((x) => ({ ...x, [d.id]: e.target.value }))} placeholder="Ta réponse" />
                 )}
-                <button className="btn btn-secondary" onClick={() => decider(d.id)}>{d.libelle.startsWith("Valider la commande") ? "Valider la commande" : "Répondre à l'agent"}</button>
+                <button className="btn btn-primary" onClick={() => decider(d.id)}>{d.libelle.startsWith("Valider la commande") ? "Valider la commande" : "Répondre à l'agent"}</button>
               </div>
             ))}
+            {!rapportOuvert && <button className="btn btn-secondary" onClick={() => setRapportOuvert(true)}>Revoir le rapport</button>}
           </div>
         )}
-        {proposition === "refusee" && <p role="status">Pas de souci, tu continues ton travail.</p>}
+        {proposition === "refusee" && <p className="bloc" role="status">Pas de souci, tu continues ton travail.</p>}
 
-        {erreur && <p role="alert" style={{ color: "var(--o-700)" }}>{erreur}</p>}
+        {erreur && <p role="alert" className="erreur">{erreur}</p>}
         <button className="btn btn-secondary" onClick={deconnecter}>Se déconnecter</button>
       </aside>
 
