@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import Fantome from "@/components/portail/Fantome";
+import { agentInfo } from "@/lib/agents";
 import Pastille from "@/components/portail/Pastille";
 import VueAgent from "@/components/portail/VueAgent";
 import Rapport, { type DonneesRapport } from "@/components/portail/Rapport";
@@ -386,7 +388,7 @@ export default function Portail() {
         {rapportPret
           ? <div className="rapport-zone"><Rapport d={suivi as unknown as DonneesRapport} onFermer={() => setRapportOuvert(false)} /></div>
           : ongletActif === "__agents" && suivi && suivi.runs.length > 0
-            ? <div className="agents-direct">{suivi.runs.map((r) => r.session_h_id && <VueAgent key={r.id} session={r.session_h_id} agent={nomAgent(r.agent)} actif={r.statut === "en_cours"} />)}</div>
+            ? <div className="agents-direct">{suivi.runs.map((r) => r.session_h_id && <VueAgent key={r.id} session={r.session_h_id} agent={r.agent} actif={r.statut === "en_cours"} />)}</div>
             : courant && <iframe key={`${courant.id}-${rafraichir}`} title={courant.nom} src={courant.chemin} className="cadre" />}
       </section>
 
@@ -451,7 +453,7 @@ export default function Portail() {
             {suivi?.runs.map((r) => (
               <div key={r.id} className={`agent ${r.statut}`}>
                 <div className="agent-tete">
-                  <h3>Agent {nomAgent(r.agent)}</h3>
+                  <h3 className="agent-id"><Fantome couleur={agentInfo(r.agent).couleur} taille={24} actif={r.statut === "en_cours"} /> {agentInfo(r.agent).prenom} <small>agent {agentInfo(r.agent).role}</small></h3>
                   <span>{r.statut === "en_cours" ? "au travail" : r.statut === "termine" ? "terminé" : "échec"}</span>
                 </div>
                 <ul>
