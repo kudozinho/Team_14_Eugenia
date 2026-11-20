@@ -34,6 +34,21 @@ ATTENTE_HUMAINE_S = 600
 ELEMENTS = {"fiche": "Fiche RH créée", "acces": "Accès demandés", "badge": "Badge demandé"}
 
 
+AGENT_PAR_DEFAUT = "h/web-surfer-pro"
+
+
+def demarrer(client, agent, **params):
+    """Démarre une session avec l'agent nommé ; s'il n'existe pas dans le compte H de la clé utilisée (404),
+    bascule sur l'agent prêt à l'emploi de H. Les agents personnalisés sont propres à chaque compte."""
+    try:
+        return client.start_session(agent=agent, **params)
+    except Exception as e:  # noqa: BLE001
+        if "404" in str(e) and agent != AGENT_PAR_DEFAUT:
+            print(f"  Agent '{agent}' introuvable dans ce compte H : repli sur {AGENT_PAR_DEFAUT}", flush=True)
+            return client.start_session(agent=AGENT_PAR_DEFAUT, **params)
+        raise
+
+
 class Reponse(BaseModel):
     statut: Literal["termine", "question", "echec"]
     question: Optional[str] = None
@@ -116,7 +131,7 @@ def passage(client, run_id, p, manager):
 
     t = threading.Thread(target=surveiller, daemon=True)
     t.start()
-    s = client.start_session(agent=AGENT, messages=consigne(p, manager), answer_schema=Reponse, max_steps=MAX_STEPS,
+    s = demarrer(client, AGENT, messages=consigne(p, manager), answer_schema=Reponse, max_steps=MAX_STEPS,
                              max_time_s=MAX_TIME_S, timezone="Europe/Paris",
                              overrides={"agent.environments[kind=web].start_url": f"{INTRANET}/intranet/rh"})
     vue = client.sessions.get_session(s.id).agent_view_url
