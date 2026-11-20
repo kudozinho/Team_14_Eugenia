@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Pastille from "@/components/portail/Pastille";
+import VueAgent from "@/components/portail/VueAgent";
 import Rapport, { type DonneesRapport } from "@/components/portail/Rapport";
 import { getSupabase } from "@/lib/supabase";
 
@@ -16,7 +17,7 @@ const TOUS = [
 ];
 
 type Suivi = {
-  runs: { id: string; agent: string; statut: string; vue_directe_url: string | null; actions_verifiees: number; actions_total: number; debut: string; fin: string | null; cout_credits: number | null }[];
+  runs: { id: string; agent: string; statut: string; session_h_id: string | null; vue_directe_url: string | null; actions_verifiees: number; actions_total: number; debut: string; fin: string | null; cout_credits: number | null }[];
   evenements: { id: string; run_id: string; action: string; statut: string; detail: string | null; outil: string | null }[];
   rapport: DonneesRapport["rapport"];
   decisions: { id: string; libelle: string; statut: string; reponse: string | null }[];
@@ -45,6 +46,7 @@ export default function Portail() {
   const [saisies, setSaisies] = useState<Record<string, string>>({});
   const [vus, setVus] = useState<{ t: string; resume: string }[]>([]);
   const [rafraichir, setRafraichir] = useState(0);
+  const vueAgentsAuto = useRef(false);
   const flux = useRef<MediaStream | null>(null);
   const enCours = useRef(false);
 
@@ -188,6 +190,11 @@ export default function Portail() {
     return () => clearInterval(m);
   }, [etape]);
 
+  // Dès que les agents démarrent, on montre leur écran : c'est le moment fort.
+  useEffect(() => {
+    if (suivi?.runs.length && !vueAgentsAuto.current) { vueAgentsAuto.current = true; setOngletActif("__agents"); }
+  }, [suivi]);
+
   async function secours() {
     setErreur("");
     const { data } = await getSupabase().auth.getSession();
@@ -292,11 +299,14 @@ export default function Portail() {
           {outilsAutorises.map((o) => (
             <button key={o.id} className={o.id === courant?.id ? "actif" : ""} onClick={() => setOngletActif(o.id)}>{o.nom}</button>
           ))}
+          {!!suivi?.runs.length && <button className={ongletActif === "__agents" ? "actif" : ""} onClick={() => setOngletActif("__agents")}>Agents en direct</button>}
           {agentsAuTravail && <span className="direct">● Intranet en direct : se met à jour pendant que les agents agissent</span>}
         </nav>
         {rapportPret
           ? <div className="rapport-zone"><Rapport d={suivi as unknown as DonneesRapport} onFermer={() => setRapportOuvert(false)} /></div>
-          : courant && <iframe key={`${courant.id}-${rafraichir}`} title={courant.nom} src={courant.chemin} className="cadre" />}
+          : ongletActif === "__agents" && suivi && suivi.runs.length > 0
+            ? <div className="agents-direct">{suivi.runs.map((r) => r.session_h_id && <VueAgent key={r.id} session={r.session_h_id} agent={nomAgent(r.agent)} actif={r.statut === "en_cours"} />)}</div>
+            : courant && <iframe key={`${courant.id}-${rafraichir}`} title={courant.nom} src={courant.chemin} className="cadre" />}
       </section>
 
       <aside aria-label="Panneau Ghost" className="panneau">

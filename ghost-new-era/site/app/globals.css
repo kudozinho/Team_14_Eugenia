@@ -160,3 +160,20 @@ a:hover { background-size: 100% 2px; }
 .lien { background: none; border: 0; color: var(--g-700); font: inherit; font-weight: 700; cursor: pointer; text-align: left; padding: 0; text-decoration: underline; }
 .erreur { color: var(--o-700); font-weight: 600; margin: 0; }
 @media (max-width: 1000px) { .portail { grid-template-columns: 1fr; } }
+
+/* Vue en direct des agents : leur écran et leurs clics */
+.agents-direct { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); padding: 4px 0; }
+.vue-agent { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 8px; align-content: start; }
+.vue-agent header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-titres); }
+.pastille-live { color: var(--o-700); font-weight: 700; font-size: 0.85rem; }
+.pastille-fin { color: var(--g-700); font-weight: 700; font-size: 0.85rem; }
+.vue-ecran { position: relative; background: #0d1b14; border-radius: 10px; overflow: hidden; min-height: 150px; display: grid; place-items: center; }
+.vue-ecran img { width: 100%; display: block; }
+.vue-ecran .petit { color: #c9d6cf; padding: 16px; text-align: center; }
+.pointeur { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: rgba(230, 70, 40, 0.9); border: 3px solid #fff; box-shadow: 0 0 0 0 rgba(230, 70, 40, 0.7); animation: onde 1.4s ease-out infinite; pointer-events: none; }
+@keyframes onde { 0% { box-shadow: 0 0 0 0 rgba(230, 70, 40, 0.6); } 100% { box-shadow: 0 0 0 22px rgba(230, 70, 40, 0); } }
+.adresse { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.actions-agent { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 0.88rem; color: var(--ink-2); }
+.actions-agent .recente { color: var(--ink); font-weight: 700; }
+.actions-agent .recente::before { content: "→ "; color: var(--o-600); }
+@media (prefers-reduced-motion: reduce) { .pointeur { animation: none; } }
