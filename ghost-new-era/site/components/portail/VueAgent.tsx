@@ -6,7 +6,7 @@ type Etape = { image: number; outil: string | null; x: number | null; y: number 
 type Etat = { images: number; derniere: number; url: string | null; titre: string | null; termine: boolean; etapes: Etape[] };
 
 const ORCH = process.env.NEXT_PUBLIC_ORCH_URL ?? "";
-const VERBE: Record<string, string> = { click_web: "clique sur", select_option: "choisit dans", type_web: "écrit dans", scroll_web: "fait défiler", goto: "ouvre" };
+const VERBE: Record<string, string> = { click_web: "clique sur", select_option: "choisit dans", type_web: "écrit dans", scroll_web: "fait défiler", write: "écrit dans", goto: "ouvre" };
 const phrase = (e: Etape) => {
   if (e.outil === "answer") return "a terminé, il donne sa réponse";
   if (e.outil === "scroll_web" && !e.element) return "fait défiler la page";

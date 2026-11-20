@@ -177,3 +177,43 @@ a:hover { background-size: 100% 2px; }
 .actions-agent .recente { color: var(--ink); font-weight: 700; }
 .actions-agent .recente::before { content: "→ "; color: var(--o-600); }
 @media (prefers-reduced-motion: reduce) { .pointeur { animation: none; } }
+
+/* ===== Cockpit : thème sombre du portail (couleurs de la charte, fond forêt de nuit) ===== */
+.cockpit {
+  --bg: #07130d; --card: rgba(255, 255, 255, 0.06); --ink: #eaf1ec; --ink-2: #bfd0c5; --mute: #93a89b;
+  --line: rgba(255, 255, 255, 0.13); --line-2: rgba(255, 255, 255, 0.22);
+  --g-50: rgba(46, 154, 99, 0.16); --g-100: rgba(46, 154, 99, 0.26); --g-900: #2a8a5a; --o-50: rgba(244, 162, 97, 0.14);
+  --o-700: #f4a261; --ochre-700: #e8c06a;
+  color: var(--ink); min-height: 100vh;
+  background: radial-gradient(900px 520px at 72% -8%, rgba(46, 154, 99, 0.3), transparent 62%), radial-gradient(700px 520px at 0% 105%, rgba(29, 107, 71, 0.28), transparent 60%), #07130d;
+}
+.cockpit .bloc, .cockpit .vue-agent, .cockpit .card { backdrop-filter: blur(10px); box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28); }
+.cockpit .agent { background: rgba(255, 255, 255, 0.05); }
+.cockpit .agent.termine { background: rgba(46, 154, 99, 0.16); }
+.cockpit .agent.echec, .cockpit .agent.question { background: rgba(244, 162, 97, 0.14); }
+.cockpit .proposition { background: rgba(255, 255, 255, 0.09); border-color: var(--g-300); box-shadow: 0 0 0 4px rgba(143, 209, 168, 0.12), 0 14px 40px rgba(0, 0, 0, 0.4); }
+.cockpit .btn-secondary { color: var(--ink); border-color: rgba(255, 255, 255, 0.4); }
+.cockpit .onglets button { color: var(--ink); background: rgba(255, 255, 255, 0.06); border-color: var(--line-2); }
+.cockpit .onglets button.actif { background: var(--g-900); border-color: var(--g-900); color: #fff; }
+.cockpit .lien { color: var(--g-300); }
+.cockpit .petit { color: var(--mute); }
+.cockpit .agent input, .cockpit .formulaire input { background: rgba(255, 255, 255, 0.08); color: var(--ink); border-color: var(--line-2); }
+.cockpit .fil li { background: rgba(255, 255, 255, 0.07); }
+.cockpit .pastille-fin { color: var(--g-300); }
+.cockpit .vue-ecran { background: #050c08; }
+.consigne { margin: 0; padding: 12px 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line); border-left: 4px solid var(--o-600); color: var(--ink); }
+.consigne b { color: var(--o-400); }
+.bloc.voix .rang { gap: 8px; }
+
+/* Écran d'accueil du portail */
+.accueil-portail { display: grid; place-items: center; padding: 32px 16px; }
+.accueil-carte { width: min(680px, 100%); display: grid; gap: 14px; padding: 36px; border-radius: 26px; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--line); backdrop-filter: blur(14px); box-shadow: 0 0 80px rgba(46, 154, 99, 0.18), 0 24px 70px rgba(0, 0, 0, 0.45); }
+.accueil-carte h1 { font-size: clamp(1.8rem, 3vw + 1rem, 2.5rem); color: var(--ink); }
+.halo { width: 64px; filter: drop-shadow(0 0 26px rgba(143, 209, 168, 0.6)); }
+.consignes { margin: 4px 0; padding: 0; list-style: none; counter-reset: c; display: grid; gap: 10px; }
+.consignes li { counter-increment: c; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; color: var(--ink-2); }
+.consignes li::before { content: counter(c); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--g-500); color: #fff; font-weight: 800; }
+.consignes b { color: var(--ink); }
+.choix-outils { border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; display: grid; gap: 10px; margin: 0; }
+.choix-outils legend { font-weight: 700; padding: 0 8px; color: var(--ink); }
+.choix-outils label { display: flex; gap: 10px; align-items: center; color: var(--ink); }
