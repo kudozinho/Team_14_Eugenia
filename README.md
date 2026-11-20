@@ -64,13 +64,17 @@ Intranet d'Atelier Nova (Vercel) ───────────┘  les actio
 
 ## Comment tester
 
-1. Ouvre https://ghost-new-era.vercel.app et parcours la landing, les tarifs (**démonstration**, aucun paiement réel, aucune donnée bancaire demandée).
-2. Connecte-toi avec le **compte de démonstration de Sophie**. Ses identifiants sont communiqués à part par l'équipe, jamais dans le dépôt.
-3. Dans le portail, autorise l'espace RH, puis « Commencer l'observation » : l'intranet d'Atelier Nova s'affiche dans un cadre.
-4. « Partager mon onglet » : Ghost lit l'écran. Quand la notification « Nouvelle arrivée : Karim Benali » est visible, il propose de préparer l'onboarding.
-5. Tu peux aussi explorer l'intranet seul : https://atelier-nova-intranet.vercel.app/intranet/rh (public, données fictives).
+1. Ouvre https://ghost-new-era.vercel.app : landing, tarifs de démonstration (aucun paiement réel, aucune donnée bancaire).
+2. Connecte-toi avec le **compte de démonstration de Sophie** (identifiants communiqués à part par l'équipe, jamais dans le dépôt).
+3. Facultatif : **Connexions** (Notion, Slack, Gmail, comptes de sites) : chaque personne connecte ses propres outils, gardés dans le coffre-fort hébergé par H.
+4. Portail : coche les outils, « Commencer l'observation », « Partager mon onglet » (Onglet Chrome), laisse l'accueil de l'espace RH visible. Quand la notification « Nouvelle arrivée : Karim Benali » est lue, Ghost propose ; dis « oui » ou clique.
+5. Onglet **Agents en direct** : trois agents (Alma, Nino, Lia), leur écran et leurs clics ; réponds à la question sur le manager, valide la commande, puis lis le rapport final.
+6. L'intranet seul (public, données fictives) : https://atelier-nova-intranet.vercel.app/intranet/rh
 
-Les étapes encore en construction (lancement des trois agents, tableau de suivi, rapport final) sont décrites dans [l'état d'avancement](ghost-new-era/docs/ETAT-ET-REPARTITION.md). Rien n'est annoncé comme fonctionnel avant d'avoir été testé.
+Avant un nouvel essai, remettre Karim à zéro (`docs/PLAN-DE-DEMO.md`). Le service des agents (Render, offre gratuite) peut mettre une minute à se réveiller.
+
+### Ce qui n'est pas testé ou pas annoncé
+Slack, Gmail et Notion (connexion réelle), une connexion automatique d'un agent sur un site, le taux de réussite (une dizaine de runs seulement), la durée humaine de référence (hypothèse de 2 h, non chronométrée).
 
 ## Lancer le projet en local
 
