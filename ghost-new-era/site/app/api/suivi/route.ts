@@ -20,5 +20,25 @@ export async function GET(req: Request) {
         admin.from("decisions_humaines").select("*").in("run_id", ids),
       ])
     : [{ data: [] }, { data: [] }];
-  return NextResponse.json({ runs: runs ?? [], evenements: evenements ?? [], decisions: decisions ?? [] });
+
+  // Données du rapport final : preuve dans la base, profil de la personne, état du matériel.
+  const { data: prop } = await admin.from("propositions").select("tache_id").eq("id", proposition).maybeSingle();
+  const { data: tache } = await admin.from("taches_detectees").select("declencheur_arrivee_id").eq("id", prop?.tache_id ?? "").maybeSingle();
+  const { data: arrivee } = await admin.from("arrivees").select("personne_id").eq("id", tache?.declencheur_arrivee_id ?? "").maybeSingle();
+  let rapport = null;
+  if (arrivee) {
+    const [{ data: lignes }, { data: pers }, { data: profil }, { data: materiel }] = await Promise.all([
+      admin.from("v_onboarding").select("element,present").eq("personne_id", arrivee.personne_id),
+      admin.from("personnes").select("prenom,nom,poste").eq("id", arrivee.personne_id).maybeSingle(),
+      admin.from("profils").select("onboardings_par_an").eq("user_id", user.id).maybeSingle(),
+      admin.from("rh_materiel").select("article,statut").eq("personne_id", arrivee.personne_id),
+    ]);
+    rapport = {
+      personne: pers,
+      preuve: Object.fromEntries((lignes ?? []).map((l) => [l.element, l.present])),
+      onboardings_par_an: profil?.onboardings_par_an ?? null,
+      materiel: materiel ?? [],
+    };
+  }
+  return NextResponse.json({ runs: runs ?? [], evenements: evenements ?? [], decisions: decisions ?? [], rapport });
 }

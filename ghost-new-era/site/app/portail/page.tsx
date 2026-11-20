@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Pastille from "@/components/portail/Pastille";
+import Rapport, { type DonneesRapport } from "@/components/portail/Rapport";
 import { getSupabase } from "@/lib/supabase";
 
 // L'intranet d'Atelier Nova est un autre site, déployé à part.
@@ -15,8 +16,9 @@ const TOUS = [
 ];
 
 type Suivi = {
-  runs: { id: string; agent: string; statut: string; vue_directe_url: string | null; actions_verifiees: number; actions_total: number }[];
-  evenements: { id: string; run_id: string; action: string; statut: string; detail: string | null }[];
+  runs: { id: string; agent: string; statut: string; vue_directe_url: string | null; actions_verifiees: number; actions_total: number; debut: string; fin: string | null; cout_credits: number | null }[];
+  evenements: { id: string; run_id: string; action: string; statut: string; detail: string | null; outil: string | null }[];
+  rapport: DonneesRapport["rapport"];
   decisions: { id: string; libelle: string; statut: string; reponse: string | null }[];
 };
 
@@ -39,6 +41,7 @@ export default function Portail() {
   const [lecture, setLecture] = useState<{ resume: string; latence_ms: number } | null>(null);
   const [etatCapture, setEtatCapture] = useState("Partage d'écran inactif.");
   const [suivi, setSuivi] = useState<Suivi | null>(null);
+  const [rapportOuvert, setRapportOuvert] = useState(true);
   const [saisies, setSaisies] = useState<Record<string, string>>({});
   const flux = useRef<MediaStream | null>(null);
   const enCours = useRef(false);
@@ -238,7 +241,9 @@ export default function Portail() {
             <button key={o.id} className="btn btn-secondary" style={{ padding: "8px 16px", background: o.id === courant?.id ? "var(--g-100)" : "transparent" }} onClick={() => setOngletActif(o.id)}>{o.nom}</button>
           ))}
         </nav>
-        {courant && <iframe title={courant.nom} src={courant.chemin} style={{ width: "100%", height: "100%", minHeight: 520, border: "1px solid var(--line-2)", borderRadius: 14, background: "#fff" }} />}
+        {suivi && suivi.runs.length >= 3 && suivi.runs.every((r) => r.statut !== "en_cours") && rapportOuvert
+          ? <div style={{ overflowY: "auto" }}><Rapport d={suivi as unknown as DonneesRapport} onFermer={() => setRapportOuvert(false)} /></div>
+          : courant && <iframe title={courant.nom} src={courant.chemin} style={{ width: "100%", height: "100%", minHeight: 520, border: "1px solid var(--line-2)", borderRadius: 14, background: "#fff" }} />}
       </section>
 
       <aside aria-label="Panneau Ghost" className="card" style={{ alignSelf: "start", display: "grid", gap: 14 }}>
