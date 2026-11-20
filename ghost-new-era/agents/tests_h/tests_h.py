@@ -51,12 +51,10 @@ CAS = {
 }
 
 
-def vue_directe(session):
-    """Cherche l'adresse de la vue en direct dans l'état de la session (nom du champ non garanti)."""
+def vue_directe(client, session):
+    """Adresse de la vue en direct (agent_view_url) lue dans la session côté H."""
     try:
-        etat = session.status()
-        d = etat.model_dump() if hasattr(etat, "model_dump") else dict(vars(etat))
-        return next((str(v) for k, v in d.items() if "view" in k.lower() and v), None), sorted(d.keys())
+        return client.sessions.get_session(session.id).agent_view_url, []
     except Exception as e:  # noqa: BLE001
         return None, [f"erreur: {e}"]
 
@@ -79,7 +77,7 @@ def lancer(cle, client, resultats, idle=None):
             params["idle_timeout_s"] = idle
         s = client.start_session(**params)
         r.update(demarrage_ok=True, session_id=s.id, demarrage_s=round(time.monotonic() - t0, 1))
-        vue, champs = vue_directe(s)
+        vue, champs = vue_directe(client, s)
         r.update(vue_directe=vue, champs_etat=champs)
         fin = s.wait_for_completion()
         r.update(statut=fin.status, duree_s=round(time.monotonic() - t0), reponse=getattr(fin.answer, "model_dump", lambda: None)(),
@@ -99,6 +97,11 @@ def afficher(resultats):
 def main():
     test = sys.argv[1] if len(sys.argv) > 1 else "1"
     client = Client()  # lit HAI_API_KEY
+    try:
+        q = client.quota.get_token_quota()
+        print(f"Quota de jetons : {q.used} utilisés sur {q.limit} (reste {q.remaining})")
+    except Exception as e:  # noqa: BLE001
+        print("Quota illisible :", type(e).__name__)
     res = {}
     if test == "1":
         lancer("rh", client, res)
@@ -109,11 +112,11 @@ def main():
         [f.join() for f in fils]
         print(f"Durée totale en parallèle : {round(time.monotonic() - t0)} s (somme des durées seules : {sum(r.get('duree_s', 0) for r in res.values())} s)")
     elif test == "3":
-        r = lancer("rh", client, res, idle=120)
+        r = lancer("rh", client, res, idle=90)
         s = r.get("session")
         if s:
             t0 = time.monotonic()
-            s.send_message({"type": "user_message", "message": "Merci. Donne aussi la date d'arrivée de Karim."})
+            s.send_message({"type": "user_message", "message": "Merci. Redonne ta réponse, mais écris le poste en MAJUSCULES."})
             time.sleep(3)
             fin = s.wait_for_completion()
             r["message_envoye"] = True
