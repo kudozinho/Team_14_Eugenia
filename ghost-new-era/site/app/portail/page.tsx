@@ -14,6 +14,12 @@ const TOUS = [
   { id: "wiki", nom: "Wiki", chemin: `${INTRANET}/intranet/wiki` },
 ];
 
+type Suivi = {
+  runs: { id: string; agent: string; statut: string; vue_directe_url: string | null; actions_verifiees: number; actions_total: number }[];
+  evenements: { id: string; run_id: string; action: string; statut: string; detail: string | null }[];
+  decisions: { id: string; libelle: string; statut: string; reponse: string | null }[];
+};
+
 type Etape = "chargement" | "accord" | "observation";
 
 export default function Portail() {
@@ -31,6 +37,8 @@ export default function Portail() {
   const [sessionId, setSessionId] = useState("");
   const [propositionId, setPropositionId] = useState("");
   const [lecture, setLecture] = useState<{ resume: string; latence_ms: number } | null>(null);
+  const [suivi, setSuivi] = useState<Suivi | null>(null);
+  const [saisies, setSaisies] = useState<Record<string, string>>({});
   const flux = useRef<MediaStream | null>(null);
   const enCours = useRef(false);
 
@@ -119,6 +127,39 @@ export default function Portail() {
     }, 4000);
     return () => { clearInterval(minuteur); video.srcObject = null; };
   }, [partage, enPause, sessionId, proposition]);
+
+  // Une fois la proposition acceptée, le portail interroge le suivi toutes les 3 secondes.
+  useEffect(() => {
+    if (proposition !== "acceptee" || !propositionId) return;
+    let actif = true;
+    const lire = async () => {
+      const { data } = await getSupabase().auth.getSession();
+      const r = await fetch(`/api/suivi?proposition=${propositionId}`, { headers: { Authorization: `Bearer ${data.session?.access_token}` } });
+      if (r.ok && actif) setSuivi(await r.json());
+    };
+    lire();
+    const m = setInterval(lire, 3000);
+    return () => { actif = false; clearInterval(m); };
+  }, [proposition, propositionId]);
+
+  // Garde le service des agents (hébergé, offre gratuite) éveillé pendant que la session est ouverte.
+  useEffect(() => {
+    const url = process.env.NEXT_PUBLIC_ORCH_URL;
+    if (!url || etape !== "observation") return;
+    const ping = () => fetch(`${url}/sante`, { mode: "no-cors" }).catch(() => {});
+    ping();
+    const m = setInterval(ping, 4 * 60 * 1000);
+    return () => clearInterval(m);
+  }, [etape]);
+
+  async function decider(id: string) {
+    const { data } = await getSupabase().auth.getSession();
+    await fetch("/api/decision", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token}` },
+      body: JSON.stringify({ id, reponse: saisies[id] ?? "" }),
+    });
+  }
 
   async function repondre(statut: "acceptee" | "refusee") {
     setProposition(statut);
@@ -215,7 +256,38 @@ export default function Portail() {
             </div>
           </div>
         )}
-        {proposition === "acceptee" && <p role="status"><b>D'accord.</b> Le lancement des 3 agents sera branché ici (Accès, Équipe, Docs).</p>}
+        {proposition === "acceptee" && (
+          <div role="status" style={{ display: "grid", gap: 12 }}>
+            <p><b>D'accord, je m'en occupe.</b> Les agents H travaillent sous tes yeux ; chaque ligne n'est cochée que si l'outil l'a confirmée.</p>
+            {!propositionId && <p style={{ color: "var(--ochre-700)" }}>Mode démo : proposition simulée, aucun agent n'est lancé.</p>}
+            {propositionId && !suivi?.runs.length && <p>En attente du démarrage des agents…</p>}
+            {suivi?.runs.map((r) => (
+              <div key={r.id} className="card" style={{ padding: 14 }}>
+                <h3>Agent {r.agent === "acces" ? "Accès" : r.agent === "equipe" ? "Équipe" : "Docs"} · {r.statut === "en_cours" ? "au travail" : r.statut === "termine" ? "terminé" : "échec"}</h3>
+                <ul style={{ margin: "8px 0", paddingLeft: 0, listStyle: "none", display: "grid", gap: 4 }}>
+                  {suivi.evenements.filter((e) => e.run_id === r.id).map((e) => (
+                    <li key={e.id}>
+                      {e.statut === "ok" ? "☑" : e.statut === "echec" ? "✗" : e.statut === "question" || e.statut === "attente_validation" ? "⏸" : "…"} {e.action}
+                      {e.detail ? <span style={{ color: "var(--mute)" }}> : {e.detail}</span> : null}
+                    </li>
+                  ))}
+                </ul>
+                {r.vue_directe_url && <a href={r.vue_directe_url} target="_blank" rel="noreferrer">Voir l&apos;agent en direct</a>}
+              </div>
+            ))}
+            {suivi?.decisions.filter((d) => d.statut === "en_attente").map((d) => (
+              <div key={d.id} className="card" style={{ borderColor: "var(--o-600)", padding: 14 }}>
+                <h3>{d.libelle.startsWith("Valider la commande") ? "Validation nécessaire" : "L'agent a une question"}</h3>
+                <p style={{ margin: "6px 0 10px" }}>{d.libelle}</p>
+                {!d.libelle.startsWith("Valider la commande") && (
+                  <input aria-label="Ta réponse" style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid var(--line-2)", marginBottom: 8, font: "inherit" }}
+                    value={saisies[d.id] ?? ""} onChange={(e) => setSaisies((x) => ({ ...x, [d.id]: e.target.value }))} placeholder="Ta réponse" />
+                )}
+                <button className="btn btn-secondary" onClick={() => decider(d.id)}>{d.libelle.startsWith("Valider la commande") ? "Valider la commande" : "Répondre à l'agent"}</button>
+              </div>
+            ))}
+          </div>
+        )}
         {proposition === "refusee" && <p role="status">Pas de souci, tu continues ton travail.</p>}
 
         {erreur && <p role="alert" style={{ color: "var(--o-700)" }}>{erreur}</p>}

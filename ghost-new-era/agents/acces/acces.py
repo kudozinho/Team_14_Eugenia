@@ -74,6 +74,12 @@ def reinitialiser(personne_id):
     _req("DELETE", f"rh_acces?personne_id=eq.{q}")
     _req("DELETE", f"rh_materiel?personne_id=eq.{q}")
     _req("PATCH", f"rh_badges?personne_id=eq.{q}", {"zones": [], "statut": "a_demander"})
+    # Messagerie et wiki : uniquement ce que les agents ont écrit pour cette personne de test.
+    if personne_id == "karim-benali":
+        _req("DELETE", "msg_demandes?personne_id=eq.karim-benali")
+        _req("DELETE", "msg_messages?auteur=eq." + urllib.parse.quote("Ghost, pour Sophie Durand") + "&texte=ilike." + urllib.parse.quote("*Karim*"))
+        _req("DELETE", "wiki_pages?titre=ilike." + urllib.parse.quote("Bienvenue Karim*"))
+        _req("DELETE", "wiki_checklists?personne_id=eq.karim-benali")
     print(f"Données de test de {personne_id} remises à zéro.")
 
 
@@ -123,44 +129,40 @@ def passage(client, run_id, p, manager):
     return fin, vus
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--personne", default="karim-benali")
-    ap.add_argument("--manager", default=None, help="nom du manager, si déjà connu")
-    ap.add_argument("--reset", action="store_true", help="remet la personne de test à zéro avant de lancer")
-    a = ap.parse_args()
-    if a.reset:
-        if a.personne != "karim-benali":
-            raise SystemExit("Reset réservé à karim-benali.")
-        reinitialiser(a.personne)
-
-    p = lire(f"personnes?id=eq.{urllib.parse.quote(a.personne)}&select=*")[0]
-    client = Client()
+def executer(client, personne_id, proposition_id=None, manager=None):
+    """Lance l'Agent Accès pour une personne. Renvoie un dict (réussite, actions vérifiées, durée)."""
+    p = lire(f"personnes?id=eq.{urllib.parse.quote(personne_id)}&select=*")[0]
     debut = time.monotonic()
-    run = _req("POST", "agents_runs", {"agent": "acces", "statut": "en_cours"}, retour=True)[0]["id"]
+    corps = {"agent": "acces", "statut": "en_cours"}
+    if proposition_id:
+        corps["proposition_id"] = proposition_id
+    run = _req("POST", "agents_runs", corps, retour=True)[0]["id"]
     evenement(run, f"Agent Accès : préparation de {p['prenom']} {p['nom']}", "en_cours")
 
-    manager, fin, vus = a.manager, None, set()
-    for essai in range(2):
-        fin, vus = passage(client, run, p, manager)
-        rep = fin.answer if isinstance(fin.answer, Reponse) else None
-        if rep and rep.statut == "question" and essai == 0:
-            d = _req("POST", "decisions_humaines", {"run_id": run, "libelle": rep.question or "Question de l'agent Accès"}, retour=True)[0]["id"]
-            evenement(run, "Question de l'agent", "question", rep.question or "")
-            print(f"  En attente d'une réponse humaine (decisions_humaines {d})...")
-            limite = time.monotonic() + ATTENTE_HUMAINE_S
-            while time.monotonic() < limite:
-                r = lire(f"decisions_humaines?id=eq.{d}&select=statut,reponse")[0]
-                if r["statut"] == "validee" and r["reponse"]:
-                    manager = r["reponse"]
-                    evenement(run, "Réponse reçue", "ok", f"manager : {manager}")
+    fin, vus = None, set()
+    try:
+        for essai in range(2):
+            fin, vus = passage(client, run, p, manager)
+            rep = fin.answer if isinstance(fin.answer, Reponse) else None
+            if rep and rep.statut == "question" and essai == 0:
+                d = _req("POST", "decisions_humaines", {"run_id": run, "libelle": rep.question or "Question de l'agent Accès"}, retour=True)[0]["id"]
+                evenement(run, "Question de l'agent", "question", rep.question or "")
+                print(f"  En attente d'une réponse humaine (decisions_humaines {d})...")
+                limite = time.monotonic() + ATTENTE_HUMAINE_S
+                while time.monotonic() < limite:
+                    r = lire(f"decisions_humaines?id=eq.{d}&select=statut,reponse")[0]
+                    if r["statut"] == "validee" and r["reponse"]:
+                        manager = r["reponse"]
+                        evenement(run, "Réponse reçue", "ok", f"manager : {manager}")
+                        break
+                    time.sleep(3)
+                else:
+                    evenement(run, "Pas de réponse humaine", "echec")
                     break
-                time.sleep(3)
-            else:
-                evenement(run, "Pas de réponse humaine", "echec")
-                break
-            continue
-        break
+                continue
+            break
+    except Exception as e:  # noqa: BLE001
+        evenement(run, "Erreur de l'agent", "echec", f"{type(e).__name__}: {str(e)[:200]}")
 
     # Matériel : jamais validé par l'agent, une personne doit décider.
     mat = lire(f"rh_materiel?personne_id=eq.{urllib.parse.quote(p['id'])}&statut=eq.a_valider&select=article")
@@ -171,12 +173,24 @@ def main():
     prouve = preuve(p["id"])
     verifiees = sum(1 for el in ELEMENTS if prouve.get(el)) + (1 if mat else 0)
     ok = all(prouve.get(el) for el in ELEMENTS)
+    duree = round(time.monotonic() - debut)
     _req("PATCH", f"agents_runs?id=eq.{run}", {"statut": "termine" if ok else "echec", "fin": datetime.now(timezone.utc).isoformat(),
                                                "actions_total": 4, "actions_verifiees": verifiees})
-    print(f"\nRésultat : {'RÉUSSI' if ok else 'ÉCHEC'} · {verifiees}/4 actions vérifiées dans la base · {round(time.monotonic() - debut)} s")
-    print("Preuve v_onboarding :", {k: prouve.get(k) for k in ELEMENTS})
-    if fin and isinstance(fin.answer, Reponse):
-        print("Dit par l'agent :", fin.answer.statut, "-", fin.answer.resume[:200])
+    print(f"\nAgent Accès : {'RÉUSSI' if ok else 'ÉCHEC'} · {verifiees}/4 actions vérifiées dans la base · {duree} s")
+    return {"agent": "acces", "run_id": run, "reussi": ok, "verifiees": verifiees, "duree_s": duree}
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--personne", default="karim-benali")
+    ap.add_argument("--manager", default=None, help="nom du manager, si déjà connu")
+    ap.add_argument("--reset", action="store_true", help="remet la personne de test à zéro avant de lancer")
+    a = ap.parse_args()
+    if a.reset:
+        if a.personne != "karim-benali":
+            raise SystemExit("Reset réservé à karim-benali.")
+        reinitialiser(a.personne)
+    executer(Client(), a.personne, manager=a.manager)
 
 
 if __name__ == "__main__":
