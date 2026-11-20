@@ -8,7 +8,7 @@ export const PLANS = [
 
 export default function Plans({ lien = "/inscription" }: { lien?: string }) {
   return (
-    <div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", maxWidth: 820 }}>
+    <div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", maxWidth: 820, margin: "0 auto" }}>
       {PLANS.map((p) => (
         <article key={p.id} className="card" style={p.principal ? { borderColor: "var(--g-700)", borderWidth: 2 } : undefined}>
           <h3>{p.nom}</h3>

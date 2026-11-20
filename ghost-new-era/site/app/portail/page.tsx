@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import Fantome from "@/components/portail/Fantome";
+import Checklist from "@/components/portail/Checklist";
+import ScenesAgents from "@/components/portail/ScenesAgents";
 import { agentInfo } from "@/lib/agents";
 import Pastille from "@/components/portail/Pastille";
 import VueAgent from "@/components/portail/VueAgent";
@@ -373,7 +375,7 @@ export default function Portail() {
   return (
     <main className="portail cockpit">
       <header className="portail-haut">
-        <span className="portail-marque"><span aria-hidden>👻</span> Ghost</span>
+        <span className="portail-marque"><Logo taille={22} /> Ghost</span>
         <ol className="etapes" aria-label="Avancement">
           {ETAPES.map((e, i) => (
             <li key={e} className={i + 1 < phase ? "fait" : i + 1 === phase ? "courant" : ""}><span>{i + 1 < phase ? "✓" : i + 1}</span>{e}</li>
@@ -394,7 +396,7 @@ export default function Portail() {
         {rapportPret
           ? <div className="rapport-zone"><Rapport d={suivi as unknown as DonneesRapport} onFermer={() => setRapportOuvert(false)} /></div>
           : ongletActif === "__agents" && suivi && suivi.runs.length > 0
-            ? <div className="agents-direct">{suivi.runs.map((r) => r.session_h_id && <VueAgent key={r.id} session={r.session_h_id} agent={r.agent} actif={r.statut === "en_cours"} />)}</div>
+            ? <ScenesAgents runs={suivi.runs} />
             : courant && <iframe key={`${courant.id}-${rafraichir}`} title={courant.nom} src={courant.chemin} className="cadre" />}
       </section>
 
@@ -402,7 +404,7 @@ export default function Portail() {
         <div className="bloc">
           <h2>Ce que Ghost voit</h2>
           <ul className="espaces" aria-label="Espaces observés">
-            {outilsAutorises.map((o) => <li key={o.id} className={espacesVus.includes(o.id) ? "vu" : ""}>{espacesVus.includes(o.id) ? "👁" : "○"} {o.nom.split(" ")[0] === "Espace" ? "RH" : o.nom}</li>)}
+            {outilsAutorises.map((o) => <li key={o.id} className={espacesVus.includes(o.id) ? "vu" : ""}><span className="pt" />{o.nom.split(" ")[0] === "Espace" ? "RH" : o.nom}</li>)}
           </ul>
           <p className="petit">Navigue dans les espaces pendant que Ghost regarde : il note ceux qu&apos;il a vus.</p>
           <p className="petit">Outils autorisés : <b>{outilsAutorises.map((o) => o.nom).join(", ") || "aucun"}</b></p>
@@ -460,23 +462,7 @@ export default function Portail() {
             <h2>Les agents H travaillent</h2>
             {!propositionId && <p className="petit">Aucune proposition enregistrée : aucun agent n'est lancé.</p>}
             {propositionId && !suivi?.runs.length && <p className="petit">Démarrage des agents… (le service peut mettre une minute à se réveiller)</p>}
-            {suivi?.runs.map((r) => (
-              <div key={r.id} className={`agent ${r.statut}`}>
-                <div className="agent-tete">
-                  <h3 className="agent-id"><Fantome couleur={agentInfo(r.agent).couleur} taille={24} actif={r.statut === "en_cours"} /> {agentInfo(r.agent).prenom} <small>agent {agentInfo(r.agent).role}</small></h3>
-                  <span>{r.statut === "en_cours" ? "au travail" : r.statut === "termine" ? "terminé" : "échec"}</span>
-                </div>
-                <ul>
-                  {suivi.evenements.filter((e) => e.run_id === r.id).map((e) => (
-                    <li key={e.id} className={e.statut}>
-                      <i>{e.statut === "ok" ? "☑" : e.statut === "echec" ? "✗" : e.statut === "question" || e.statut === "attente_validation" ? "⏸" : "…"}</i>
-                      <span>{e.action}{e.detail ? <small> : {e.detail}</small> : null}</span>
-                    </li>
-                  ))}
-                </ul>
-                {r.vue_directe_url && <button className="lien" onClick={() => ouvrirVue(r.vue_directe_url!)}>Voir l&apos;agent H en direct ↗</button>}
-              </div>
-            ))}
+            {suivi && <Checklist preuve={suivi.rapport?.preuve ?? {}} runs={suivi.runs} />}
             {suivi?.decisions.filter((d) => d.statut === "en_attente").map((d) => (
               <div key={d.id} className="agent question">
                 <h3>{d.libelle.startsWith("Valider la commande") ? "Validation nécessaire" : "L'agent a une question"}</h3>

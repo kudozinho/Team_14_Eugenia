@@ -16,7 +16,7 @@ const phrase = (e: Etape) => {
 };
 
 // L'écran de l'agent H en direct : sa dernière capture, et un point rouge là où il clique.
-export default function VueAgent({ session, agent, actif }: { session: string; agent: string; actif: boolean }) {
+export default function VueAgent({ session, agent, actif, grand = false }: { session: string; agent: string; actif: boolean; grand?: boolean }) {
   const info = agentInfo(agent);
   const [etat, setEtat] = useState<Etat | null>(null);
   const [panne, setPanne] = useState(false);
@@ -38,10 +38,10 @@ export default function VueAgent({ session, agent, actif }: { session: string; a
 
   const dernier = etat?.etapes.filter((e) => e.image === etat.derniere && e.x != null && e.y != null).at(-1)
     ?? etat?.etapes.filter((e) => e.x != null && e.y != null).at(-1);
-  const recentes = etat?.etapes.slice(-3).reverse() ?? [];
+  const recentes = etat?.etapes.slice(grand ? -5 : -3).reverse() ?? [];
 
   return (
-    <article className="vue-agent" aria-label={`Écran de ${info.prenom}, agent ${info.role}`} style={{ ["--c" as string]: info.couleur }}>
+    <article className={grand ? "vue-agent grand" : "vue-agent"} aria-label={`Écran de ${info.prenom}, agent ${info.role}`} style={{ ["--c" as string]: info.couleur }}>
       <header>
         <span className="agent-id"><Fantome couleur={info.couleur} taille={30} actif={actif} /><b>{info.prenom}</b><small>agent {info.role}</small></span>
         <span className={actif ? "pastille-live" : "pastille-fin"}>{actif ? "● au travail" : "✓ terminé"}</span>

@@ -329,3 +329,60 @@ a:hover { background-size: 100% 2px; }
 .demo-pied small { color: var(--mute); }
 @media (max-width: 960px) { .roi { grid-template-columns: 1fr; } .bandeau-sombre, .bandeau-final { padding: 36px 26px; } }
 @media (max-width: 700px) { .demo-voies { grid-template-columns: 1fr; } }
+
+/* ===== Mise en page : tout est centré dans un même conteneur, tailles cohérentes ===== */
+.section { max-width: 1120px; margin-left: auto; margin-right: auto; padding-left: 28px; padding-right: 28px; }
+.sec-tete { text-align: center; justify-items: center; margin-left: auto; margin-right: auto; }
+.sec-tete .lead { margin-left: auto; margin-right: auto; }
+.outils-vrac { justify-content: center; }
+.chronologie { max-width: 1120px; margin: 0 auto; }
+.integrations { max-width: 880px; margin: 0 auto; }
+.roi { max-width: 980px; margin: 0 auto; }
+.faq { margin: 0 auto; }
+.bandeau-sombre, .bandeau-final { text-align: center; justify-items: center; }
+.bandeau-sombre h2, .bandeau-final h2 { margin-left: auto; margin-right: auto; max-width: 22ch; }
+.bandeau-final { padding: 56px 32px; }
+.bandeau-final .btn { padding: 13px 28px; font-size: 1rem; border-radius: 999px; }
+.piliers { text-align: left; }
+.etape { text-align: left; }
+
+/* ===== Dashboard : écran principal, onglets par agent, checklist ===== */
+.portail-marque { display: inline-flex; align-items: center; gap: 10px; }
+.portail { grid-template-columns: minmax(0, 1fr) 380px; }
+.scenes { display: grid; gap: 14px; }
+.onglets-agents { display: flex; gap: 10px; flex-wrap: wrap; }
+.onglets-agents button { display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px 10px 14px; border-radius: 16px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, 0.05); color: var(--ink); font: inherit; cursor: pointer; border-bottom: 3px solid transparent; }
+.onglets-agents button span { display: grid; text-align: left; line-height: 1.15; }
+.onglets-agents button small { color: var(--mute); }
+.onglets-agents button.actif { background: rgba(255, 255, 255, 0.12); border-bottom-color: var(--c); }
+.pt { width: 9px; height: 9px; border-radius: 50%; background: var(--mute); display: inline-block; }
+.pt.en_cours { background: var(--c, var(--g-500)); animation: onde-pt 1.4s ease-in-out infinite; }
+.pt.termine { background: var(--g-500); }
+@keyframes onde-pt { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.vue-agent.grand { padding: 0; background: transparent; border: 0; border-top: 0; box-shadow: none; backdrop-filter: none; gap: 12px; }
+.vue-agent.grand header { display: none; }
+.vue-agent.grand .vue-ecran { min-height: 460px; border-radius: 16px; border: 1px solid var(--line-2); box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45); }
+.vue-agent.grand .curseur .onde { width: 34px; height: 34px; left: 8px; top: 8px; }
+.vue-agent.grand .curseur em { font-size: 0.85rem; }
+.vue-agent.grand .actions-agent { font-size: 1rem; gap: 6px; }
+.vue-agent.grand .adresse { font-size: 0.9rem; }
+.checklist { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; }
+.checklist header { display: flex; justify-content: space-between; align-items: baseline; }
+.checklist header b { font-family: var(--font-titres); font-size: 1.4rem; color: var(--ink); }
+.barre-prog { height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.barre-prog i { display: block; height: 100%; background: var(--g-500); border-radius: 999px; transition: width 0.5s; }
+.groupe { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 8px; }
+.groupe h3 { display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+.groupe h3 small { color: var(--mute); font-weight: 600; }
+.etat-pt { margin-left: auto; font-size: 0.75rem; font-weight: 700; color: var(--mute); }
+.etat-pt.en_cours { color: var(--c); } .etat-pt.termine { color: var(--g-300); }
+.groupe ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.groupe li { display: flex; align-items: center; gap: 10px; color: var(--mute); font-size: 0.92rem; }
+.groupe li.ok { color: var(--ink); }
+.coche { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line-2); position: relative; }
+.groupe li.ok .coche { background: var(--g-500); border-color: var(--g-500); }
+.groupe li.ok .coche::after { content: ""; position: absolute; left: 5px; top: 2px; width: 5px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.espaces .pt { margin-right: 6px; }
+.espaces li.vu .pt { background: var(--g-500); }
+.checklist header h2 { font-size: 1.1rem; }
+.checklist header b { white-space: nowrap; }
