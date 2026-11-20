@@ -1,12 +1,14 @@
-"""Ce que la personne a autorisé pour la session en cours (liste d'outils cochés dans le portail).
-Un agent n'utilise un connecteur, le coffre-fort ou Notion que si l'outil est coché. Sans contexte (essais en ligne de commande), tout est permis."""
+"""Ce que la personne a autorisé et connecté pour la session en cours.
+- autorises : outils cochés dans le portail. Un agent n'utilise un outil que s'il est coché (sans contexte : tout est permis, pour les essais en ligne de commande).
+- apps : accès de CETTE personne (Notion, Slack, Gmail) lus dans le coffre-fort H, jamais ceux d'une autre."""
 import threading
 
 CONTEXTE = threading.local()
 
 
-def definir(autorises):
+def definir(autorises, apps=None):
     CONTEXTE.autorises = autorises
+    CONTEXTE.apps = apps
 
 
 def autorise(nom):

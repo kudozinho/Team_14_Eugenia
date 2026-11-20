@@ -131,14 +131,40 @@ class Service(BaseHTTPRequestHandler):
             return self._envoyer(200, b'{"ok":true}')
         return self._envoyer(404, b'{"erreur":"inconnu"}')
 
+    def _app(self, methode):
+        """Accès Notion, Slack ou Gmail de la personne : vérifiés avant d'être enregistrés dans le coffre-fort H."""
+        uid = utilisateur(self.headers)
+        if not uid:
+            return self._envoyer(401, b'{"erreur":"Non connecte."}')
+        tag = uid[:8]
+        if methode == "DELETE":
+            coffre.retirer_app(client(), self.path.split("/")[-1].split("?")[0], tag)
+            return self._envoyer(200, b'{"ok":true}')
+        n = int(self.headers.get("Content-Length") or 0)
+        d = json.loads(self.rfile.read(min(n, 4000)) or b"{}")
+        app, valeurs = d.get("app"), d.get("valeurs") or {}
+        if app not in connecteurs.CHAMPS or not all(valeurs.get(k) for k in connecteurs.CHAMPS[app]):
+            return self._envoyer(400, json.dumps({"erreur": "Champs manquants."}).encode())
+        valeurs = {k: str(valeurs[k])[:300] for k in connecteurs.CHAMPS[app]}
+        ok, detail = connecteurs.tester(app, valeurs)
+        if not ok:
+            return self._envoyer(400, json.dumps({"erreur": detail}, ensure_ascii=False).encode())
+        coffre.ajouter_app(client(), app, valeurs, tag)
+        return self._envoyer(200, json.dumps({"ok": True, "detail": detail}, ensure_ascii=False).encode())
+
     def do_POST(self):  # noqa: N802
         try:
-            return self._comptes("POST") if self.path.split("?")[0] == "/connexions" else self._envoyer(404, b"{}")
+            chemin = self.path.split("?")[0]
+            if chemin == "/apps":
+                return self._app("POST")
+            return self._comptes("POST") if chemin == "/connexions" else self._envoyer(404, b"{}")
         except Exception as e:  # noqa: BLE001
             return self._envoyer(502, json.dumps({"erreur": type(e).__name__}).encode())
 
     def do_DELETE(self):  # noqa: N802
         try:
+            if self.path.startswith("/apps/"):
+                return self._app("DELETE")
             return self._comptes("DELETE")
         except Exception as e:  # noqa: BLE001
             return self._envoyer(502, json.dumps({"erreur": type(e).__name__}).encode())
@@ -148,15 +174,13 @@ class Service(BaseHTTPRequestHandler):
         try:
             if chemin == "/connexions":
                 return self._comptes("GET")
-            if chemin == "/connecteurs":  # état des accès : oui ou non, jamais une valeur
-                try:
-                    navigateur = bool(coffre.coffre_existant(client()))
-                except Exception:  # noqa: BLE001
-                    navigateur = False
-                return self._envoyer(200, json.dumps({"slack": connecteurs.configure("slack"), "gmail": connecteurs.configure("gmail"),
-                                                      "notion": connecteurs.configure("notion"), "navigateur": navigateur}).encode())
-            if chemin in ("/", "/sante"):
-                return self._envoyer(200, b"ok", "text/plain")
+            if chemin == "/connecteurs":  # accès de la personne connectée : oui ou non, jamais une valeur
+                uid = utilisateur(self.headers)
+                if not uid:
+                    return self._envoyer(401, b'{"erreur":"Non connecte."}')
+                apps = coffre.apps_connectees(client(), uid[:8])
+                return self._envoyer(200, json.dumps({"notion": "notion" in apps, "slack": "slack" in apps, "gmail": "gmail" in apps,
+                                                      "navigateur": bool(coffre.lister(client(), uid[:8]))}).encode())
             m = re.fullmatch(rf"/agent/({UUID})", chemin)
             if m:
                 return self._envoyer(200, json.dumps(etat_agent(m.group(1)), ensure_ascii=False).encode())

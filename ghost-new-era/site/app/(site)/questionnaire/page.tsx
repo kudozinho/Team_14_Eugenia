@@ -34,7 +34,7 @@ export default function Questionnaire() {
     });
     setEnvoi(false);
     if (error) { setErreur("Impossible d'enregistrer tes réponses : " + error.message); return; }
-    router.push("/portail");
+    router.push("/connexions?suite=1");
   }
 
   if (!user) return <section className="wrap" style={{ padding: 40 }}><p>Chargement…</p></section>;

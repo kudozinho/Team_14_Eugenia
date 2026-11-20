@@ -1,26 +1,22 @@
-# Accès, comptes connectés et connecteurs
+# Accès, connexions et connecteurs
 
-Ce que la personne coche sur l'écran d'accueil du portail est enregistré (`sessions_audit.outils_autorises`, `consentements`) et **appliqué** par les agents : un agent n'utilise un outil que s'il est coché.
+**Chaque personne connecte ses propres outils** depuis la plateforme (page « Connexions », proposée juste après le questionnaire). Rien n'est configuré par l'équipe dans l'environnement du service.
 
-| Case | Ce que ça autorise | Où se configure l'accès |
+## Le parcours
+1. Compte, paiement de démonstration, questionnaire.
+2. **Connexions** : Notion, Slack, Gmail et comptes de sites (Google, etc.), avec les étapes guidées pour trouver chaque clé. Tout est facultatif. Un accès est **vérifié avant d'être enregistré** (Notion : lecture de la page ; Slack : message de confirmation ; Gmail : ouverture de session sans envoi).
+3. **Portail** : l'écran d'accueil coche d'office les accès que la personne a connectés ; elle peut les décocher. Un agent n'utilise un outil que s'il est coché.
+
+## Où sont les accès
+Dans le **coffre-fort hébergé par H**, un élément par personne et par outil (nom étiqueté avec le début de l'identifiant de la personne). Les valeurs ne sont jamais conservées par Ghost ; le service ne les relit côté serveur qu'au moment d'un onboarding lancé par la **même personne**. Une personne ne voit et ne retire que ses propres accès.
+
+| Outil | Ce que fait l'agent avec | Ce que la personne fournit |
 |---|---|---|
-| Espace RH, messagerie, wiki | Les agents H travaillent dans l'intranet d'Atelier Nova | Rien à configurer |
-| Navigateur et comptes connectés | Les navigateurs des agents sont liés au coffre-fort H : ils se connectent seuls aux comptes enregistrés | Page « Comptes connectés » du site |
-| Notion | Lire la page Notion partagée et y créer la page d'onboarding | Variables du service des agents |
-| Slack | Publier le message de bienvenue | Variables du service des agents |
-| Gmail | Envoyer l'e-mail de bienvenue | Variables du service des agents |
+| Notion | Lit la page et y crée la page d'onboarding (Lia) | Secret de l'intégration, lien de la page |
+| Slack | Publie le message de bienvenue (Nino) | Adresse du webhook |
+| Gmail | Envoie l'e-mail de bienvenue (Nino) | Adresse, mot de passe d'application, destinataire |
+| Comptes de sites | Les navigateurs des agents se connectent seuls | Identifiant, mot de passe, clé 2FA (facultatif) |
 
-L'écran d'accueil coche d'office les accès **configurés** (route `/connecteurs` du service, qui répond seulement oui ou non) ; la personne peut décocher. Un accès non configuré est grisé : « non configuré ».
-
-## Variables du service des agents (Render, onglet Environment ; jamais dans le dépôt)
-- Slack : `SLACK_BOT_TOKEN`, `SLACK_CHANNEL`.
-- Gmail : `GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD`, `NEW_HIRE_EMAIL`.
-- Notion : `NOTION_TOKEN`, `NOTION_PARENT_PAGE_ID` (un identifiant **ou le lien** de la page ; la page doit être partagée avec l'intégration).
-- Coffre-fort H : `H_VAULT_ID` (facultatif : sinon le coffre « ghost-comptes » est créé au premier compte enregistré).
-
-## Comptes connectés
-Page `/connexions` : plateforme, adresse de connexion, identifiant, mot de passe, clé secrète du code à usage unique (facultatif). Les valeurs partent du navigateur vers le service, puis vers le coffre-fort hébergé par H ; elles ne sont ni stockées par Ghost ni relues. Chaque personne ne voit que ses comptes.
-
-## Ce qui est testé, ce qui ne l'est pas
-- Testé : création, lecture des métadonnées et suppression d'un élément du coffre-fort ; logique « seul ce qui est coché est utilisé » ; lecture d'un lien Notion.
-- **Non testé** : une vraie connexion automatique sur un site, Slack, Gmail, la lecture réelle d'une page Notion, le rattachement du coffre-fort à une session d'agent.
+## Testé, non testé
+- Testé : stockage par personne (deux personnes ne voient pas les accès l'une de l'autre), relecture côté serveur, remplacement sans doublon, suppression ; logique « seul ce qui est coché est utilisé » ; lecture d'un lien Notion ; refus d'un webhook invalide.
+- **Non testé** : connexion réelle à Notion, Slack, Gmail ; une vraie connexion automatique sur un site ; le rattachement du coffre-fort à une session d'agent.
