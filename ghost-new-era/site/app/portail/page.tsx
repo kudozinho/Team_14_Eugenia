@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import Pastille from "@/components/portail/Pastille";
 import { getSupabase } from "@/lib/supabase";
 
+// L'intranet d'Atelier Nova est un autre site, déployé à part.
+const INTRANET = process.env.NEXT_PUBLIC_INTRANET_URL ?? "https://atelier-nova-intranet.vercel.app";
+
 const TOUS = [
-  { id: "rh", nom: "Espace RH et badges", chemin: "/intranet/rh" },
-  { id: "messagerie", nom: "Messagerie", chemin: "/intranet/messagerie" },
-  { id: "wiki", nom: "Wiki", chemin: "/intranet/wiki" },
+  { id: "rh", nom: "Espace RH et badges", chemin: `${INTRANET}/intranet/rh` },
+  { id: "messagerie", nom: "Messagerie", chemin: `${INTRANET}/intranet/messagerie` },
+  { id: "wiki", nom: "Wiki", chemin: `${INTRANET}/intranet/wiki` },
 ];
 
 type Etape = "chargement" | "accord" | "observation";
