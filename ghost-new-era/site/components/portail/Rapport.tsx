@@ -69,9 +69,9 @@ export default function Rapport({ d, onFermer }: { d: DonneesRapport; onFermer: 
         <h3>Ce qui a été fait, et prouvé dans l&apos;outil</h3>
         <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0", display: "grid", gap: 6 }}>
           {ELEMENTS.map(([k, libelle, outil]) => (
-            <li key={k}>{preuve[k] ? "☑" : "☐"} {libelle} <span style={{ color: "var(--mute)" }}>· {outil}</span></li>
+            <li key={k}>{preuve[k] ? "✓" : "○"} {libelle} <span style={{ color: "var(--mute)" }}>· {outil}</span></li>
           ))}
-          {commande && <li>{commande.statut === "valide" ? "☑" : "⏸"} {commande.article} : {commande.statut === "valide" ? "commande validée par toi" : "en attente de ta validation"} <span style={{ color: "var(--mute)" }}>· décision humaine</span></li>}
+          {commande && <li>{commande.statut === "valide" ? "✓" : "…"} {commande.article} : {commande.statut === "valide" ? "commande validée par toi" : "en attente de ta validation"} <span style={{ color: "var(--mute)" }}>· décision humaine</span></li>}
         </ul>
       </section>
 

@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import commun as c  # noqa: E402
 from commun import evenement, lire  # noqa: E402
+import connecteurs  # noqa: E402
 
 ATTENTE_MANAGER_S = 600
 AGENT_H = os.environ.get("AGENT_EQUIPE", "ghost-equipe")
@@ -66,6 +67,18 @@ Ne sors pas de la messagerie. Réponds statut=termine avec un résumé court, ou
             ok2 = bool(c.preuve(p["id"]).get("parrain")) and bool(c.preuve(p["id"]).get("cafe"))
     except Exception as e:  # noqa: BLE001
         evenement(run, "Erreur de l'agent", "echec", f"{type(e).__name__}: {str(e)[:200]}", outil="Messagerie")
+    mgr_nom = None
+    try:
+        f = lire(f"rh_fiches?personne_id=eq.{urllib.parse.quote(p['id'])}&select=manager_id")
+        if f and f[0]["manager_id"]:
+            mp = lire(f"personnes?id=eq.{f[0]['manager_id']}&select=prenom,nom")
+            mgr_nom = f"{mp[0]['prenom']} {mp[0]['nom']}" if mp else None
+    except Exception:  # noqa: BLE001
+        pass
+    for nom, fn, outil, lib in (("slack", connecteurs.slack_bienvenue, "Slack", "Message de bienvenue dans Slack"), ("gmail", connecteurs.gmail_bienvenue, "Gmail", "E-mail de bienvenue envoyé")):
+        ok, detail = fn(p, mgr_nom)
+        if ok is not None:
+            evenement(run, lib, "ok" if ok else "echec", detail, outil=outil)
     pr = c.preuve(p["id"])
     verifiees = sum(1 for k in ("canal", "message", "parrain", "cafe") if pr.get(k))
     return c.cloturer(run, verifiees == 4, verifiees, 4, debut, "Équipe")

@@ -125,7 +125,7 @@ export default function Accueil() {
       <section className="wrap section">
         <div className="cockpit bandeau-final">
           <h2>La prochaine arrivée, vous la préparez en trois minutes.</h2>
-          <Link href="/inscription" className="btn btn-primary btn-grand">Commencer</Link>
+          <Link href="/inscription" className="btn btn-primary">Commencer</Link>
         </div>
       </section>
     </>
